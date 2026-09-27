@@ -12,6 +12,7 @@ import type { ExtractedIocs } from '../core/ioc';
 import type { Assessment } from '../core/detection';
 import type { DeviceSecurityReport, SettingsLink } from '../core/device-security';
 import type { TamperReport } from '../core/tamper';
+import type { ExtensionAudit } from '../core/extensions';
 import type { CapaSummary } from '../core/capa';
 import type { EmailAnalysis } from '../core/email';
 import type { DieSummary } from '../core/die';
@@ -502,6 +503,7 @@ export type { AttackRef, Capability, CapaSummary } from '../core/capa';
 export type { DieDetection, DieSummary } from '../core/die';
 export type { DeviceCheck, DeviceSecurityReport, SettingsLink } from '../core/device-security';
 export type { TamperFinding, TamperItem, TamperReport } from '../core/tamper';
+export type { BrowserExtension, BrowserId, ExtensionAudit, ExtensionFlag, ExtensionRisk } from '../core/extensions';
 
 export interface OsintOptions {
   /** Certificate Transparency (crt.sh) — domain */
@@ -948,6 +950,10 @@ export interface BlazmaApi {
   password: {
     /** "Was my password leaked?" — sends only a 5-char SHA-1 prefix (k-anonymity) through NetworkGate. */
     checkPwned(password: string): Promise<Result<PwnedResult>>;
+  };
+  extensions: {
+    /** Read-only audit of browser extensions (Chromium browsers + Firefox) for the current user. */
+    audit(): Promise<Result<ExtensionAudit>>;
   };
   device: {
     /** Read-only Device Security Score (Windows). */

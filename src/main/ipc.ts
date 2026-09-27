@@ -19,6 +19,7 @@ import { systemFetch } from './services/net-fetch';
 import { checkPwnedPassword, PwnedError } from './services/pwned';
 import { deviceSecurity, DeviceSecurityError, openSettingsPage } from './services/device-security';
 import { tamperChecks } from './services/tamper';
+import { auditExtensions } from './services/extensions';
 import { externalLinkHost } from '../core/intel';
 import * as forensics from './services/forensics';
 import { NetToolsError, NetToolsService } from './services/nettools';
@@ -186,6 +187,7 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
 
   handle('system:snapshot', async () => ({ ok: true, data: await getSystemSnapshot() }));
   handle('system:security', async () => ({ ok: true, data: (await getWindowsFacts()).security }));
+  handle('extensions:audit', async () => ({ ok: true, data: await auditExtensions() }));
   handle('device:tamper', async () => ({ ok: true, data: await tamperChecks() }));
   handle('device:security', async (force: unknown) => {
     const r = await deviceSecurity(force === true);

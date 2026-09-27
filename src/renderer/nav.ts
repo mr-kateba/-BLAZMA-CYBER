@@ -1,12 +1,12 @@
 import {
   BadgeCheck, Crosshair, Earth, MailWarning, FileSearch, FolderOpen, Hash, KeyRound, KeySquare, Languages, Link2, MonitorCog, Network, Palette, Plug,
-  ScanSearch, ScrollText, ShieldCheck, ShieldHalf, SquareTerminal, UserSearch, LayoutDashboard, Cpu, Scale, type LucideIcon,
+  Puzzle, ScanSearch, ScrollText, ShieldCheck, ShieldHalf, SquareTerminal, UserSearch, LayoutDashboard, Cpu, Scale, type LucideIcon,
 } from 'lucide-react';
 
 export type PageId =
   | 'dashboard' | 'device-security'
   | 'ip-intel' | 'domain-intel' | 'email-check' | 'password-check' | 'osint' | 'reputation'
-  | 'security-center' | 'file-analyzer' | 'yara' | 'hash-lab'
+  | 'security-center' | 'file-analyzer' | 'browser-extensions' | 'yara' | 'hash-lab'
   | 'password-recovery'
   | 'windows-forensics' | 'network-toolkit' | 'threat-hunting' | 'terminal'
   | 'cases' | 'reports'
@@ -57,6 +57,7 @@ export const NAV: NavSection[] = [
     items: [
       { id: 'security-center', simple: true, labelKey: 'nav.securityCenter', icon: ShieldHalf },
       { id: 'file-analyzer', simple: true, simpleLabelKey: 'nav.simple.scanFile', labelKey: 'nav.fileAnalyzer', icon: FileSearch },
+      { id: 'browser-extensions', simple: true, labelKey: 'nav.extensions', icon: Puzzle },
       { id: 'yara', labelKey: 'nav.yara', icon: ScanSearch },
       { id: 'hash-lab', labelKey: 'nav.hashLab', icon: Hash },
     ],

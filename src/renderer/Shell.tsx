@@ -26,6 +26,7 @@ const Reports = lazy(() => import('./pages/Reports').then((m) => ({ default: m.R
 const ThreatHunting = lazy(() => import('./pages/ThreatHunting').then((m) => ({ default: m.ThreatHunting })));
 const DeviceSecurity = lazy(() => import('./pages/DeviceSecurity').then((m) => ({ default: m.DeviceSecurity })));
 const EmailCheck = lazy(() => import('./pages/EmailCheck').then((m) => ({ default: m.EmailCheck })));
+const BrowserExtensions = lazy(() => import('./pages/BrowserExtensions').then((m) => ({ default: m.BrowserExtensions })));
 const PasswordCheck = lazy(() => import('./pages/PasswordCheck').then((m) => ({ default: m.PasswordCheck })));
 const Osint = lazy(() => import('./pages/Osint').then((m) => ({ default: m.Osint })));
 
@@ -53,6 +54,8 @@ function Page({ id }: { id: PageId }) {
       return <EmailCheck />;
     case 'password-check':
       return <PasswordCheck />;
+    case 'browser-extensions':
+      return <BrowserExtensions />;
     case 'osint':
       return <Osint />;
     case 'reputation':

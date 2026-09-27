@@ -12,6 +12,7 @@ import { NetToolsService } from '../src/main/services/nettools';
 import { NetworkGate } from '../src/core/network-gate';
 import { deviceSecurity } from '../src/main/services/device-security';
 import { tamperChecks } from '../src/main/services/tamper';
+import { auditExtensions } from '../src/main/services/extensions';
 import { runCapa, runDie } from '../src/main/services/static-engines';
 import { YaraService } from '../src/main/services/yara';
 import { readdirSync, readFileSync, copyFileSync } from 'node:fs';
@@ -129,6 +130,12 @@ describe.runIf(WIN)('Windows integration (real PowerShell / Defender / Authentic
     for (const f of r.findings) expect(f.status, f.id).not.toBe('unknown');
     // A stock runner has not had its security sites hijacked.
     expect(r.findings.find((f) => f.id === 'hosts')!.status).not.toBe('fail');
+  }, 120_000);
+
+  it('Browser extension audit reads the real browser folders without errors', async () => {
+    const r = await auditExtensions();
+    console.log('Extensions:', JSON.stringify({ browsers: r.browsers, extensions: r.extensions.map((e) => `${e.browser}:${e.name}:${e.risk}:${e.source}`).slice(0, 20) }));
+    expect(Array.isArray(r.extensions)).toBe(true);
   }, 120_000);
 });
 

@@ -80,6 +80,9 @@ const api: BlazmaApi = {
   password: {
     checkPwned: (password) => invoke('password:checkPwned', password),
   },
+  extensions: {
+    audit: () => invoke('extensions:audit'),
+  },
   device: {
     security: (force) => invoke('device:security', force === true),
     tamper: () => invoke('device:tamper'),

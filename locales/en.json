@@ -55,7 +55,8 @@
       "checkLink": "Check a link or website"
     },
     "emailCheck": "Check an email",
-    "passwordCheck": "Was my password leaked?"
+    "passwordCheck": "Was my password leaked?",
+    "extensions": "Browser extensions"
   },
   "topbar": {
     "search": "Search tools…",
@@ -1768,6 +1769,10 @@
     "tampering": {
       "title": "What is tampering?",
       "text": "Some malware quietly changes Windows settings instead of showing itself: it redirects websites, routes your traffic through its own server, or installs a certificate so it can read encrypted pages. These checks look for such changes. Some legitimate programs make similar changes, so each result explains what was found."
+    },
+    "extension_permissions": {
+      "title": "Why do permissions matter?",
+      "text": "An extension can only do what its permissions allow. \"All websites\" means it can read and change every page you open — including your email and bank. Many useful extensions need that, but so do malicious ones. Keep only extensions you know and use."
     }
   },
   "mode": {
@@ -2033,6 +2038,90 @@
       "dns_known": "A well-known public DNS provider",
       "dns_unknown": "Not a well-known provider — make sure you set it yourself",
       "root_user_added": "Added to your account, not part of Windows"
+    }
+  },
+  "ext": {
+    "title": "Browser extensions",
+    "subtitle": "What the add-ons in your browsers are allowed to do, and where they came from.",
+    "readOnly": "BLAZMA only reads the files your browsers keep about their extensions. It never changes, disables or uploads anything.",
+    "rescan": "Check again",
+    "noBrowsers": "No supported browser found for this user",
+    "noBrowsersHint": "Supported: Chrome, Edge, Brave, Vivaldi, Opera, Chromium and Firefox.",
+    "count": {
+      "high": "{{n}} need attention",
+      "medium": "{{n}} with broad access",
+      "low": "{{n}} limited"
+    },
+    "browsersFound": "Browsers found (profiles): {{list}}",
+    "onlyBroad": "Show only extensions with broad access",
+    "checkedAt": "Checked {{time}}",
+    "listTitle": "Extensions ({{count}})",
+    "listSub": "Sorted by access level. Click an extension for details.",
+    "none": "Nothing to show.",
+    "disabled": "Disabled",
+    "risk": {
+      "high": "Needs attention",
+      "medium": "Broad access",
+      "low": "Limited access"
+    },
+    "flag": {
+      "all_sites": "All websites",
+      "traffic": "Web traffic",
+      "cookies": "Cookies",
+      "history": "History",
+      "clipboard": "Clipboard",
+      "native": "Programs on this PC",
+      "debugger": "Debugger",
+      "proxy": "Proxy",
+      "management": "Other extensions",
+      "downloads": "Downloads",
+      "sideloaded": "Not from the store",
+      "external": "Installed by a program",
+      "policy": "Installed by policy",
+      "unsigned": "Not signed"
+    },
+    "flagWhy": {
+      "all_sites": "Can read and change everything on every website you visit, including passwords you type.",
+      "traffic": "Can watch, block or redirect your web requests.",
+      "cookies": "Can read your cookies — they keep you signed in to sites.",
+      "history": "Can read your browsing history.",
+      "clipboard": "Can read what you copy.",
+      "native": "Can talk to a program installed on this computer.",
+      "debugger": "Can take full control of pages through the browser debugger — rarely needed by normal extensions.",
+      "proxy": "Can send your browsing through a server of its choice.",
+      "management": "Can see, turn on or off other extensions.",
+      "downloads": "Can start and manage downloads.",
+      "sideloaded": "Loaded from a folder or the command line instead of the store — a common trick of malware.",
+      "external": "Installed by another program on this computer, not by you from the store.",
+      "policy": "Installed by an organization policy (normal on work computers; malware sometimes abuses policies too).",
+      "unsigned": "Not signed by Mozilla."
+    },
+    "id": "ID",
+    "version": "Version",
+    "source": "Installed from",
+    "permissions": "Permissions",
+    "sites": "Sites",
+    "sourceName": {
+      "store": "The browser’s store",
+      "sideloaded": "A folder / command line",
+      "external": "Another program",
+      "policy": "Policy",
+      "unknown": "Unknown"
+    },
+    "howRemove": "To remove:",
+    "remove": {
+      "chromium": "open {{page}} in the browser and click Remove on this extension.",
+      "firefox": "open about:addons in Firefox, click ⋯ next to this extension and choose Remove."
+    },
+    "disclaimer": "Broad access is not proof of harm — but remove anything you did not install or no longer use.",
+    "browser": {
+      "chrome": "Google Chrome",
+      "edge": "Microsoft Edge",
+      "brave": "Brave",
+      "vivaldi": "Vivaldi",
+      "opera": "Opera",
+      "chromium": "Chromium",
+      "firefox": "Firefox"
     }
   }
 }

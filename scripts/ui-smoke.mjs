@@ -16,6 +16,19 @@ const root = resolve(import.meta.dirname, '..');
 const out = join(root, 'docs', 'screenshots');
 mkdirSync(out, { recursive: true });
 const dataDir = mkdtempSync(join(tmpdir(), 'blazma-smoke-'));
+// Linux: a fixture browser profile (XDG_CONFIG_HOME) for the extensions audit — one extension loaded
+// from a folder with access to all sites, one from the store. On Windows the runner's real browsers are read.
+const xdg = join(dataDir, 'xdg');
+if (process.platform === 'linux') {
+  const prof = join(xdg, 'google-chrome', 'Default');
+  const put = (id, name, manifest) => {
+    mkdirSync(join(prof, 'Extensions', id, '1.0_0'), { recursive: true });
+    writeFileSync(join(prof, 'Extensions', id, '1.0_0', 'manifest.json'), JSON.stringify({ name, version: '1.0', manifest_version: 3, ...manifest }));
+  };
+  put('a'.repeat(32), 'Free PDF Converter', { permissions: ['webRequest', 'cookies'], host_permissions: ['<all_urls>'] });
+  put('b'.repeat(32), 'Simple Notes', { permissions: ['storage'] });
+  writeFileSync(join(prof, 'Secure Preferences'), JSON.stringify({ extensions: { settings: { ['a'.repeat(32)]: { location: 4, state: 1 }, ['b'.repeat(32)]: { location: 1, state: 1 } } } }));
+}
 const sample = process.argv[2];
 const yr = process.env.BLAZMA_TEST_YR; // optional: real YARA-X CLI for the Phase 2 flow
 const stubOpen = (p) => app.evaluate(({ dialog }, x) => { dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [x] }); }, p);
@@ -24,7 +37,7 @@ const app = await electron.launch({
   // require('electron') returns the binary path and downloads it first if npm skipped that step.
   executablePath: createRequire(import.meta.url)('electron'),
   args: [...(process.platform === 'linux' ? ['--no-sandbox'] : []), root],
-  env: { ...process.env, BLAZMA_DATA_DIR: dataDir },
+  env: { ...process.env, BLAZMA_DATA_DIR: dataDir, ...(process.platform === 'linux' ? { XDG_CONFIG_HOME: xdg } : {}) },
 });
 
 const errors = [];
@@ -402,6 +415,21 @@ try {
   await win.waitForTimeout(300);
   await win.screenshot({ path: join(out, '33-reputation-abusech-ar.png'), fullPage: true });
 
+  // Phase E3: browser extensions audit (read-only).
+  await win.locator('.nav-item', { hasText: 'إضافات المتصفح' }).click();
+  if (process.platform === 'linux') {
+    await win.locator('.devsec-title', { hasText: 'Free PDF Converter' }).waitFor({ timeout: 30000 });
+    await win.locator('.devsec-row', { hasText: 'Free PDF Converter' }).getByText('ليست من المتجر').waitFor();
+    await win.locator('.devsec-row', { hasText: 'Simple Notes' }).getByText('صلاحيات محدودة').waitFor();
+    await win.locator('.devsec-head', { hasText: 'Free PDF Converter' }).click();
+    await win.getByText('chrome://extensions', { exact: false }).first().waitFor();
+    await win.waitForTimeout(300);
+    await win.screenshot({ path: join(out, '34-extensions-ar.png'), fullPage: true });
+  } else {
+    await win.getByText('إضافات المتصفح', { exact: true }).first().waitFor();
+    await win.locator('.page .card').first().waitFor({ timeout: 30000 });
+  }
+
   // 6) Hash Lab identify (Arabic)
   await win.locator('.nav-item', { hasText: 'مختبر الهاشات' }).click();
   await win.getByRole('tab', { name: 'تعرّف' }).click();
@@ -429,7 +457,7 @@ try {
   await win.getByRole('button', { name: 'الوضع البسيط' }).click();
   await win.locator('.nav-item', { hasText: 'افحص رابطًا أو موقعًا' }).waitFor();
   const simpleItems = await win.locator('.nav-item').count();
-  assert.ok(simpleItems <= 10 && simpleItems < expertItems, `simple mode should show only the essentials (${simpleItems} vs ${expertItems})`);
+  assert.ok(simpleItems <= 11 && simpleItems < expertItems, `simple mode should show only the essentials (${simpleItems} vs ${expertItems})`);
   await win.locator('.nav-item', { hasText: 'لوحة التحكم' }).click();
   await win.locator('.hero').getByRole('button', { name: 'افحص ملفًا' }).waitFor();
   // Drag a file anywhere: the drop overlay appears; a file without a real path is refused honestly.
