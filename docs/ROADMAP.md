@@ -9,7 +9,7 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE Engine/dependency research and license review (THIRD-PARTY-NOTICES.md, ARCHITECTURE §8)
 - DONE Architecture and threat model
 
-## Phase 1 — Foundation — DONE (pending Windows verification)
+## Phase 1 — Foundation — DONE (core paths verified on Windows Server 2025 in CI)
 - DONE Project structure, build (Vite + esbuild), typecheck, tests
 - DONE Hardened Electron shell (sandbox, contextIsolation, CSP, IPC sender checks)
 - DONE Design system (cards, stat cards, badges, gauges, sparkline, tables, tabs, toggles, dialogs, toasts, drop zone, skeletons, empty/error states)
@@ -23,16 +23,17 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE Privacy architecture: NetworkGate, Offline Mode (default ON), Network Activity log, clear-data controls
 - DONE Secure API-key storage (Electron safeStorage / DPAPI; refuses plaintext)
 - DONE PowerShell launcher `Start-Blazma.ps1`
-- IN PROGRESS Verify Windows-only paths on real Windows 10/11 (Defender/firewall/Authenticode PowerShell scripts, title-bar overlay, launcher)
+- DONE Windows-only PowerShell paths verified on a real Windows machine (GitHub Actions windows-latest = Windows Server 2025, build 26100): system facts, Defender/firewall status, Authenticode, forensics collectors, network toolkit
+- TODO Verify on a Windows 10/11 desktop: title-bar overlay look, Start-Blazma.ps1 launcher, installer install/uninstall
 
 ## Phase 2 — Local security
 - DONE File Analyzer (static): streaming MD5/SHA-1/SHA-256/SHA-512, magic-byte type, MIME, timestamps, entropy, PE headers/sections/imports/exports/packer hints, IOC extraction, interesting strings, progress + cancel
 - DONE Combined detection model with reasons and "incomplete" handling
-- IN PROGRESS Digital signature verification (implemented via Get-AuthenticodeSignature; needs Windows verification)
+- DONE Digital signature verification (Get-AuthenticodeSignature; verified on Windows in CI — also fixed a bug where an inherited PowerShell 7 PSModulePath made every result empty)
 - DONE Hash Lab: text/file hashing, integrity verification, hash identification (ranked candidates), comparison
 - DONE Quarantine: neutralized storage (XOR + .blazmaq + 0600), metadata, verified restore (SHA-256), restore-to, delete, rescan; tested end-to-end
 - DONE YARA-X integration (official `yr` CLI adapter, tested against real YARA-X 1.20.0): engine detection/selection, rule manager, builtin starter pack, custom rules with `yr check` validation, local import, enable/disable, file & folder scans (recursive), results in File Analyzer and combined assessment
-- IN PROGRESS Security Center: Defender quick/full/file/folder scans (MpCmdRun, report-only for file/folder), threat history, quarantine UI — implemented; Defender paths need verification on real Windows
+- DONE Security Center: Defender quick/full/file/folder scans (MpCmdRun, report-only for file/folder), threat history, quarantine UI — file scan (EICAR detection) and threat history verified on Windows in CI; quick/full scans not run in CI (duration)
 - DONE Folder scanning (YARA-X; Defender folder scan on Windows)
 
 ## Phase 3 — Intelligence — DONE (with noted verification gaps)
@@ -44,7 +45,7 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - TODO Censys adapter (API changed to Platform tokens; not implemented — a stored key is unused, stated in UI)
 - TODO Use Electron `net.fetch` for system-proxy support (after verifying redirect: 'manual' semantics)
 
-## Phase 4 — Forensics — DONE (Windows collectors need verification on real Windows)
+## Phase 4 — Forensics — DONE (Windows collectors verified in CI; USB history fixed for machines without USBSTOR)
 - DONE Processes (PID/PPID, path, user, command line, start time, connection count, batch Authenticode check, "Analyze" → File Analyzer)
 - DONE Connections (TCP/UDP, listening & established, owning process)
 - DONE Services (binary path extraction, account, unquoted-service-path flag, signatures), drivers, startup commands, scheduled tasks (hide Microsoft), local users + Administrators membership (by SID, locale-independent), installed software (HKLM/HKCU, 32/64-bit), USB storage history, event logs (allow-listed logs, level filter), PowerShell history (explicit, warned, never logged)
@@ -72,7 +73,7 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - TODO Integrated PowerShell terminal (separate from GUI operations; needs a pty — listed in the UI as planned)
 - DONE Packaging config (electron-builder.yml): per-user NSIS (asInvoker, no elevation, Arabic + English installer), asar, hardened Electron fuses (RunAsNode off, NODE_OPTIONS/inspect off, asar integrity, only-load-from-asar), no publish/auto-update; app icon generated from the logo SVG (scripts/make-icon.mjs)
 - DONE Packaged-app smoke test (scripts/package-smoke.mjs via CDP) — verified on Linux; `electron-builder --win --dir` also succeeds on Linux
-- IN PROGRESS Windows installer: `npm run dist:win` must run on Windows (the NSIS uninstaller step needs Wine elsewhere) — not yet built/verified
+- DONE Windows installer build: `npm run dist:win` builds the NSIS installer in CI and the packaged app passes the smoke test (installer uploaded as an unsigned artifact); install/uninstall on a desktop not yet tested
 - TODO Code signing (certificate via CSC_LINK / CSC_KEY_PASSWORD env vars only; never committed)
 - DONE Keyboard review: Escape closes dialogs (E2E-tested), dialogs labelled (aria-labelledby/-describedby), focus moves into dialogs, visible focus ring; full screen-reader audit still TODO
 - DONE Final security review (see docs/AUDIT-REPORT.md §8): external links now gated + allowlisted, window.open fully denied, report paths contained, npm audit 0, no secrets in repo
@@ -86,7 +87,7 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - TODO "What does this mean?" educational explanations for every indicator
 - TODO Downloads folder watcher, File Integrity Monitoring, browser-extension audit
 - TODO MITRE ATT&CK mapping, Sigma via external engine, IOC export (CSV/JSON/STIX 2.1), portable mode
-- IN PROGRESS Windows CI (.github/workflows/ci.yml, windows-latest + ubuntu): unit tests incl. tests/windows-integration.test.ts (real PowerShell, Defender EICAR scan, Authenticode, forensics, network), full UI E2E, NSIS installer build + packaged smoke test — DONE once the first Windows run is green
+- DONE Windows CI (.github/workflows/ci.yml, windows-latest + ubuntu): unit tests incl. tests/windows-integration.test.ts (real PowerShell, Defender EICAR scan, Authenticode, forensics, network), full UI E2E, NSIS installer build + packaged smoke test — all green on Windows (run 3); the first runs found and fixed 2 real bugs (USB history without USBSTOR, PSModulePath breaking Authenticode)
 
 ## BLOCKED
 - (none)

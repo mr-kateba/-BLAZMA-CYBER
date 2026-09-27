@@ -123,7 +123,7 @@ Writes are atomic (temp file + rename). Corrupt JSON is set aside, never crashes
 
 | Capability | Engine | Integration | License | Notes |
 |---|---|---|---|---|
-| AV scanning | Microsoft Defender | `MpCmdRun.exe -Scan` (file/folder with `-DisableRemediation`) + threat history via fixed scripts | OS component | Implemented; needs Windows verification |
+| AV scanning | Microsoft Defender | `MpCmdRun.exe -Scan` (file/folder with `-DisableRemediation`) + threat history via fixed scripts | OS component | Verified in Windows CI (file scan detects EICAR; history) |
 | YARA | **YARA-X** (VirusTotal) | user-installed `yr` CLI, run from the rules dir with relative `ns:file.yar` args | BSD-3-Clause | Implemented; tested with yr 1.20.0 |
 | Password recovery | hashcat | user-installed executable, execFile args | MIT | Implemented (orchestration only) |
 | Password recovery | John the Ripper (jumbo) | user-installed executable | GPL-2.0 (core) + mixed | Implemented; never bundled/linked; `*2john` extraction inside BLAZMA still TODO |
@@ -175,5 +175,5 @@ Windows target: per-user NSIS, `asInvoker`, no elevation, Arabic + English insta
 auto-update. Fuses flipped at package time: RunAsNode off, `NODE_OPTIONS` off, Node CLI inspect
 arguments off, embedded asar integrity validation on, only load app from asar. DevTools are
 disabled when packaged. `scripts/package-smoke.mjs` verifies a packaged build over CDP (renderer
-loads from asar, preload bridge present, no Node in the renderer). Verified on Linux; the Windows
-installer still needs to be built and verified on Windows.
+loads from asar, preload bridge present, no Node in the renderer). Verified on Linux and on Windows
+in CI (installer built, packaged app smoke-tested); installing/uninstalling on a desktop is untested.
