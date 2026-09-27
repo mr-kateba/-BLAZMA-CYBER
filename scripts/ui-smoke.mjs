@@ -26,6 +26,7 @@ async function assertClearOfCaptionButtons(win, label) {
   }
 }
 import { createServer } from 'node:net';
+import { createServer as createHttpServer } from 'node:http';
 import { createRequire } from 'node:module';
 
 const root = resolve(import.meta.dirname, '..');
@@ -422,6 +423,30 @@ try {
   }
   await win.waitForTimeout(300);
   await win.screenshot({ path: join(out, '39-wifi-ar.png') });
+
+  // Service scan (Nmap, user-installed): where Nmap exists, a real authorized scan of this computer
+  // (a local web server on 8000 gives it something to find); otherwise the honest "not installed" state.
+  await win.locator('.nav-item', { hasText: 'فحص الخدمات' }).click();
+  await win.locator('h1', { hasText: 'فحص الخدمات (Nmap)' }).waitFor();
+  await win.getByText(/برنامج Nmap غير مثبّت|ابدأ الفحص/).first().waitFor({ timeout: 30000 });
+  if (await win.getByRole('button', { name: 'ابدأ الفحص' }).count()) {
+    const web = createHttpServer((_q, s) => s.end('ok'));
+    await new Promise((r) => web.once('error', r).listen(8000, '127.0.0.1', r));
+    await win.locator('input.input.mono').fill('127.0.0.1');
+    await win.getByRole('radio', { name: /سريع/ }).click();
+    await win.getByRole('button', { name: 'ابدأ الفحص' }).click();
+    const go = win.locator('.dialog').getByRole('button', { name: 'ابدأ الفحص' });
+    assert.equal(await go.isDisabled(), true, 'Nmap needs the authorization checkbox');
+    await win.locator('.dialog input[type=checkbox]').check();
+    await go.click();
+    await win.getByText('نتائج 127.0.0.1').waitFor({ timeout: 180000 });
+    await win.getByText('الأجهزة والخدمات المفتوحة').waitFor();
+    web.close();
+  } else {
+    await win.getByRole('button', { name: 'افتح صفحة تنزيل Nmap' }).waitFor();
+  }
+  await win.waitForTimeout(300);
+  await win.screenshot({ path: join(out, '40-service-scan-ar.png'), fullPage: true });
 
   // Phase D: phishing email check (local only). A classic phishing sample: spoofed display name,
   // DMARC fail, a link that shows paypal.com but goes to an IP, and a double-extension attachment.

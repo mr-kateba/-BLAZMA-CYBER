@@ -257,7 +257,7 @@ export function vtPath(kind: VtKind, value: string): string {
 }
 
 /** Hosts whose result pages the UI may open in the user's browser (always via NetworkGate). */
-export const EXTERNAL_LINK_HOSTS: readonly string[] = ['www.virustotal.com', 'attack.mitre.org', ...ABUSECH_LINK_HOSTS];
+export const EXTERNAL_LINK_HOSTS: readonly string[] = ['www.virustotal.com', 'attack.mitre.org', 'nmap.org', 'www.wireshark.org', 'npcap.com', ...ABUSECH_LINK_HOSTS];
 
 /** Returns the host when `url` is an https link to an allowlisted host (no credentials/port), else null. */
 export function externalLinkHost(url: unknown): string | null {

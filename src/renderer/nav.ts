@@ -1,6 +1,6 @@
 import {
   Activity, BadgeCheck, Crosshair, Earth, FileClock, MemoryStick, MailWarning, FileSearch, FolderOpen, Hash, KeyRound, KeySquare, Languages, Link2, MonitorCog, Network, Palette, Plug,
-  Puzzle, ScanSearch, ScrollText, ShieldCheck, ShieldHalf, SquareTerminal, UserSearch, LayoutDashboard, Cpu, Scale, Wifi, type LucideIcon,
+  Puzzle, ScanSearch, ScrollText, ShieldCheck, ShieldHalf, SquareTerminal, UserSearch, LayoutDashboard, Cpu, Scale, Wifi, Radar, type LucideIcon,
 } from 'lucide-react';
 
 export type PageId =
@@ -8,7 +8,7 @@ export type PageId =
   | 'ip-intel' | 'domain-intel' | 'email-check' | 'password-check' | 'osint' | 'reputation'
   | 'security-center' | 'file-analyzer' | 'browser-extensions' | 'yara' | 'hash-lab'
   | 'password-recovery'
-  | 'wifi' | 'network-traffic'
+  | 'wifi' | 'network-traffic' | 'service-scan'
   | 'windows-forensics' | 'network-toolkit' | 'threat-hunting' | 'event-logs' | 'memory-scan' | 'terminal'
   | 'cases' | 'reports'
   | 'privacy'
@@ -72,6 +72,7 @@ export const NAV: NavSection[] = [
     items: [
       { id: 'wifi', simple: true, labelKey: 'nav.wifi', icon: Wifi },
       { id: 'network-traffic', labelKey: 'nav.networkTraffic', icon: Activity },
+      { id: 'service-scan', labelKey: 'nav.serviceScan', icon: Radar },
       { id: 'network-toolkit', labelKey: 'nav.networkToolkit', icon: Network },
     ],
   },

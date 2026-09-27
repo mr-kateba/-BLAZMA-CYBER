@@ -82,7 +82,8 @@ describe('traffic analyzer', () => {
     expect(r.first).not.toBeNull();
     expect(r.last! - r.first!).toBeGreaterThan(1000);
     expect(r.truncated).toBe(false);
-    expect(r.protocols.map((p) => p.name)).toEqual(expect.arrayContaining(['DNS', 'TLS', 'HTTP', 'FTP', 'DHCP', 'ARP']));
+    expect(r.protocols.map((p) => p.name)).toEqual(expect.arrayContaining(['DNS', 'HTTPS', 'HTTP', 'FTP', 'DHCP', 'ARP']));
+    expect(r.protocols.map((p) => p.name)).not.toContain('TLS');
   });
 
   it('lists devices with manufacturer, addresses and DHCP names', () => {
@@ -101,7 +102,7 @@ describe('traffic analyzer', () => {
     expect(r.tls.find((t) => t.name === 'example.org')).toMatchObject({ count: 1, versions: ['TLS 1.0'] });
     expect(r.external.find((e) => e.ip === '198.51.100.7')?.names).toContain('example.org');
     const https = r.conversations.find((c) => c.server === '198.51.100.7' && c.port === 443);
-    expect(https).toMatchObject({ client: '192.168.1.10', protocol: 'TLS', encrypted: true, name: 'example.org' });
+    expect(https).toMatchObject({ client: '192.168.1.10', protocol: 'HTTPS', encrypted: true, name: 'example.org' });
   });
 
   it('shows cleartext traffic without any secret', () => {

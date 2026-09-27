@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.94SVN scan initiated Sun Sep 27 23:29:22 2026 as: nmap -sT -T4 -sV -&#45;version-light -n -p 18021,18080,18099 -oX scan.xml 127.0.0.1 -->
+<nmaprun scanner="nmap" args="nmap -sT -T4 -sV -&#45;version-light -n -p 18021,18080,18099 -oX scan.xml 127.0.0.1" start="1790551762" startstr="Sun Sep 27 23:29:22 2026" version="7.94SVN" xmloutputversion="1.05">
+<scaninfo type="connect" protocol="tcp" numservices="3" services="18021,18080,18099"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<host starttime="1790551762" endtime="1790551768"><status state="up" reason="localhost-response" reason_ttl="0"/>
+<address addr="127.0.0.1" addrtype="ipv4"/>
+<hostnames>
+</hostnames>
+<ports><port protocol="tcp" portid="18021"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="tcpwrapped" method="probed" conf="8"/></port>
+<port protocol="tcp" portid="18080"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="http" product="SimpleHTTPServer" version="0.6" extrainfo="Python 3.11.15" method="probed" conf="10"><cpe>cpe:/a:python:simplehttpserver:0.6</cpe></service></port>
+<port protocol="tcp" portid="18099"><state state="closed" reason="conn-refused" reason_ttl="0"/></port>
+</ports>
+<times srtt="532" rttvar="2957" to="100000"/>
+</host>
+<runstats><finished time="1790551768" timestr="Sun Sep 27 23:29:28 2026" summary="Nmap done at Sun Sep 27 23:29:28 2026; 1 IP address (1 host up) scanned in 6.18 seconds" elapsed="6.18" exit="success"/><hosts up="1" down="0" total="1"/>
+</runstats>
+</nmaprun>

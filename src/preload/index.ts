@@ -107,6 +107,11 @@ const api: BlazmaApi = {
     tamper: () => invoke('device:tamper'),
     openSettings: (link) => invoke('device:openSettings', link),
   },
+  nmap: {
+    info: () => invoke('nmap:info'),
+    targets: () => invoke('nmap:targets'),
+    scan: (target, profile, authorized, taskId) => invoke('nmap:scan', target, profile, authorized, taskId),
+  },
   wifi: {
     report: () => invoke('wifi:report'),
     openLocationSettings: () => invoke('wifi:openLocationSettings'),

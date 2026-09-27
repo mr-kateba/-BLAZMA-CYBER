@@ -12,6 +12,7 @@ import { YaraError, YaraService } from './services/yara';
 import { IntelError, IntelService } from './services/intel';
 import { OsintService } from './services/osint';
 import { WifiError, wifiReport } from './services/wifi';
+import { NmapError, nmapInfo, parseNmapRequest, runNmap } from './services/nmap';
 import { TrafficError, analyzeFile as analyzeCapture, captureEnvironment, captureInterfaces, liveCapture, openInWireshark, parseLiveOptions } from './services/traffic';
 import { accountProfileUrl, accountSiteCounts, checkUsernameAccounts } from './services/username-accounts';
 import { bundledEngine, bundledRulePack } from './services/bundled';
@@ -57,7 +58,7 @@ function fail(error: string, detail?: string): Result<never> {
 }
 
 function errorCode(e: unknown): string {
-  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError || e instanceof RecoveryError || e instanceof CaseError || e instanceof ReportError || e instanceof TerminalError || e instanceof DeviceSecurityError || e instanceof EmailError || e instanceof PwnedError || e instanceof EventHuntError || e instanceof MemoryScanError || e instanceof UpdateError || e instanceof WifiError || e instanceof TrafficError) return e.code;
+  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError || e instanceof RecoveryError || e instanceof CaseError || e instanceof ReportError || e instanceof TerminalError || e instanceof DeviceSecurityError || e instanceof EmailError || e instanceof PwnedError || e instanceof EventHuntError || e instanceof MemoryScanError || e instanceof UpdateError || e instanceof WifiError || e instanceof TrafficError || e instanceof NmapError) return e.code;
   if (e instanceof OfflineModeError) return 'offline_mode';
   return 'internal_error';
 }
@@ -523,6 +524,19 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
     const { url, site } = accountProfileUrl(username, siteId);
     await gate.run({ module: 'osint', service: `browser:accounts:${site.id}`, host: new URL(url).host, dataKind: 'privacy.data.username' }, () => shell.openExternal(url));
     return { ok: true, data: undefined };
+  });
+
+  // ---- Nmap (user-installed; own networks only, after authorization) ----
+  handle('nmap:info', async () => ({ ok: true, data: await nmapInfo() }));
+  handle('nmap:targets', () => ({ ok: true, data: net.localSubnets() }));
+  handle('nmap:scan', (target: unknown, profile: unknown, authorized: unknown, taskId: unknown) => {
+    const req = parseNmapRequest(target, profile, authorized, net.localSubnets().map((s) => s.cidr));
+    return runTask(taskId, async (signal) => {
+      const r = await runNmap(req.target, req.profile, signal, (pct) => progress(taskId as string)({ processedBytes: Math.round(pct * 10), totalBytes: 1000, stage: 'scanning' }));
+      history.record({ kind: 'nmap_scan', subject: `${req.target} (${req.profile})`, summaryKey: 'activity.summary.nmap_scanned' });
+      logger.security('nmap_scan', { target: req.target, profile: req.profile, hostsUp: r.run.hostsUp, findings: r.findings.length });
+      return r;
+    });
   });
 
   // ---- Wi-Fi (read-only) ----

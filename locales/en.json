@@ -62,7 +62,8 @@
     "eventLogs": "Event log hunting",
     "memoryScan": "Memory implant scan",
     "networkTraffic": "Network traffic",
-    "wifi": "Wi-Fi"
+    "wifi": "Wi-Fi",
+    "serviceScan": "Service scan (Nmap)"
   },
   "topbar": {
     "search": "Search tools…",
@@ -618,7 +619,8 @@
       "email_check": "Email check",
       "event_hunt": "Event log hunting",
       "memory_scan": "Memory scan",
-      "traffic_analysis": "Traffic analysis"
+      "traffic_analysis": "Traffic analysis",
+      "nmap_scan": "Nmap scan"
     },
     "summary": {
       "hashed": "Hashes calculated",
@@ -634,7 +636,8 @@
       "memory_suspicious": "suspicious programs found",
       "memory_clean": "nothing suspicious in memory",
       "traffic_analyzed": "capture analysed",
-      "traffic_captured": "live capture analysed"
+      "traffic_captured": "live capture analysed",
+      "nmap_scanned": "scan completed"
     }
   },
   "errors": {
@@ -744,7 +747,9 @@
     "capture_failed": "The capture could not be completed.",
     "not_a_capture": "This file is not a packet capture (pcap / pcapng).",
     "file_too_large": "The file is too large for this analysis.",
-    "no_wifi_adapter": "No Wi-Fi adapter on this computer"
+    "no_wifi_adapter": "No Wi-Fi adapter on this computer",
+    "nmap_missing": "Nmap is not installed.",
+    "nmap_target_not_local": "Only private addresses or networks this computer is attached to can be scanned."
   },
   "defender": {
     "status": {
@@ -1434,7 +1439,8 @@
       "manual": "Manual",
       "quarantine": "Quarantine",
       "osint": "OSINT Workspace",
-      "traffic": "Network traffic"
+      "traffic": "Network traffic",
+      "nmap": "Service scan (Nmap)"
     }
   },
   "hunt": {
@@ -1905,6 +1911,10 @@
     "packet_capture": {
       "title": "What is a packet capture?",
       "text": "Everything a computer sends or receives on a network travels in small packets. A capture records them for a short time so they can be examined: which devices talk, to whom, with which protocol, and whether it is encrypted. Blazma reads only what travels in the clear (like website names in HTTPS handshakes) and never decrypts anything."
+    },
+    "service_scan": {
+      "title": "What does a service scan show?",
+      "text": "Every program that accepts network connections listens on a \"port\". A service scan knocks on the common ports of each device and records which ones answer and which program answers (for example a printer's web page, file sharing or remote desktop). Open ports are not a problem in themselves — the question is whether each one should be open."
     }
   },
   "mode": {
@@ -2623,6 +2633,73 @@
       "crowded_channel": {
         "title": "Channel {{channel}} is crowded ({{networks}} other networks)",
         "body": "Overlapping networks on 2.4 GHz slow each other down. See the Channels tab for a less crowded channel."
+      }
+    }
+  },
+  "nmap": {
+    "title": "Service scan (Nmap)",
+    "subtitle": "Which devices are on your network and which services they expose — using Nmap, the standard network scanner.",
+    "authorizedOnly": "Scan only networks and devices you own or are allowed to test. Blazma limits Nmap to your own local networks and never scans the internet.",
+    "notInstalled": "Nmap is not installed",
+    "installHint": "Blazma uses Nmap when you install it (free, from the official site). It is not bundled, and Blazma never downloads or installs programs by itself. After installing, reopen this page.",
+    "download": "Open the Nmap download page",
+    "engine": "Nmap {{version}}",
+    "scanTitle": "New scan",
+    "target": "What to scan",
+    "targetPlaceholder": "e.g. 192.168.1.20 or your network above",
+    "targetNote": "A private address (like 192.168.x.x) or one of the networks this computer is attached to. Public internet addresses are refused.",
+    "profile": "Scan type",
+    "profiles": {
+      "hosts": "Who is online",
+      "quick": "Quick (100 ports)",
+      "standard": "Standard (1,000 ports)"
+    },
+    "profileHint": {
+      "hosts": "Lists the devices that answer — no ports are checked. Takes seconds.",
+      "quick": "The 100 most common ports on each device, with the name and version of each service. About a minute per network.",
+      "standard": "The 1,000 most common ports with version detection. Thorough; can take several minutes."
+    },
+    "start": "Start scan",
+    "authTitle": "Start an Nmap scan?",
+    "authBody": "Nmap will contact {{target}} to see which devices answer and which services they expose. Only continue if you own this network or have permission to test it.",
+    "running": "Scanning… {{pct}}%",
+    "resultTitle": "Results for {{target}}",
+    "resultSub": "{{up}} device(s) online · {{time}} · {{profile}}",
+    "again": "New scan",
+    "noFindings": "No risky services found among the open ports.",
+    "hostsTitle": "Devices and open services",
+    "noHosts": "No device answered.",
+    "openServices": "Open services",
+    "noneOpen": "No open ports in this profile",
+    "hostsOnly": "Online (ports not checked)",
+    "risk": {
+      "cleartext_remote": {
+        "title": "{{service}} on {{host}} (port {{port}}) sends logins unencrypted",
+        "body": "Anyone on the network path can read user names and passwords. Switch to SSH/SFTP or turn the service off."
+      },
+      "remote_desktop": {
+        "title": "Remote Desktop is open on {{host}} (port {{port}})",
+        "body": "Fine on a trusted network with strong passwords and Network Level Authentication; it should never be reachable from the internet."
+      },
+      "file_sharing": {
+        "title": "File sharing (SMB) is open on {{host}} (port {{port}})",
+        "body": "Normal for PCs and NAS drives on a home network. Make sure shared folders have passwords and are not open to \"Everyone\"."
+      },
+      "database": {
+        "title": "A database ({{service}}) is reachable on {{host}} (port {{port}})",
+        "body": "Databases exposed to the network are a favourite target and often run without a password. Bind it to localhost or protect it with a strong password and a firewall rule."
+      },
+      "remote_admin": {
+        "title": "VNC remote control is open on {{host}} (port {{port}})",
+        "body": "VNC often uses weak or no passwords. Use it only over a VPN or turn it off."
+      },
+      "camera_stream": {
+        "title": "A video stream (RTSP) is open on {{host}} (port {{port}})",
+        "body": "Usually a camera or recorder. Make sure it has a password that is not the factory default."
+      },
+      "docker_api": {
+        "title": "The Docker API is open without TLS on {{host}} (port {{port}})",
+        "body": "An unauthenticated Docker API gives full control of the machine to anyone who can reach it. Close it immediately."
       }
     }
   }

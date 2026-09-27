@@ -112,7 +112,8 @@ function app(p: ParsedPacket, payload: Uint8Array): void {
   if (p.transport === 'TCP') {
     if (looksLikeTls(payload)) {
       p.tls = parseTls(payload);
-      return set('TLS', true);
+      // TLS on the web ports is HTTPS; one label keeps the protocol list readable.
+      return set(port(443) || port(8443) ? 'HTTPS' : 'TLS', true);
     }
     if (looksLikeHttp(payload)) {
       p.http = parseHttp(payload);

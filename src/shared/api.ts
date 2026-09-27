@@ -25,6 +25,7 @@ import type { AccountStatus, AccountUnknownReason, UsernameGroup } from '../core
 import type { MacKind } from '../core/oui';
 import type { TrafficReport } from '../core/traffic/analyzer';
 import type { SavedProfile, WifiConnection, WifiFinding, WifiNetwork } from '../core/wifi';
+import type { NmapFinding, NmapProfile, NmapRun } from '../core/nmap';
 
 export type Theme = 'dark' | 'midnight';
 export type StartPage = 'dashboard' | 'file-analyzer' | 'hash-lab' | 'privacy';
@@ -292,7 +293,7 @@ export interface ActivityEntry {
   kind:
     | 'file_analysis' | 'hash_file' | 'hash_text' | 'hash_identify' | 'hash_compare'
     | 'defender_scan' | 'yara_scan' | 'quarantine' | 'restore'
-    | 'ip_lookup' | 'domain_lookup' | 'reputation_lookup' | 'osint_lookup' | 'email_check' | 'event_hunt' | 'memory_scan' | 'traffic_analysis'
+    | 'ip_lookup' | 'domain_lookup' | 'reputation_lookup' | 'osint_lookup' | 'email_check' | 'event_hunt' | 'memory_scan' | 'traffic_analysis' | 'nmap_scan'
     | 'forensics' | 'port_check' | 'discovery';
   /** Displayable subject, e.g. a filename. Never a secret. */
   subject: string;
@@ -509,6 +510,7 @@ export interface DomainLookupResult {
 export type { OsintTargetType } from '../core/osint';
 export type { AccountStatus, AccountUnknownReason, UsernameGroup } from '../core/username-check';
 export type { MacKind } from '../core/oui';
+export type { NmapFinding, NmapHost, NmapPort, NmapProfile, NmapRun, ServiceRisk } from '../core/nmap';
 export type { SavedProfile, WifiConnection, WifiFinding, WifiNetwork, WifiSecurity, WifiRating } from '../core/wifi';
 export type { TrafficReport, TrafficFinding, TrafficDevice, TrafficConversation, FindingSeverity } from '../core/traffic/analyzer';
 export type { EmailAnalysis, EmailAttachment, EmailLink, EmailSignal, AuthResult } from '../core/email';
@@ -580,6 +582,19 @@ export interface AccountsResult {
   durationMs: number;
   /** Where the site list and detection rules come from (WhatsMyName commit). */
   source: string;
+}
+
+export interface NmapInfo {
+  installed: boolean;
+  version: string | null;
+}
+
+export interface NmapResult {
+  target: string;
+  profile: NmapProfile;
+  run: NmapRun;
+  findings: NmapFinding[];
+  durationMs: number;
 }
 
 export interface WifiReport {
@@ -1102,6 +1117,12 @@ export interface BlazmaApi {
     tamper(): Promise<Result<TamperReport>>;
     /** Opens a fixed Windows settings page (never changes a setting). */
     openSettings(link: SettingsLink): Promise<Result<true>>;
+  };
+  nmap: {
+    info(): Promise<Result<NmapInfo>>;
+    /** Local subnets this computer is attached to (the only networks Nmap may scan). */
+    targets(): Promise<Result<Array<{ cidr: string; interface: string; address: string }>>>;
+    scan(target: string, profile: NmapProfile, authorized: boolean, taskId: string): Promise<Result<NmapResult>>;
   };
   wifi: {
     /** Read-only: current connection, nearby networks and saved networks (never passwords). */

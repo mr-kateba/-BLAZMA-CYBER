@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<nmaprun scanner="nmap" args="nmap -sT -T4 -n --top-ports 100 -sV --version-light --open -oX scan.xml 192.168.1.0/24" start="1790550000" version="7.95" xmloutputversion="1.05">
+<host><status state="up" reason="arp-response"/>
+<address addr="192.168.1.20" addrtype="ipv4"/>
+<address addr="3C:2E:FF:11:22:33" addrtype="mac"/>
+<hostnames><hostname name="nas.lan" type="PTR"/></hostnames>
+<ports>
+<port protocol="tcp" portid="445"><state state="open" reason="syn-ack"/><service name="microsoft-ds" method="table" conf="3"/></port>
+<port protocol="tcp" portid="23"><state state="open" reason="syn-ack"/><service name="telnet" product="BusyBox telnetd" method="probed" conf="10"/></port>
+<port protocol="tcp" portid="6379"><state state="open" reason="syn-ack"/><service name="redis" product="Redis key-value store" version="7.2.4" method="probed" conf="10"/></port>
+</ports>
+</host>
+<host><status state="up" reason="arp-response"/>
+<address addr="192.168.1.1" addrtype="ipv4"/>
+<address addr="00:11:22:33:44:55" addrtype="mac" vendor="Cimsys &amp; Co"/>
+<hostnames/>
+<ports>
+<port protocol="tcp" portid="80"><state state="open" reason="syn-ack"/><service name="http" product="lighttpd" version="1.4.59" method="probed" conf="10"/></port>
+<port protocol="tcp" portid="3389"><state state="filtered" reason="no-response"/><service name="ms-wbt-server" method="table" conf="3"/></port>
+</ports>
+</host>
+<host><status state="down" reason="no-response"/>
+<address addr="192.168.1.99" addrtype="ipv4"/>
+</host>
+<runstats><finished time="1790550042" elapsed="42.00" exit="success"/><hosts up="2" down="253" total="255"/></runstats>
+</nmaprun>
