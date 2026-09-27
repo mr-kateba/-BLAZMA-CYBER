@@ -107,6 +107,14 @@ try {
     await win.getByText('سبب هذه النتيجة').waitFor();
     await win.locator('.main').evaluate((m) => m.scrollTo(0, 0));
     await win.screenshot({ path: join(out, '05-file-analyzer-ar.png') });
+    // "What does this mean?" explains a technical term in plain Arabic; Escape closes it.
+    const explainBtn = win.getByRole('button', { name: 'ما معنى «الإنتروبيا (العشوائية)»؟' });
+    await explainBtn.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    await explainBtn.click();
+    await win.getByText('مقياس للعشوائية من 0 إلى 8', { exact: false }).waitFor();
+    await win.screenshot({ path: join(out, '29-explain-ar.png') });
+    await win.keyboard.press('Escape');
+    await win.getByText('مقياس للعشوائية من 0 إلى 8', { exact: false }).waitFor({ state: 'detached' });
     await win.locator('.main').evaluate((m) => m.scrollTo(0, 700));
     await win.waitForTimeout(300);
     await win.screenshot({ path: join(out, '06-file-analyzer-pe-ar.png') });

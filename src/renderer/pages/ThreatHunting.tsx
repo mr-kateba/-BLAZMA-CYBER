@@ -62,7 +62,7 @@ function SearchTab() {
             </div>
           </Card>
           {timeline.length > 0 && (
-            <Card title={t('hunt.timeline')} icon={Crosshair} tone="purple">
+            <Card title={t('hunt.timeline')} explain="timeline" icon={Crosshair} tone="purple">
               <ol style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 8 }}>
                 {timeline.map((h, i) => (
                   <li key={i} className="row" style={{ alignItems: 'flex-start', borderInlineStart: '2px solid var(--border-strong)', paddingInlineStart: 12 }}>

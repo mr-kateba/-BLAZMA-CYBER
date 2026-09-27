@@ -14,7 +14,7 @@ function EngineTab({ engine, onChange }: { engine: YaraEngineInfo | null; onChan
   const { toast } = useApp();
   if (!engine) return <Card><Skeleton h={60} /></Card>;
   return (
-    <Card title={t('yara.tab.engine')} icon={Cpu} tone={engine.available ? 'green' : 'amber'}>
+    <Card title={t('yara.tab.engine')} explain="yara" icon={Cpu} tone={engine.available ? 'green' : 'amber'}>
       <div className="col" style={{ gap: 12 }}>
         {engine.available ? (
           <>

@@ -1449,3 +1449,57 @@ table.data tbody tr:hover td {
   align-items: center;
   gap: 4px;
 }
+
+/* "What does this mean?" */
+.explain {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+  margin-inline-start: 6px;
+}
+.explain-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 0;
+  background: transparent;
+  color: var(--text-3);
+  cursor: pointer;
+  padding: 0;
+}
+.explain-btn:hover,
+.explain-btn[aria-expanded='true'] {
+  color: var(--cyan, #22d3ee);
+  background: rgba(34, 211, 238, 0.1);
+}
+.explain-pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  inset-inline-start: -8px;
+  z-index: 40;
+  width: min(340px, 80vw);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--panel-solid);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--text);
+  white-space: normal;
+}
+/* Cards create a stacking context (backdrop-filter); lift the one showing an explanation. */
+.card:has(.explain-pop) {
+  z-index: 30;
+}
+/* Keep the "opens outside" icon next to its label. */
+.nav-item:has(.nav-external) .nav-label {
+  flex: 0 1 auto;
+}

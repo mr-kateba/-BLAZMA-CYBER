@@ -1590,5 +1590,104 @@
       }
     },
     "scanningShort": "Checking…"
+  },
+  "explain": {
+    "ask": "What does “{{term}}” mean?",
+    "verdict": {
+      "title": "The assessment",
+      "text": "BLAZMA combines every check it ran (static analysis, signature, Defender, YARA, reputation) into one verdict and lists the reasons. If an engine could not run, the file is marked “Unknown” instead of “Clean”."
+    },
+    "engines": {
+      "title": "Scan engines",
+      "text": "Programs that inspect the file: Microsoft Defender (antivirus) and YARA (rules that describe known malware). More engines means a more reliable verdict."
+    },
+    "reputation": {
+      "title": "Reputation",
+      "text": "Checks whether security companies have already seen this file, site or IP. Only its fingerprint (hash) is sent — never the file itself."
+    },
+    "filetype": {
+      "title": "Real file type",
+      "text": "BLAZMA reads the first bytes of the file to know what it really is. A file called “photo.jpg” that is actually a program is a classic trick."
+    },
+    "entropy": {
+      "title": "Entropy",
+      "text": "A measure of randomness from 0 to 8. Very high values (above ~7.2) often mean the content is compressed or encrypted, which malware uses to hide. Normal archives and media are high too, so it is a hint, not proof."
+    },
+    "hash": {
+      "title": "Hash (fingerprint)",
+      "text": "A unique fingerprint calculated from the file's contents. If one byte changes, the hash changes completely. It lets you check a download is genuine and look a file up without sharing it."
+    },
+    "signature": {
+      "title": "Digital signature",
+      "text": "Proof of who published a program and that it wasn't changed after signing. A valid signature from a known company is a good sign; no signature isn't proof of danger, but be more careful."
+    },
+    "pe": {
+      "title": "Windows program structure (PE)",
+      "text": "The internal layout of .exe and .dll files: which Windows functions the program uses, its sections and when it was built. Some combinations (e.g. keylogging or injecting into other programs) are suspicious."
+    },
+    "iocs": {
+      "title": "Indicators (IOCs)",
+      "text": "Addresses found inside the file: websites, IP addresses, emails. Malware often contains the address of the server it talks to. You can check each one."
+    },
+    "strings": {
+      "title": "Notable text",
+      "text": "Readable text found inside the file, like commands, registry paths or URLs. It often reveals what a program intends to do."
+    },
+    "quarantine": {
+      "title": "Quarantine",
+      "text": "A safe prison for suspicious files: the file is moved and scrambled so it can't run. You can restore it exactly as it was if it turns out to be safe."
+    },
+    "yara": {
+      "title": "YARA rules",
+      "text": "Descriptions of known malware patterns written by security researchers. A match means the file contains something that looks like a known threat."
+    },
+    "defender": {
+      "title": "Microsoft Defender",
+      "text": "The antivirus built into Windows. BLAZMA asks it to scan files and shows you the result; it never turns it off or changes its settings."
+    },
+    "rdap": {
+      "title": "Registration (RDAP/WHOIS)",
+      "text": "Official records of who registered a domain and when. Scam sites are usually only days or weeks old; real banks and shops are years old."
+    },
+    "tls": {
+      "title": "TLS certificate (the padlock)",
+      "text": "Encrypts the connection and proves the site controls its name. A padlock does NOT mean a site is honest: scam sites get free certificates too."
+    },
+    "dns": {
+      "title": "DNS records",
+      "text": "The internet's phone book: they map a name like example.com to server addresses, mail servers and verification records."
+    },
+    "spf_dmarc": {
+      "title": "Email protection (SPF / DMARC)",
+      "text": "Rules a domain publishes to say which servers may send its email. Without them, anyone can send fake emails that look like they come from that domain."
+    },
+    "asn": {
+      "title": "Network owner (ASN)",
+      "text": "The company or organisation that operates the network an IP address belongs to, such as an internet provider or a cloud host."
+    },
+    "ip_network": {
+      "title": "IP registration",
+      "text": "Who the address range is registered to and where to report abuse, from the official regional internet registries."
+    },
+    "geo": {
+      "title": "Approximate location",
+      "text": "An estimate of the country and city based on public databases. It is often wrong at city level and never identifies a person or a home."
+    },
+    "ip_indicators": {
+      "title": "Indicators",
+      "text": "Signals such as a Tor exit node or a hosting/cloud network. They explain what kind of address it is; they are not a verdict on their own."
+    },
+    "offline_mode": {
+      "title": "Offline Mode",
+      "text": "When on, BLAZMA refuses every internet request before it happens. Everything local keeps working. Turn it off only when you want an online lookup."
+    },
+    "timeline": {
+      "title": "Timeline",
+      "text": "Everything related to your search, ordered by time, so you can see what happened first and what followed."
+    },
+    "ps_history": {
+      "title": "PowerShell history",
+      "text": "Commands previously typed in PowerShell on this account. Attackers who get in often run commands here, so unfamiliar lines deserve a look."
+    }
   }
 }

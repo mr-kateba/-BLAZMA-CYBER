@@ -77,7 +77,7 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 
 ## Phase B — Regular users — IN PROGRESS
 - DONE B1 Device Security Score: 16 read-only checks (Defender, tamper protection, firewall, updates, UAC, SMBv1, RDP/NLA, Secure Boot, drive encryption, auto sign-in, Guest, LSA protection, memory integrity, PowerShell policy, TPM), unknown ≠ pass, plain-language why/fix, fixed "open Windows setting" links; dashboard hero with score + "Scan a file" / "Check a link"; verified on Windows in CI
-- TODO B2 "What does this mean?" explanations
+- DONE B2 "What does this mean?": 24 plain-language explanations (Arabic + English) on the key cards of File Analyzer, Domain/IP Intelligence, Security Center, YARA, Hash Lab, Forensics, Threat Hunting and Offline Mode
 - TODO B3 Simple/expert mode, first-launch intro, drag-and-drop anywhere, plain summaries
 
 ## Phase 7 — Polish

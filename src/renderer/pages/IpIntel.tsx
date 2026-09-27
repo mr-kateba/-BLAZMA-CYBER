@@ -110,7 +110,7 @@ export function IpIntel() {
 
             <div className="grid g-2">
               {opts.rdap && (
-                <Card title={t('ipintel.network')} icon={Network} tone="blue">
+                <Card title={t('ipintel.network')} explain="ip_network" icon={Network} tone="blue">
                   {!r.rdap ? <div className="muted small">{sourceNote(r, 'rdap', t)}</div> : (
                     <dl className="kv">
                       <KV label={t('ipintel.netName')}><Ltr>{r.rdap.name ?? '—'}</Ltr></KV>
@@ -128,7 +128,7 @@ export function IpIntel() {
                 </Card>
               )}
               {opts.asn && (
-                <Card title={t('ipintel.asnTitle')} icon={Route} tone="purple">
+                <Card title={t('ipintel.asnTitle')} explain="asn" icon={Route} tone="purple">
                   {!r.asn ? <div className="muted small">{sourceNote(r, 'asn', t)}</div> : (
                     <dl className="kv">
                       <KV label="ASN"><Ltr mono>{`AS${r.asn.asn}`}</Ltr></KV>
@@ -142,7 +142,7 @@ export function IpIntel() {
                 </Card>
               )}
               {opts.geo && (
-                <Card title={t('ipintel.location')} icon={MapPin} tone="amber" subtitle={t('ipintel.geoNotice')}>
+                <Card title={t('ipintel.location')} explain="geo" icon={MapPin} tone="amber" subtitle={t('ipintel.geoNotice')}>
                   {!r.geo ? <div className="muted small">{sourceNote(r, 'geo', t)}</div> : (
                     <dl className="kv">
                       <KV label={t('ipintel.country')}><Ltr>{r.geo.country ?? '—'}</Ltr></KV>
@@ -155,7 +155,7 @@ export function IpIntel() {
                   )}
                 </Card>
               )}
-              <Card title={t('ipintel.indicators')} icon={Building2} tone="cyan">
+              <Card title={t('ipintel.indicators')} explain="ip_indicators" icon={Building2} tone="cyan">
                 <dl className="kv">
                   {opts.reverseDns && (
                     <KV label={t('ipintel.reverse')}>

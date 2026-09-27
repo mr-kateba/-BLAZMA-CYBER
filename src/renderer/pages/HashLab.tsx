@@ -39,7 +39,7 @@ function TextTab() {
           <span className="small dim">{t('hashlab.privacyNote')}</span>
         </div>
       </Card>
-      <Card title={t('file.hashes')} icon={Fingerprint} tone="cyan">
+      <Card title={t('file.hashes')} explain="hash" icon={Fingerprint} tone="cyan">
         {err ? <ErrorState code={err} /> : res ? <HashRows hashes={res as unknown as Record<string, string>} /> : <div className="small dim">—</div>}
       </Card>
     </div>

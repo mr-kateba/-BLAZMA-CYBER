@@ -35,7 +35,7 @@ function Overview({ sec, yaraEngine, qCount }: { sec: SecurityStatus | null; yar
   const onOff = (v?: 'on' | 'off' | 'unknown') => v === 'on' ? <Badge tone="green">{t('common.on')}</Badge> : v === 'off' ? <Badge tone="red">{t('common.off')}</Badge> : <Badge tone="gray">{t('common.unknown')}</Badge>;
   return (
     <div className="grid g-3">
-      <Card title={t('security.engine')} icon={ShieldHalf} tone={d.available ? 'green' : 'amber'} className="span-2">
+      <Card title={t('security.engine')} explain="defender" icon={ShieldHalf} tone={d.available ? 'green' : 'amber'} className="span-2">
         {!sec.platformSupported ? (
           <Notice tone="gray" icon={ShieldAlert}>{t('security.windowsOnly')}</Notice>
         ) : !d.available ? (
@@ -51,13 +51,13 @@ function Overview({ sec, yaraEngine, qCount }: { sec: SecurityStatus | null; yar
         )}
       </Card>
       <div className="col" style={{ gap: 16 }}>
-        <Card title={t('security.yaraEngine')} icon={ScanSearch} tone={yaraEngine?.available ? 'green' : 'amber'}
+        <Card title={t('security.yaraEngine')} explain="yara" icon={ScanSearch} tone={yaraEngine?.available ? 'green' : 'amber'}
           actions={<button className="btn sm" onClick={() => navigate('yara')}>{t('settings.configure')}</button>}>
           {!yaraEngine ? <Skeleton h={16} /> : yaraEngine.available
             ? <Badge tone="green">{t('yara.engineInstalled', { version: yaraEngine.version ?? '' })}</Badge>
             : <Badge tone="amber">{t('yara.engineMissing')}</Badge>}
         </Card>
-        <Card title={t('security.quarantineItems')} icon={ShieldCheck} tone="cyan">
+        <Card title={t('security.quarantineItems')} explain="quarantine" icon={ShieldCheck} tone="cyan">
           <div className="stat-value">{qCount === null ? '—' : <Ltr>{qCount}</Ltr>}</div>
         </Card>
       </div>

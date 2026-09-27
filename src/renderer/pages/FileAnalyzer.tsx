@@ -6,7 +6,7 @@ import {
 import type { FileAnalysis, ReputationResult, TaskProgress } from '../../shared/api';
 import { assess, vtSignal, type SignalSource, type Verdict } from '../../core/detection';
 import { entropyLabel } from '../../core/entropy';
-import { Badge, Card, CopyButton, DataTable, ErrorState, FileDrop, IconTile, Ltr, Notice, Progress, type Tone } from '../components/ui';
+import { Badge, Card, CopyButton, Explain, DataTable, ErrorState, FileDrop, IconTile, Ltr, Notice, Progress, type Tone } from '../components/ui';
 import { useI18n } from '../i18n/I18nProvider';
 import { useApp } from '../components/AppContext';
 import { ReputationCard, useKeyStatus } from '../components/intel';
@@ -106,7 +106,7 @@ export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAn
         </div>
       </div>
 
-      <Card title={t('file.engines')} icon={ScanSearch} tone="blue">
+      <Card title={t('file.engines')} explain="engines" icon={ScanSearch} tone="blue">
         <div className="grid g-2">
           <div className="row" style={{ alignItems: 'flex-start', gap: 12 }}>
             <IconTile icon={ShieldHalf} tone={!r.defender.ran ? 'gray' : r.defender.threats.length ? 'red' : 'green'} small />
@@ -147,7 +147,7 @@ export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAn
       {rep.result ? (
         <ReputationCard r={rep.result} />
       ) : (
-        <Card title={t('file.hashRep')} icon={Globe} tone="purple">
+        <Card title={t('file.hashRep')} explain="reputation" icon={Globe} tone="purple">
           <div className="row-wrap" style={{ alignItems: 'center' }}>
             <button className="btn" disabled={!keys?.virustotal || settings.offlineMode || rep.loading} onClick={() => void checkHash()}>
               <Globe size={15} /> {t('file.hashRepCheck')}
@@ -162,7 +162,7 @@ export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAn
       )}
 
       <div className="grid g-2">
-        <Card title={t('file.reasons')} icon={ShieldAlert} tone={v.tone}>
+        <Card title={t('file.reasons')} explain="verdict" icon={ShieldAlert} tone={v.tone}>
           {assessment.reasons.length === 0 ? (
             <div className="muted small">{t('file.noReasons')}</div>
           ) : (
@@ -183,7 +183,7 @@ export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAn
           <div className="tiny dim" style={{ marginTop: 12 }}>{t('file.falsePositives')}</div>
         </Card>
 
-        <Card title={t('file.overview')} icon={FileSearch} tone="blue">
+        <Card title={t('file.overview')} explain="filetype" icon={FileSearch} tone="blue">
           <dl className="kv">
             <dt>{t('file.name')}</dt><dd><Ltr breakAll>{r.name}</Ltr></dd>
             <dt>{t('file.path')}</dt><dd><Ltr mono breakAll className="small">{r.path}</Ltr></dd>
@@ -192,7 +192,7 @@ export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAn
             <dt>{t('file.mime')}</dt><dd><Ltr mono className="small">{r.type.mime}</Ltr></dd>
             <dt>{t('file.created')}</dt><dd>{formatDateTime(locale, r.created)}</dd>
             <dt>{t('file.modified')}</dt><dd>{formatDateTime(locale, r.modified)}</dd>
-            <dt>{t('file.entropy')}</dt>
+            <dt>{t('file.entropy')}<Explain term="entropy" /></dt>
             <dd>
               <Ltr>{r.entropy.toFixed(3)}</Ltr> / 8 · <Badge tone={entropyLabel(r.entropy) === 'high' ? 'amber' : 'gray'}>{t(`file.entropyLevel.${entropyLabel(r.entropy)}`)}</Badge>
             </dd>
@@ -208,10 +208,10 @@ export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAn
       )}
 
       <div className="grid g-2">
-        <Card title={t('file.hashes')} icon={Fingerprint} tone="cyan">
+        <Card title={t('file.hashes')} explain="hash" icon={Fingerprint} tone="cyan">
           <HashRows hashes={r.hashes as unknown as Record<string, string>} />
         </Card>
-        <Card title={t('file.signature')} icon={ShieldAlert} tone={sigTone}>
+        <Card title={t('file.signature')} explain="signature" icon={ShieldAlert} tone={sigTone}>
           {!sig.checked ? (
             <div className="col" style={{ alignItems: 'flex-start' }}>
               <Badge tone="gray">{t('file.sig.notChecked')}</Badge>
@@ -231,7 +231,7 @@ export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAn
       </div>
 
       {(r.pe || r.peError) && (
-        <Card title={t('file.pe.title')} icon={Binary} tone="purple">
+        <Card title={t('file.pe.title')} explain="pe" icon={Binary} tone="purple">
           {r.peError ? (
             <Notice tone="amber">{t('file.pe.parseError', { reason: r.peError })}</Notice>
           ) : r.pe && (
@@ -295,7 +295,7 @@ export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAn
       )}
 
       <div className="grid g-2">
-        <Card title={`${t('file.iocs')} (${iocCount})`} icon={Link2} tone="amber">
+        <Card title={`${t('file.iocs')} (${iocCount})`} explain="iocs" icon={Link2} tone="amber">
           {iocCount === 0 ? <div className="small muted">{t('file.noIocs')}</div> : (
             <div className="col" style={{ gap: 12 }}>
               {([['urls', r.iocs.urls], ['domains', r.iocs.domains], ['ips', r.iocs.ipv4], ['emails', r.iocs.emails]] as const).map(([k, list]) =>
@@ -311,7 +311,7 @@ export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAn
             </div>
           )}
         </Card>
-        <Card title={`${t('file.strings')} (${r.interestingStrings.length})`} icon={ListTree} tone="purple" subtitle={t('file.stringsNote', { size: formatBytes(t, r.stringsScannedBytes) })}>
+        <Card title={`${t('file.strings')} (${r.interestingStrings.length})`} explain="strings" icon={ListTree} tone="purple" subtitle={t('file.stringsNote', { size: formatBytes(t, r.stringsScannedBytes) })}>
           {r.interestingStrings.length === 0 ? <div className="small muted">{t('file.noStrings')}</div> : (
             <div className="table-wrap" style={{ maxHeight: 300, padding: 8 }}>
               {r.interestingStrings.map((s, i) => <div key={i} className="small" style={{ padding: '3px 0' }}><Ltr mono breakAll>{s}</Ltr></div>)}

@@ -102,7 +102,7 @@ export function DomainIntel() {
 
             <div className="grid g-2">
               {opts.rdap && (
-                <Card title={t('domainintel.registration')} icon={CalendarClock} tone="purple">
+                <Card title={t('domainintel.registration')} explain="rdap" icon={CalendarClock} tone="purple">
                   {!r.rdap ? <div className="muted small">{sourceNote(r, 'rdap', t)}</div> : (
                     <dl className="kv">
                       <KV label={t('domainintel.registrar')}><Ltr>{r.rdap.registrar ?? '—'}</Ltr>{r.rdap.registrarIanaId && <span className="dim small"> (IANA <Ltr>{r.rdap.registrarIanaId}</Ltr>)</span>}</KV>
@@ -119,7 +119,7 @@ export function DomainIntel() {
                 </Card>
               )}
               {opts.tls && (
-                <Card title={t('domainintel.tls')} icon={LockKeyhole} tone={!r.tls ? 'gray' : r.tls.authorized && (r.tls.daysRemaining ?? 0) > 14 ? 'green' : 'amber'}>
+                <Card title={t('domainintel.tls')} explain="tls" icon={LockKeyhole} tone={!r.tls ? 'gray' : r.tls.authorized && (r.tls.daysRemaining ?? 0) > 14 ? 'green' : 'amber'}>
                   {!r.tls ? <div className="muted small">{sourceNote(r, 'tls', t)}</div> : (
                     <dl className="kv">
                       <KV label={t('domainintel.status')}>
@@ -145,7 +145,7 @@ export function DomainIntel() {
 
             {opts.dns && (
               <div className="grid g-3">
-                <Card title={t('domainintel.dns')} icon={Server} tone="blue" className="span-2">
+                <Card title={t('domainintel.dns')} explain="dns" icon={Server} tone="blue" className="span-2">
                   {!r.dns ? <div className="muted small">{sourceNote(r, 'dns', t)}</div> : dnsRows.length === 0 ? <div className="muted">{t('domainintel.noRecords')}</div> : (
                     <DataTable
                       maxHeight={380}
@@ -158,7 +158,7 @@ export function DomainIntel() {
                     />
                   )}
                 </Card>
-                <Card title={t('domainintel.email')} icon={Mail} tone={r.dns?.spf && r.dns.dmarc ? 'green' : 'amber'}>
+                <Card title={t('domainintel.email')} explain="spf_dmarc" icon={Mail} tone={r.dns?.spf && r.dns.dmarc ? 'green' : 'amber'}>
                   {r.dns && (
                     <div className="col" style={{ gap: 12 }}>
                       {(['spf', 'dmarc'] as const).map((k) => (
@@ -177,7 +177,7 @@ export function DomainIntel() {
             )}
 
             {opts.infrastructure && r.infrastructure.length > 0 && (
-              <Card title={t('domainintel.infrastructure')} icon={Route} tone="purple">
+              <Card title={t('domainintel.infrastructure')} explain="asn" icon={Route} tone="purple">
                 <DataTable
                   rowKey={(x) => x.ip}
                   rows={r.infrastructure}

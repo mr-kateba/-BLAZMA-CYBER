@@ -1,7 +1,7 @@
 import { CircleCheck, CloudOff, Cloud, FolderOpen, History, ShieldCheck, Trash2 } from 'lucide-react';
 import type { ClearTarget } from '../../shared/api';
 import type { NetworkActivityEntry } from '../../core/network-gate';
-import { Badge, Card, DataTable, EmptyState, IconTile, Ltr, Skeleton, Toggle, usePoll } from '../components/ui';
+import { Badge, Card, DataTable, EmptyState, Explain, IconTile, Ltr, Skeleton, Toggle, usePoll } from '../components/ui';
 import { useApp } from '../components/AppContext';
 import { useI18n } from '../i18n/I18nProvider';
 import { formatDateTime } from '../format';
@@ -42,7 +42,7 @@ export function PrivacyCenter() {
             <IconTile icon={offline ? CloudOff : Cloud} tone={offline ? 'cyan' : 'green'} />
             <div style={{ flex: 1 }}>
               <div className="row">
-                <h3 className="card-title" style={{ fontSize: 17 }}>{t('privacy.offlineTitle')}</h3>
+                <h3 className="card-title" style={{ fontSize: 17 }}>{t('privacy.offlineTitle')}<Explain term="offline_mode" /></h3>
                 <span className="spacer" />
                 <Toggle checked={offline} label={t('privacy.offlineTitle')} onChange={(v) => void updateSettings({ offlineMode: v })} />
               </div>

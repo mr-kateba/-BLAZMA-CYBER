@@ -379,7 +379,7 @@ function History() {
   const [state, setState] = useState<{ data?: { path: string; lines: string[]; total: number }; error?: string; loading?: boolean }>({});
   const f = useFilter(state.data?.lines, (l) => [l]);
   return (
-    <Card title={t('forensics.psHistory')} icon={TerminalSquare} tone="purple">
+    <Card title={t('forensics.psHistory')} explain="ps_history" icon={TerminalSquare} tone="purple">
       <Notice tone="amber" icon={TriangleAlert}>{t('forensics.psHistoryWarning')}</Notice>
       {!state.data && (
         <button

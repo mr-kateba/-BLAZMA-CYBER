@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
-import { AlertTriangle, Check, Copy, Inbox, Info, UploadCloud } from 'lucide-react';
+import { AlertTriangle, Check, CircleHelp, Copy, Inbox, Info, UploadCloud } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
 import { useApp } from './AppContext';
@@ -9,8 +9,10 @@ const TONE_VAR: Record<Tone, string> = {
   blue: 'var(--primary)', cyan: 'var(--cyan)', green: 'var(--green)', amber: 'var(--amber)', red: 'var(--red)', purple: 'var(--purple)', gray: '#7d8db0',
 };
 
-export function Card({ title, subtitle, icon, tone = 'blue', actions, children, className = '', style }: {
+export function Card({ title, subtitle, icon, tone = 'blue', actions, children, className = '', style, explain }: {
   title?: ReactNode; subtitle?: ReactNode; icon?: LucideIcon; tone?: Tone; actions?: ReactNode; children?: ReactNode; className?: string; style?: CSSProperties;
+  /** Glossary term (explain.<term>) shown as a "What does this mean?" button next to the title. */
+  explain?: string;
 }) {
   const Icon = icon;
   return (
@@ -19,7 +21,7 @@ export function Card({ title, subtitle, icon, tone = 'blue', actions, children, 
         <header className="card-head">
           {Icon && <IconTile icon={Icon} tone={tone} small />}
           <div style={{ flex: 1, minWidth: 0 }}>
-            {title && <h3 className="card-title">{title}</h3>}
+            {title && <h3 className="card-title">{title}{explain && <Explain term={explain} />}</h3>}
             {subtitle && <div className="card-sub">{subtitle}</div>}
           </div>
           {actions}
@@ -331,5 +333,41 @@ export function useFilter<R>(rows: R[] | null | undefined, fields: (r: R) => Arr
 export function FilterInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
   return (
     <input className="input" style={{ maxWidth: 280, height: 34 }} value={value} placeholder={placeholder} aria-label={placeholder} onChange={(e) => onChange(e.target.value)} />
+  );
+}
+
+/** "What does this mean?": a small help button that explains a technical term in plain language. */
+export function Explain({ term }: { term: string }) {
+  const { t } = useI18n();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const click = (e: MouseEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const key = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('mousedown', click);
+    window.addEventListener('keydown', key);
+    return () => {
+      document.removeEventListener('mousedown', click);
+      window.removeEventListener('keydown', key);
+    };
+  }, [open]);
+  const title = t(`explain.${term}.title`);
+  return (
+    <span className="explain" ref={ref}>
+      <button type="button" className="explain-btn" aria-label={t('explain.ask', { term: title })} title={t('explain.ask', { term: title })} aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+        <CircleHelp size={14} />
+      </button>
+      {open && (
+        <span className="explain-pop" role="note">
+          <strong>{title}</strong>
+          <span>{t(`explain.${term}.text`)}</span>
+        </span>
+      )}
+    </span>
   );
 }
