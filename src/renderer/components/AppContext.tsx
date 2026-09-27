@@ -27,6 +27,12 @@ interface AppCtx {
   analyzeFile: (path: string) => void;
   /** Consumed once by the File Analyzer on mount. */
   takePendingFile: () => string | null;
+  /** Opens a tool with a value pre-filled (from the smart search); the user still starts it. */
+  openWith: (page: PageId, value: string, mode?: string) => void;
+  /** The value the target page starts with (idempotent; cleared by the next navigation). */
+  prefillFor: (page: PageId) => { value: string; mode?: string } | null;
+  /** Changes on every openWith so an already-open page restarts with the new value. */
+  viewSeq: number;
 }
 
 const Ctx = createContext<AppCtx | null>(null);
@@ -57,6 +63,17 @@ export function AppProvider({ settings, setSettings, initialPage, children }: {
     pending.current = null;
     return p;
   }, []);
+  const prefill = useRef<{ page: PageId; value: string; mode?: string } | null>(null);
+  const [viewSeq, setViewSeq] = useState(0);
+  const openWith = useCallback((p: PageId, value: string, mode?: string) => {
+    prefill.current = { page: p, value, mode };
+    setViewSeq((n) => n + 1);
+    setPage(p);
+  }, []);
+  const prefillFor = useCallback((p: PageId) => {
+    const x = prefill.current;
+    return x && x.page === p ? { value: x.value, mode: x.mode } : null;
+  }, []);
 
   const toast = useCallback(
     (tone: ToastTone, text: string) => {
@@ -80,7 +97,10 @@ export function AppProvider({ settings, setSettings, initialPage, children }: {
   // "Terminal" is an action, not a page: it opens the regular Windows terminal in its own window.
   const navigate = useCallback(
     (p: PageId) => {
-      if (p !== 'terminal') return setPage(p);
+      if (p !== 'terminal') {
+        prefill.current = null;
+        return setPage(p);
+      }
       void window.blazma.app.openTerminal().then((r) => {
         if (r.ok) toast('green', t(`terminal.opened.${r.data}`));
         else toast('red', t(`errors.${r.error}`));
@@ -98,7 +118,7 @@ export function AppProvider({ settings, setSettings, initialPage, children }: {
   useEscape(!!dialog, () => close(false));
 
   return (
-    <Ctx.Provider value={{ settings, updateSettings, page, navigate, toast, confirm, analyzeFile, takePendingFile }}>
+    <Ctx.Provider value={{ settings, updateSettings, page, navigate, toast, confirm, analyzeFile, takePendingFile, openWith, prefillFor, viewSeq }}>
       {children}
       <div className="toasts" aria-live="polite">
         {toasts.map((x) => {

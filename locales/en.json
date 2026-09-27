@@ -66,14 +66,15 @@
     "serviceScan": "Service scan (Nmap)"
   },
   "topbar": {
-    "search": "Search tools…",
+    "search": "Search tools, or paste an IP, hash, link or file path…",
     "searchEmpty": "No matching tools",
     "localOnly": "Local only",
     "online": "Online intelligence enabled",
     "localOnlyTooltip": "Offline Mode is on: every external request is blocked. Click to open the Privacy Center.",
     "onlineTooltip": "Optional online lookups are allowed, but only when you start them. Click to open the Privacy Center.",
     "settings": "Settings",
-    "language": "Language"
+    "language": "Language",
+    "shortcut": "Ctrl+K"
   },
   "common": {
     "loading": "Loading…",
@@ -2703,6 +2704,28 @@
         "title": "The Docker API is open without TLS on {{host}} (port {{port}})",
         "body": "An unauthenticated Docker API gives full control of the machine to anyone who can reach it. Close it immediately."
       }
+    }
+  },
+  "smart": {
+    "kind": {
+      "ip": "IP address",
+      "hash": "Hash",
+      "domain": "Domain",
+      "url": "Link",
+      "email": "Email",
+      "username": "Username",
+      "path": "File"
+    },
+    "action": {
+      "ipIntel": "Look up this IP address",
+      "reputation": "Check its reputation",
+      "serviceScan": "Scan its services (Nmap)",
+      "identifyHash": "Identify the hash type",
+      "checkLink": "Check this link",
+      "osint": "Open in the OSINT workspace",
+      "accounts": "Find accounts with this username",
+      "domainIntel": "Look up this domain",
+      "analyzeFile": "Analyze this file (read-only)"
     }
   }
 }

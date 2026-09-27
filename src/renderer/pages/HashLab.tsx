@@ -3,6 +3,7 @@ import { Fingerprint, GitCompare, Hash, Search, ShieldCheck, TriangleAlert, X } 
 import type { HashResult, TaskProgress } from '../../shared/api';
 import type { HashIdResult } from '../../core/hash-id';
 import { Badge, Card, ErrorState, FileDrop, IconTile, Ltr, Notice, Progress, Tabs } from '../components/ui';
+import { useApp } from '../components/AppContext';
 import { useI18n } from '../i18n/I18nProvider';
 import { formatBytes, newTaskId } from '../format';
 import { HashRows } from './FileAnalyzer';
@@ -114,9 +115,9 @@ function FileTab() {
   );
 }
 
-function IdentifyTab() {
+function IdentifyTab({ initial = '' }: { initial?: string }) {
   const { t } = useI18n();
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(initial);
   const [res, setRes] = useState<HashIdResult | null>(null);
   const tone = { high: 'green', medium: 'amber', low: 'gray' } as const;
   return (
@@ -176,7 +177,8 @@ function CompareTab() {
 
 export function HashLab() {
   const { t } = useI18n();
-  const [tab, setTab] = useState<Tab>('file');
+  const pre = useApp().prefillFor('hash-lab');
+  const [tab, setTab] = useState<Tab>(pre ? 'identify' : 'file');
   return (
     <div className="page">
       <div className="page-head">
@@ -193,7 +195,7 @@ export function HashLab() {
       />
       {tab === 'text' && <TextTab />}
       {tab === 'file' && <FileTab />}
-      {tab === 'identify' && <IdentifyTab />}
+      {tab === 'identify' && <IdentifyTab initial={pre?.value} />}
       {tab === 'compare' && <CompareTab />}
     </div>
   );

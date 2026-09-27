@@ -5,6 +5,7 @@ import { isDomain } from '../../core/validation';
 import { Badge, Card, DataTable, ErrorState, IconTile, Ltr, Notice, Progress } from '../components/ui';
 import { hasRepKey, KV, OfflineBanner, OptionPills, ReputationCard, SourcesTable, useKeyStatus } from '../components/intel';
 import { AddToCase } from '../components/AddToCase';
+import { useApp } from '../components/AppContext';
 import { useI18n } from '../i18n/I18nProvider';
 import { formatDateTime } from '../format';
 import { sourceNote } from './IpIntel';
@@ -19,7 +20,8 @@ function looksLikeDomain(v: string): boolean {
 export function DomainIntel() {
   const { t, locale } = useI18n();
   const keys = useKeyStatus();
-  const [value, setValue] = useState('');
+  const { prefillFor } = useApp();
+  const [value, setValue] = useState(() => prefillFor('domain-intel')?.value ?? '');
   const [opts, setOpts] = useState<DomainLookupOptions>({ dns: true, rdap: true, tls: true, infrastructure: true, reputation: [] });
   const [state, setState] = useState<{ loading?: boolean; result?: DomainLookupResult; error?: string }>({});
   const valid = useMemo(() => looksLikeDomain(value), [value]);

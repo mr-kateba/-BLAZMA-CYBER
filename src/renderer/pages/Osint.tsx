@@ -22,9 +22,10 @@ const EVIDENCE_KIND: Record<OsintTargetType, EvidenceKind> = { domain: 'domain',
 
 export function Osint() {
   const { t, locale } = useI18n();
-  const { confirm, toast } = useApp();
-  const [type, setType] = useState<OsintTargetType>('domain');
-  const [value, setValue] = useState('');
+  const { confirm, toast, prefillFor } = useApp();
+  const pre = prefillFor('osint');
+  const [type, setType] = useState<OsintTargetType>(() => (pre?.mode === 'email' || pre?.mode === 'username' || pre?.mode === 'url' ? pre.mode : 'domain'));
+  const [value, setValue] = useState(() => pre?.value ?? '');
   const [opts, setOpts] = useState<OsintOptions>({ ct: true, wayback: true, github: true, emailDns: true });
   const [state, setState] = useState<{ loading?: boolean; result?: OsintResult; error?: string }>({});
   const [groups, setGroups] = useState<Record<UsernameGroup, boolean>>({ social: true, other: false });

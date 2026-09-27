@@ -11,10 +11,11 @@ const FOR_KIND = REPUTATION_FOR_KIND;
 
 export function ReputationCenter() {
   const { t } = useI18n();
-  const { navigate } = useApp();
+  const { navigate, prefillFor } = useApp();
   const keys = useKeyStatus();
-  const [kind, setKind] = useState<IndicatorKind>('ip');
-  const [value, setValue] = useState('');
+  const pre = prefillFor('reputation');
+  const [kind, setKind] = useState<IndicatorKind>(() => (pre?.mode === 'hash' || pre?.mode === 'domain' ? pre.mode : 'ip'));
+  const [value, setValue] = useState(() => pre?.value ?? '');
   const [selected, setSelected] = useState<ReputationService[]>([]);
   const [state, setState] = useState<{ loading?: boolean; data?: { results: ReputationResult[]; sources: LookupSource[] }; error?: string }>({});
 

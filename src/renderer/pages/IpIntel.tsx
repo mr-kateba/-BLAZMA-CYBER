@@ -5,6 +5,7 @@ import { isIP } from '../../core/validation';
 import { Badge, Card, ErrorState, IconTile, Ltr, Notice, Progress } from '../components/ui';
 import { hasRepKey, KV, OfflineBanner, OptionPills, ReputationCard, SourcesTable, useKeyStatus } from '../components/intel';
 import { AddToCase } from '../components/AddToCase';
+import { useApp } from '../components/AppContext';
 import { useI18n } from '../i18n/I18nProvider';
 import { formatDateTime } from '../format';
 
@@ -13,7 +14,8 @@ const REP = REPUTATION_FOR_KIND.ip;
 export function IpIntel() {
   const { t, locale } = useI18n();
   const keys = useKeyStatus();
-  const [value, setValue] = useState('');
+  const { prefillFor } = useApp();
+  const [value, setValue] = useState(() => prefillFor('ip-intel')?.value ?? '');
   const [opts, setOpts] = useState<IpLookupOptions>({ reverseDns: true, rdap: true, asn: true, geo: true, tor: true, reputation: [] });
   const [state, setState] = useState<{ loading?: boolean; result?: IpLookupResult; error?: string }>({});
   const valid = useMemo(() => isIP(value.trim()), [value]);

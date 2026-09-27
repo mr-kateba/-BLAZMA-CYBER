@@ -397,6 +397,16 @@ try {
   await win.waitForTimeout(300);
   await win.screenshot({ path: join(out, '37-osint-accounts-offline-ar.png') });
 
+  // Smart search: Ctrl+K, paste a (defanged) indicator, pick the suggested tool — it opens pre-filled.
+  await win.keyboard.press('Control+K');
+  await win.keyboard.type('evil[.]example');
+  await win.locator('.search-results button.smart', { hasText: 'استعلم عن هذا النطاق' }).waitFor();
+  await win.waitForTimeout(200);
+  await win.screenshot({ path: join(out, '42-smart-search-ar.png') });
+  await win.keyboard.press('Enter');
+  await win.locator('h1', { hasText: 'معلومات النطاقات' }).waitFor();
+  assert.equal(await win.locator('input.input.mono').first().inputValue(), 'evil.example', 'smart search pre-fills the tool');
+
   // Network traffic: analyse a real capture file (synthetic fixture) end to end — reader, parser,
   // analyzer, findings, devices with manufacturers, and the cleartext view without secrets.
   await win.locator('.nav-item', { hasText: 'حركة الشبكة' }).click();

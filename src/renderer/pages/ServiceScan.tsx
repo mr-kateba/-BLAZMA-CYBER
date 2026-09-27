@@ -13,10 +13,11 @@ const PROFILES: NmapProfile[] = ['hosts', 'quick', 'standard'];
 
 export function ServiceScan() {
   const { t } = useI18n();
-  const { confirm, toast } = useApp();
+  const { confirm, toast, prefillFor } = useApp();
+  const preset = prefillFor('service-scan')?.value;
   const [info, setInfo] = useState<NmapInfo | null>(null);
   const [subnets, setSubnets] = useState<Array<{ cidr: string; interface: string; address: string }>>([]);
-  const [target, setTarget] = useState('');
+  const [target, setTarget] = useState(() => preset ?? '');
   const [profile, setProfile] = useState<NmapProfile>('quick');
   const [state, setState] = useState<{ running?: string; result?: NmapResult; error?: string }>({});
   const [p, setP] = useState<TaskProgress | null>(null);
@@ -26,7 +27,7 @@ export function ServiceScan() {
     void window.blazma.nmap.targets().then((r) => {
       if (!r.ok) return;
       setSubnets(r.data);
-      if (r.data[0]) setTarget(r.data[0].cidr);
+      if (r.data[0] && !preset) setTarget(r.data[0].cidr);
     });
   }, []);
   useEffect(() => {

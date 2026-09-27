@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
-import { ExternalLink, Search, Settings as SettingsIcon } from 'lucide-react';
-import { Skeleton } from './components/ui';
+import { ExternalLink, Search, Settings as SettingsIcon, type LucideIcon } from 'lucide-react';
+import { Ltr, Skeleton } from './components/ui';
+import { classifyInput } from '../core/smart-input';
 import { Logo } from './components/Logo';
 import { useApp } from './components/AppContext';
 import { useI18n } from './i18n/I18nProvider';
@@ -103,24 +104,58 @@ function Page({ id }: { id: PageId }) {
 
 function TopSearch() {
   const { t } = useI18n();
-  const { navigate, settings } = useApp();
+  const { navigate, settings, openWith, analyzeFile } = useApp();
   const mode = settings.uiMode;
   const [q, setQ] = useState('');
   const [open, setOpen] = useState(false);
   const [idx, setIdx] = useState(0);
   const ref = useRef<HTMLInputElement>(null);
 
+  // Ctrl+K (or "/" outside a text field) jumps to the search from anywhere.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const typing = e.target instanceof HTMLElement && (e.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName));
+      if (((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') || (e.key === '/' && !typing)) {
+        e.preventDefault();
+        ref.current?.focus();
+        ref.current?.select();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   const results = useMemo(() => {
     const s = q.trim().toLowerCase();
     if (!s) return [];
-    return visibleNav(mode)
-      .flatMap((sec) => sec.items)
-      .filter((i) => t(labelKeyFor(i, mode)).toLowerCase().includes(s) || i.id.includes(s))
-      .slice(0, 8);
-  }, [q, t, mode]);
+    const visible = visibleNav(mode).flatMap((sec) => sec.items);
+    const out: Array<{ key: string; icon: LucideIcon; label: string; hint?: string; value?: string; planned?: boolean; go: () => void }> = [];
+    // "Paste anything": an indicator or a file path becomes direct actions on the tools that examine it.
+    const m = classifyInput(q);
+    if (m) {
+      for (const a of m.actions) {
+        const item = visible.find((i) => i.id === a.page);
+        if (!item) continue;
+        out.push({
+          key: `smart:${a.page}:${a.action}`,
+          icon: item.icon,
+          label: t(`smart.action.${a.action}`),
+          hint: t(`smart.kind.${m.kind}`),
+          value: m.value,
+          go: () => (a.page === 'file-analyzer' ? analyzeFile(a.value) : openWith(a.page, a.value, a.mode)),
+        });
+      }
+    }
+    for (const i of visible) {
+      if (!(t(labelKeyFor(i, mode)).toLowerCase().includes(s) || i.id.includes(s))) continue;
+      out.push({ key: i.id, icon: i.icon, label: t(labelKeyFor(i, mode)), planned: !!i.planned, go: () => navigate(i.id) });
+      if (out.length >= 10) break;
+    }
+    return out;
+  }, [q, t, mode, navigate, openWith, analyzeFile]);
 
-  const go = (id: PageId) => {
-    navigate(id);
+  const go = (r: (typeof results)[number]) => {
+    r.go();
     setQ('');
     setOpen(false);
     ref.current?.blur();
@@ -134,6 +169,7 @@ function TopSearch() {
         value={q}
         placeholder={t('topbar.search')}
         aria-label={t('topbar.search')}
+        spellCheck={false}
         onChange={(e) => {
           setQ(e.target.value);
           setOpen(true);
@@ -144,19 +180,27 @@ function TopSearch() {
         onKeyDown={(e) => {
           if (e.key === 'ArrowDown') setIdx((i) => Math.min(i + 1, results.length - 1));
           if (e.key === 'ArrowUp') setIdx((i) => Math.max(i - 1, 0));
-          if (e.key === 'Enter' && results[idx]) go(results[idx]!.id);
-          if (e.key === 'Escape') setOpen(false);
+          if (e.key === 'Enter' && results[idx]) go(results[idx]!);
+          if (e.key === 'Escape') {
+            setOpen(false);
+            ref.current?.blur();
+          }
         }}
       />
+      {!q && <kbd className="search-kbd" aria-hidden>{t('topbar.shortcut')}</kbd>}
       {open && q.trim() && (
         <div className="search-results">
           {results.length === 0 && <div className="empty small">{t('topbar.searchEmpty')}</div>}
           {results.map((r, i) => {
             const Icon = r.icon;
             return (
-              <button key={r.id} className={i === idx ? 'active' : ''} onMouseDown={() => go(r.id)}>
+              <button key={r.key} className={`${i === idx ? 'active' : ''}${r.value ? ' smart' : ''}`} onMouseDown={() => go(r)}>
                 <Icon size={16} color="var(--primary)" />
-                <span style={{ flex: 1 }}>{t(labelKeyFor(r, mode))}</span>
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  {r.label}
+                  {r.value && <span className="search-value"><Ltr mono>{r.value}</Ltr></span>}
+                </span>
+                {r.hint && <span className="nav-soon">{r.hint}</span>}
                 {r.planned && <span className="nav-soon">{t('nav.planned')}</span>}
               </button>
             );
@@ -225,7 +269,7 @@ export function Shell() {
   const { t, lang } = useI18n();
   const [version, setVersion] = useState<string | null>(null);
   useEffect(() => void window.blazma.app.info().then((i) => setVersion(i.version)), []);
-  const { page, navigate, settings, updateSettings } = useApp();
+  const { page, navigate, settings, updateSettings, viewSeq } = useApp();
 
   return (
     <>
@@ -312,7 +356,7 @@ export function Shell() {
 
         <main className="main">
           <Suspense fallback={<div className="page" aria-busy="true"><Skeleton w={260} h={28} /></div>}>
-            <Page key={page} id={page} />
+            <Page key={`${page}:${viewSeq}`} id={page} />
           </Suspense>
         </main>
       </div>
