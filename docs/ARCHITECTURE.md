@@ -62,7 +62,9 @@ Each module is a main-process service plus a renderer page, communicating only t
 
 - `contextIsolation: true`, `sandbox: true`, `nodeIntegration: false`, `webSecurity: true`.
 - Strict CSP: `script-src 'self'`, `connect-src 'self'` (dev server websocket only in dev),
-  `object-src 'none'`, `frame-ancestors 'none'`.
+  `object-src 'none'`, `frame-src 'none'`. (`frame-ancestors` is not used: browsers ignore it in a
+  `<meta>` CSP and log an error; framing the app is impossible anyway because navigation, window.open
+  and `<webview>` are blocked.)
 - Navigation to anything other than the app bundle is blocked; `window.open` is always denied;
   `<webview>` blocked. External pages open only through validated IPC (§10).
 - All permission requests (camera, mic, geolocation, notifications…) denied.
