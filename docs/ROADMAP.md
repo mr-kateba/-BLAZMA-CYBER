@@ -69,6 +69,12 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE Reports: escaped, script-free HTML (strict CSP), JSON export, PDF via offline printToPDF; Arabic RTL / English LTR
 - DONE OSINT workspace: domain/email/username/URL; Certificate Transparency (crt.sh), Wayback first/last snapshot, GitHub public profile, mail-domain DNS; provenance (endpoint + time) on every source; pivot links re-derived in main, opened only on click, gated. Verified with mocks + offline E2E — live sources were unreachable from the build sandbox
 
+## Phase A (post-v0.1 plan, see chat report) — DONE
+- DONE License GPL-3.0-or-later (LICENSE, shown by the installer)
+- DONE Terminal opens the regular Windows terminal
+- DONE Build hygiene: pages lazy-loaded (startup bundle 543 → 383 kB), Vite `import.meta.dirname`, actions/checkout + setup-node v5
+- TODO (owner, GitHub settings) Rename the default branch to `main`
+
 ## Phase 7 — Polish
 - DONE Terminal: opens the regular Windows terminal (Windows Terminal, else PowerShell) in its own window — no in-app terminal by decision (the GUI never runs commands from user input)
 - DONE Packaging config (electron-builder.yml): per-user NSIS (asInvoker, no elevation, Arabic + English installer), asar, hardened Electron fuses (RunAsNode off, NODE_OPTIONS/inspect off, asar integrity, only-load-from-asar), no publish/auto-update; app icon generated from the logo SVG (scripts/make-icon.mjs)

@@ -1,5 +1,9 @@
 # Third-Party Notices
 
+BLAZMA CYBER itself is licensed under GPL-3.0-or-later (see LICENSE). All components below have
+GPL-3.0-compatible licenses (MIT, ISC, BSD, Apache-2.0, OFL-1.1 for fonts). External engines run as
+separate programs, and each keeps its own license.
+
 BLAZMA CYBER uses the following third-party components. Each was reviewed for license
 compatibility, maintenance status, platform support and security implications before adoption.
 Full license texts are available in each package under `node_modules/<package>/LICENSE`

@@ -1,27 +1,30 @@
-import { useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useMemo, useRef, useState } from 'react';
 import { ExternalLink, Search, Settings as SettingsIcon } from 'lucide-react';
+import { Skeleton } from './components/ui';
 import { Logo } from './components/Logo';
 import { useApp } from './components/AppContext';
 import { useI18n } from './i18n/I18nProvider';
 import { ALL_ITEMS, NAV, findItem, type PageId } from './nav';
 import { Dashboard } from './pages/Dashboard';
-import { FileAnalyzer } from './pages/FileAnalyzer';
-import { HashLab } from './pages/HashLab';
-import { PrivacyCenter } from './pages/PrivacyCenter';
-import { SettingsPage } from './pages/Settings';
-import { PlannedModule } from './pages/PlannedModule';
-import { SecurityCenter } from './pages/SecurityCenter';
-import { YaraScanner } from './pages/YaraScanner';
-import { IpIntel } from './pages/IpIntel';
-import { DomainIntel } from './pages/DomainIntel';
-import { ReputationCenter } from './pages/ReputationCenter';
-import { WindowsForensics } from './pages/WindowsForensics';
-import { NetworkToolkit } from './pages/NetworkToolkit';
-import { PasswordRecovery } from './pages/PasswordRecovery';
-import { Cases } from './pages/Cases';
-import { Reports } from './pages/Reports';
-import { ThreatHunting } from './pages/ThreatHunting';
-import { Osint } from './pages/Osint';
+
+// Every page except the dashboard is loaded on first visit (smaller startup bundle).
+const FileAnalyzer = lazy(() => import('./pages/FileAnalyzer').then((m) => ({ default: m.FileAnalyzer })));
+const HashLab = lazy(() => import('./pages/HashLab').then((m) => ({ default: m.HashLab })));
+const PrivacyCenter = lazy(() => import('./pages/PrivacyCenter').then((m) => ({ default: m.PrivacyCenter })));
+const SettingsPage = lazy(() => import('./pages/Settings').then((m) => ({ default: m.SettingsPage })));
+const PlannedModule = lazy(() => import('./pages/PlannedModule').then((m) => ({ default: m.PlannedModule })));
+const SecurityCenter = lazy(() => import('./pages/SecurityCenter').then((m) => ({ default: m.SecurityCenter })));
+const YaraScanner = lazy(() => import('./pages/YaraScanner').then((m) => ({ default: m.YaraScanner })));
+const IpIntel = lazy(() => import('./pages/IpIntel').then((m) => ({ default: m.IpIntel })));
+const DomainIntel = lazy(() => import('./pages/DomainIntel').then((m) => ({ default: m.DomainIntel })));
+const ReputationCenter = lazy(() => import('./pages/ReputationCenter').then((m) => ({ default: m.ReputationCenter })));
+const WindowsForensics = lazy(() => import('./pages/WindowsForensics').then((m) => ({ default: m.WindowsForensics })));
+const NetworkToolkit = lazy(() => import('./pages/NetworkToolkit').then((m) => ({ default: m.NetworkToolkit })));
+const PasswordRecovery = lazy(() => import('./pages/PasswordRecovery').then((m) => ({ default: m.PasswordRecovery })));
+const Cases = lazy(() => import('./pages/Cases').then((m) => ({ default: m.Cases })));
+const Reports = lazy(() => import('./pages/Reports').then((m) => ({ default: m.Reports })));
+const ThreatHunting = lazy(() => import('./pages/ThreatHunting').then((m) => ({ default: m.ThreatHunting })));
+const Osint = lazy(() => import('./pages/Osint').then((m) => ({ default: m.Osint })));
 
 function Page({ id }: { id: PageId }) {
   switch (id) {
@@ -205,7 +208,9 @@ export function Shell() {
         </aside>
 
         <main className="main">
-          <Page key={page} id={page} />
+          <Suspense fallback={<div className="page" aria-busy="true"><Skeleton w={260} h={28} /></div>}>
+            <Page key={page} id={page} />
+          </Suspense>
         </main>
       </div>
     </>

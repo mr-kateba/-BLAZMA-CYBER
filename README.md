@@ -144,4 +144,9 @@ Architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 Intended for defensive use on systems, networks and files you own or are authorized to assess.
 
 ## License
-Project license to be decided by the owner. Third-party components: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+Copyright © 2026 mr-kateba and BLAZMA CYBER contributors.
+
+BLAZMA CYBER is free software: you can redistribute it and/or modify it under the terms of the
+**GNU General Public License v3.0 or later** ([LICENSE](LICENSE)). It is distributed WITHOUT ANY
+WARRANTY. Anyone who distributes a modified version must publish its source under the same license.
+Third-party components keep their own licenses: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).

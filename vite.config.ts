@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 
 // Renderer build only. Main + preload are bundled by scripts/build-main.mjs (esbuild).
 export default defineConfig(({ command }) => ({
-  root: resolve(__dirname, 'src/renderer'),
+  root: resolve(import.meta.dirname, 'src/renderer'),
   base: './',
   plugins: [
     react(),
@@ -14,9 +14,9 @@ export default defineConfig(({ command }) => ({
       transformIndexHtml: (html: string) => html.replace('%DEV_CONNECT%', command === 'serve' ? ' ws://localhost:5178' : ''),
     },
   ],
-  resolve: { alias: { '@locales': resolve(__dirname, 'locales') } },
+  resolve: { alias: { '@locales': resolve(import.meta.dirname, 'locales') } },
   build: {
-    outDir: resolve(__dirname, 'dist/renderer'),
+    outDir: resolve(import.meta.dirname, 'dist/renderer'),
     emptyOutDir: true,
     target: 'chrome130',
   },

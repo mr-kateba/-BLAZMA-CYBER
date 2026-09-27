@@ -139,6 +139,7 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
 
 | Date | Decision | Why |
 |------|----------|-----|
+| 2026-09 | License: GPL-3.0-or-later | Sensitive security tool: modified redistributions must stay open source; no-warranty clause; compatible with the engines we bundle; qualifies for free OSS code signing |
 | 2026-09 | Electron + React + TypeScript | Best RTL/Arabic rendering, rich UI, testable on any OS; hardened (sandbox, contextIsolation, CSP). Alternatives in docs/ARCHITECTURE.md |
 | 2026-09 | Custom tiny i18n instead of i18next | ~60 lines, fully tested, no dependency |
 | 2026-09 | Offline Mode default ON | Privacy-first; user opts in to online lookups |

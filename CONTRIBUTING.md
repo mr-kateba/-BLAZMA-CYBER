@@ -33,3 +33,7 @@ Justify every new dependency: license, maintenance, security, size. Record it in
 Contributions must be defensive or for authorized use (own files/systems/networks). Features that
 target third-party accounts or services, evade security controls, or weaken Windows protections
 will not be accepted.
+
+## License of contributions
+BLAZMA CYBER is licensed under GPL-3.0-or-later. By submitting a contribution you agree that it is
+licensed under the same terms. Only add dependencies whose licenses are GPL-3.0-compatible.

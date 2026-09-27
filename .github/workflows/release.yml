@@ -41,8 +41,8 @@ jobs:
         env:
           TAG: ${{ inputs.tag }}
         run: if ($env:TAG -notmatch '^v\d+\.\d+\.\d+(-[0-9A-Za-z.]+)?$') { throw 'Invalid tag. Expected e.g. v0.1.0-beta.1' }
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm

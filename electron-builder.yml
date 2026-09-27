@@ -15,6 +15,7 @@ files:
   - dist/**/*
   - "!**/*.map"
   - package.json
+  - LICENSE
 asar: true
 electronLanguages:
   - en-US
@@ -41,6 +42,8 @@ win:
 nsis:
   artifactName: BLAZMA-CYBER-${version}-${arch}-setup.${ext}
   oneClick: false
+  # The installer shows the GPL-3.0 license before installing.
+  license: LICENSE
   perMachine: false
   allowElevation: false
   allowToChangeInstallationDirectory: true
