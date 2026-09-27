@@ -307,6 +307,8 @@ export interface AppInfo {
   dataDir: string;
   electron: string;
   secureStorageAvailable: boolean;
+  /** Running as a portable copy (data kept next to the program). */
+  portable: boolean;
 }
 
 export type ApiKeyService = 'virustotal' | 'abuseipdb' | 'shodan' | 'censys' | 'ipinfo' | 'abusech';

@@ -33,6 +33,8 @@
 > installer-windows-unsigned** (تحتاج تسجيل دخول، وتبقى 14 يومًا).
 
 ### 2) التثبيت
+> **بدون تثبيت؟** نزّل `BLAZMA-CYBER-*-x64-portable.zip` بدلًا من المثبّت، فكّ الضغط في أي مجلد أو ذاكرة USB، وشغّل `BLAZMA CYBER.exe`. كل البيانات تبقى في مجلد `BLAZMA-data` بجانبه.
+
 1. شغّل `BLAZMA-CYBER-0.1.0-x64-setup.exe`.
 2. ستظهر رسالة **"Windows protected your PC"** (حماية Windows). هذا متوقع لأن المثبّت
    **غير موقّع رقميًا بعد** (التوقيع يحتاج شهادة مدفوعة). اضغط **More info** ثم **Run anyway**.

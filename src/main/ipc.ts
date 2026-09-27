@@ -43,7 +43,7 @@ import { HistoryService } from './services/history';
 import { SecretStore, isApiKeyService } from './services/secrets';
 import { SettingsService } from './services/settings';
 import { logger, setLogLevel } from './services/logger';
-import { dataDir, subDir } from './services/paths';
+import { dataDir, portableDataDir, subDir } from './services/paths';
 
 const MAX_TEXT = 1024 * 1024;
 const TASK_ID_RE = /^[a-zA-Z0-9-]{1,64}$/;
@@ -187,6 +187,7 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
     dataDir: dataDir(),
     electron: process.versions.electron,
     secureStorageAvailable: safeStorage.isEncryptionAvailable(),
+    portable: !process.env.BLAZMA_DATA_DIR && portableDataDir() !== null,
   }));
   handle('app:openLink', async (url: unknown) => {
     const host = externalLinkHost(url);

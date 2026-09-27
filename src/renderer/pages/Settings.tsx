@@ -243,7 +243,8 @@ function About({ info }: { info: AppInfo | null }) {
           <dt>{t('settings.version')}</dt><dd><Ltr>{info.version}</Ltr></dd>
           <dt>{t('settings.platform')}</dt><dd><Ltr>{info.platform}</Ltr></dd>
           <dt>{t('settings.electron')}</dt><dd><Ltr>{info.electron}</Ltr></dd>
-          <dt>{t('settings.dataDir')}</dt><dd><Ltr mono breakAll className="small">{info.dataDir}</Ltr></dd>
+          <dt>{t('settings.dataDir')}</dt><dd><Ltr mono breakAll className="small">{info.dataDir}</Ltr>{info.portable && <div className="tiny dim">{t('settings.portableNote')}</div>}</dd>
+          <dt>{t('settings.installType')}</dt><dd>{t(info.portable ? 'settings.portable' : 'settings.installed')}</dd>
         </dl>
       )}
       <p className="small dim" style={{ marginBottom: 0 }}>{t('settings.license')}</p>

@@ -1,21 +1,24 @@
 // Smoke-tests a PACKAGED build (release/*-unpacked). The packaged app has the Node inspector fuse
 // disabled, so Playwright's electron.launch() can't attach; we use Chromium's DevTools protocol instead.
-// Usage: xvfb-run -a node scripts/package-smoke.mjs [path-to-executable]
+// Usage: xvfb-run -a node scripts/package-smoke.mjs [path-to-executable] [--portable]
+// --portable: the copy has portable.txt next to it; its data must land in <exe dir>/BLAZMA-data.
 import { spawn } from 'node:child_process';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const exe = process.argv[2] ?? join(root, 'release', 'linux-unpacked', 'blazma-cyber');
+const args = process.argv.slice(2);
+const portable = args.includes('--portable');
+const exe = args.find((a) => !a.startsWith('--')) ?? join(root, 'release', 'linux-unpacked', 'blazma-cyber');
 const dataDir = mkdtempSync(join(tmpdir(), 'blazma-pkg-'));
 const port = 9300 + Math.floor(Math.random() * 500);
 
 const child = spawn(exe, [...(process.platform === 'linux' ? ['--no-sandbox'] : []), `--remote-debugging-port=${port}`], {
-  env: { ...process.env, BLAZMA_DATA_DIR: dataDir },
+  env: portable ? { ...process.env, BLAZMA_DATA_DIR: '' } : { ...process.env, BLAZMA_DATA_DIR: dataDir },
   stdio: 'ignore',
 });
 
@@ -46,6 +49,14 @@ try {
   await page.getByRole('button', { name: 'متابعة' }).click();
   await page.locator('.nav-item', { hasText: 'محلل الملفات' }).click();
   await page.locator('.page-title', { hasText: 'محلل الملفات' }).waitFor({ timeout: 15000 });
+  if (portable) {
+    const own = join(dirname(exe), 'BLAZMA-data');
+    assert.ok(existsSync(join(own, 'state', 'settings.json')), 'portable copy must keep its settings next to the program');
+    assert.ok(existsSync(join(own, 'electron')), "portable copy must keep Chromium's data next to the program");
+    const info = await page.evaluate(() => window.blazma.app.info());
+    assert.equal(info.portable, true);
+    console.log('Portable mode verified:', own);
+  }
   await browser.close();
   console.log('Packaged app smoke test passed.');
 } finally {

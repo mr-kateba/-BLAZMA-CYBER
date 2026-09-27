@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { registerIpc } from './ipc';
 import { logger } from './services/logger';
+import { portableDataDir } from './services/paths';
 
 const DEV_URL = process.env.BLAZMA_DEV_URL; // set only by scripts/dev.mjs
 const RENDERER_INDEX = join(__dirname, '..', 'renderer', 'index.html');
@@ -19,6 +20,11 @@ function isTrustedUrl(url: string | undefined): boolean {
 function isTrustedSender(e: IpcMainInvokeEvent): boolean {
   return e.senderFrame !== null && e.sender === win?.webContents && isTrustedUrl(e.senderFrame.url);
 }
+
+// Portable mode: Chromium's own data (cache, local storage) also stays next to the program, and each
+// portable copy gets its own single-instance lock. Must run before anything uses userData.
+const portableDir = portableDataDir();
+if (portableDir && !process.env.BLAZMA_DATA_DIR) app.setPath('userData', join(portableDir, 'electron'));
 
 // Single instance: a second launch focuses the existing window and exits immediately.
 if (!app.requestSingleInstanceLock()) {
