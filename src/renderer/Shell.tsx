@@ -18,6 +18,9 @@ import { ReputationCenter } from './pages/ReputationCenter';
 import { WindowsForensics } from './pages/WindowsForensics';
 import { NetworkToolkit } from './pages/NetworkToolkit';
 import { PasswordRecovery } from './pages/PasswordRecovery';
+import { Cases } from './pages/Cases';
+import { Reports } from './pages/Reports';
+import { ThreatHunting } from './pages/ThreatHunting';
 
 function Page({ id }: { id: PageId }) {
   switch (id) {
@@ -45,6 +48,12 @@ function Page({ id }: { id: PageId }) {
       return <NetworkToolkit />;
     case 'password-recovery':
       return <PasswordRecovery />;
+    case 'cases':
+      return <Cases />;
+    case 'reports':
+      return <Reports />;
+    case 'threat-hunting':
+      return <ThreatHunting />;
     case 'settings-api':
       return <SettingsPage tab="apiKeys" />;
     case 'settings-engines':

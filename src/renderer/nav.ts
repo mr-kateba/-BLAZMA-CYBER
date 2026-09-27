@@ -57,14 +57,14 @@ export const NAV: NavSection[] = [
     items: [
       { id: 'windows-forensics', labelKey: 'nav.windowsForensics', icon: MonitorCog },
       { id: 'network-toolkit', labelKey: 'nav.networkToolkit', icon: Network },
-      { id: 'threat-hunting', labelKey: 'nav.threatHunting', icon: Crosshair, planned: p(6, 'threatHunting') },
+      { id: 'threat-hunting', labelKey: 'nav.threatHunting', icon: Crosshair },
     ],
   },
   {
     titleKey: 'nav.section.investigations',
     items: [
-      { id: 'cases', labelKey: 'nav.cases', icon: FolderOpen, planned: p(6, 'cases') },
-      { id: 'reports', labelKey: 'nav.reports', icon: ScrollText, planned: p(6, 'reports') },
+      { id: 'cases', labelKey: 'nav.cases', icon: FolderOpen },
+      { id: 'reports', labelKey: 'nav.reports', icon: ScrollText },
     ],
   },
   { titleKey: 'nav.section.privacy', items: [{ id: 'privacy', labelKey: 'nav.privacyCenter', icon: ShieldCheck }] },

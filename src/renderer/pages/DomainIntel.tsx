@@ -4,6 +4,7 @@ import type { DomainLookupOptions, DomainLookupResult } from '../../shared/api';
 import { isDomain } from '../../core/validation';
 import { Badge, Card, DataTable, ErrorState, IconTile, Ltr, Notice, Progress } from '../components/ui';
 import { KV, OfflineBanner, OptionPills, ReputationCard, SourcesTable, useKeyStatus } from '../components/intel';
+import { AddToCase } from '../components/AddToCase';
 import { useI18n } from '../i18n/I18nProvider';
 import { formatDateTime } from '../format';
 import { sourceNote } from './IpIntel';
@@ -93,6 +94,8 @@ export function DomainIntel() {
                 <div className="big-value"><Ltr mono>{r.domain}</Ltr></div>
                 {r.input.trim().toLowerCase() !== r.domain && <div className="small dim"><Ltr mono>{r.input}</Ltr></div>}
               </div>
+              <span className="spacer" />
+              <AddToCase items={[{ kind: 'domain', value: r.domain, source: 'domainIntel', details: { registrar: r.rdap?.registrar ?? null, created: r.rdap?.created ?? null, expires: r.rdap?.expires ?? null, tlsIssuer: r.tls?.issuer ?? null, spf: !!r.dns?.spf, dmarc: !!r.dns?.dmarc } }]} />
             </div>
 
             {ageDays !== null && ageDays < 30 && <Notice tone="amber" icon={ShieldAlert}>{t('domainintel.youngDomain')}</Notice>}

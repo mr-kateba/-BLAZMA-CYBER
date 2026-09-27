@@ -7,7 +7,7 @@ import { useI18n } from '../i18n/I18nProvider';
 import { formatDateTime } from '../format';
 
 const OUTCOME_TONE = { allowed: 'green', blocked_offline: 'cyan', error: 'red' } as const;
-const TARGETS: ClearTarget[] = ['activity', 'network_activity', 'intel_cache', 'logs', 'temp'];
+const TARGETS: ClearTarget[] = ['activity', 'network_activity', 'intel_cache', 'reports', 'cases', 'logs', 'temp'];
 
 export function PrivacyCenter() {
   const { t, locale } = useI18n();
