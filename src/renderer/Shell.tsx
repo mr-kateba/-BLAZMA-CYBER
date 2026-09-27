@@ -10,6 +10,8 @@ import { HashLab } from './pages/HashLab';
 import { PrivacyCenter } from './pages/PrivacyCenter';
 import { SettingsPage } from './pages/Settings';
 import { PlannedModule } from './pages/PlannedModule';
+import { SecurityCenter } from './pages/SecurityCenter';
+import { YaraScanner } from './pages/YaraScanner';
 
 function Page({ id }: { id: PageId }) {
   switch (id) {
@@ -21,6 +23,10 @@ function Page({ id }: { id: PageId }) {
       return <HashLab />;
     case 'privacy':
       return <PrivacyCenter />;
+    case 'security-center':
+      return <SecurityCenter />;
+    case 'yara':
+      return <YaraScanner />;
     case 'settings-api':
       return <SettingsPage tab="apiKeys" />;
     case 'settings-engines':

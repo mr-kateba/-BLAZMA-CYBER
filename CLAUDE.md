@@ -95,7 +95,10 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
 
 - `npm run check` = typecheck + unit tests + locale parity. Must pass before committing.
 - `xvfb-run -a node scripts/ui-smoke.mjs <sample.exe>` runs the real app end-to-end (Linux) and
-  refreshes `docs/screenshots/`.
+  refreshes `docs/screenshots/`. Set `BLAZMA_TEST_YR=/path/to/yr` to also run the YARA-X +
+  quarantine flow and the real-engine tests in `tests/yara.test.ts`.
+- Never commit the EICAR test string contiguously: assemble it at runtime from two halves
+  (antivirus would otherwise flag the repository/app itself).
 - Network tests use mocks/localhost only. Never test against random public targets.
 
 ## Dependency rules
@@ -111,9 +114,11 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
   first-launch language picker, dashboard (real local data; Windows data via PowerShell),
   settings, structured redacted logging, secure API-key storage, Offline Mode + Network Activity,
   clear-data controls, File Analyzer (static: hashes, type, PE, entropy, IOCs, strings, signature
-  on Windows, combined assessment), Hash Lab (text/file/verify/identify/compare), launcher.
+  on Windows, combined assessment), Hash Lab (text/file/verify/identify/compare), launcher,
+  Quarantine (neutralized, verified restore), YARA-X adapter + rule manager (tested with real yr 1.20.0),
+  Security Center (Defender scans/history/quarantine UI; Defender needs Windows verification).
 - Latest audit: docs/AUDIT-REPORT.md (3 bugs found and fixed; weaknesses and proposed features listed).
-- NOT YET: Defender scanning, YARA-X, quarantine, intelligence lookups, forensics, network toolkit,
+- NOT YET: intelligence lookups, forensics, network toolkit,
   password recovery, cases, reports, threat hunting, OSINT, terminal, packaging/installer.
 - Verified on Linux (Xvfb) only in this environment. Windows-specific PowerShell paths
   (Defender/firewall/Authenticode) are implemented but **still need verification on real Windows**.
@@ -127,4 +132,7 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
 | 2026-09 | Offline Mode default ON | Privacy-first; user opts in to online lookups |
 | 2026-09 | PowerShell via `-Command` + env-var args | No `-EncodedCommand`/`-ExecutionPolicy Bypass` (both are classic attacker IOCs our own threat hunting should flag) |
 | 2026-09 | Windows facts: single in-flight PowerShell, failures cached 5 min, dashboard never waits on PowerShell | Audit found a PowerShell process storm on slow/failed queries |
-| 2026-09 | YARA-X planned over libyara | Maintained successor by VirusTotal, BSD-3, memory-safe |
+| 2026-09 | YARA-X via official `yr` CLI (user-installed) | Maintained successor by VirusTotal, BSD-3; CLI keeps a process boundary and needs no native Node addon |
+| 2026-09 | YARA runs from the rules dir with relative `ns:file.yar` args | YARA-X uses `:` as namespace separator, which clashes with Windows drive letters |
+| 2026-09 | Quarantine stores XOR-0xFF neutralized blobs, restore verifies SHA-256 | Prevents accidental execution/AV re-detection; guarantees byte-exact restore |
+| 2026-09 | File/folder Defender scans use -DisableRemediation | Blazma reports; the user decides (quick/full follow Defender policy, stated in UI) |

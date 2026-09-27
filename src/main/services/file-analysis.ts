@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { basename } from 'node:path';
-import type { FileAnalysis, HashResult, SignatureInfo, TaskProgress } from '../../shared/api';
+import type { EngineRun, FileAnalysis, HashResult, SignatureInfo, TaskProgress, YaraMatch } from '../../shared/api';
 import { validateAbsolutePath } from '../../core/validation';
 import { detectFileType } from '../../core/filetype';
 import { entropyLabel } from '../../core/entropy';
@@ -132,16 +132,51 @@ export function pickInterestingStrings(strings: string[], cap = 100): string[] {
   return out;
 }
 
+export type DefenderRun = EngineRun<{ threats: string[] }>;
+export type YaraRun = EngineRun<{ matches: YaraMatch[]; rulesUsed: number }>;
+
+export interface AnalysisEngines {
+  verifySignature: (path: string) => Promise<SignatureInfo>;
+  defender?: (path: string, signal: AbortSignal) => Promise<DefenderRun>;
+  yara?: (path: string, signal: AbortSignal) => Promise<YaraRun>;
+}
+
+/** Maps a YARA rule's `severity` meta to evidence weight. Unknown/missing severity = strong. */
+export function yaraWeight(meta: YaraMatch['meta']): Signal['weight'] {
+  const sev = String(meta.severity ?? '').toLowerCase();
+  if (sev === 'malicious' || sev === 'critical') return 'malicious';
+  if (sev === 'info' || sev === 'low' || sev === 'informational') return 'weak';
+  return 'strong';
+}
+
 export function buildSignals(input: {
   typeId: string;
   entropy: number;
   packerHints: string[];
   signature: SignatureInfo;
   interestingCount: number;
+  defender?: DefenderRun;
+  yara?: YaraRun;
 }): { signals: Signal[]; available: Set<SignalSource> } {
   const signals: Signal[] = [];
   const available = new Set<SignalSource>(['entropy', 'static']);
   const isExecutable = input.typeId === 'pe';
+
+  if (input.defender?.ran) {
+    available.add('defender');
+    if (input.defender.threats.length === 0) {
+      signals.push({ source: 'defender', weight: 'clean', reasonKey: 'assessment.reason.defender_clean' });
+    }
+    for (const name of input.defender.threats) {
+      signals.push({ source: 'defender', weight: 'malicious', reasonKey: 'assessment.reason.defender_detection', reasonArgs: { name } });
+    }
+  }
+  if (input.yara?.ran) {
+    available.add('yara');
+    for (const m of input.yara.matches) {
+      signals.push({ source: 'yara', weight: yaraWeight(m.meta), reasonKey: 'assessment.reason.yara_match', reasonArgs: { rule: m.rule } });
+    }
+  }
 
   if (input.signature.checked) {
     available.add('signature');
@@ -175,7 +210,7 @@ export async function analyzeFile(
   rawPath: unknown,
   signal: AbortSignal,
   onProgress: (p: Omit<TaskProgress, 'taskId'>) => void,
-  verifySignature: (path: string) => Promise<SignatureInfo>,
+  engines: AnalysisEngines,
 ): Promise<FileAnalysis> {
   const started = Date.now();
   const { path, st } = await statRegularFile(rawPath);
@@ -189,21 +224,39 @@ export async function analyzeFile(
   const interestingStrings = pickInterestingStrings(strings);
   if (signal.aborted) throw new AnalysisError('cancelled');
 
-  const signature = await verifySignature(path);
+  onProgress({ processedBytes: s.totalBytes, totalBytes: st.size, stage: 'scanning' });
+  // Engines run independently; one failing never breaks the analysis.
+  const settle = async <T,>(fn: (() => Promise<T>) | undefined, fallback: T): Promise<T> => {
+    if (!fn) return fallback;
+    try {
+      return await fn();
+    } catch (e) {
+      if (signal.aborted) throw new AnalysisError('cancelled');
+      return { ran: false, reason: (e as { code?: string }).code ?? 'engine_failed' } as T;
+    }
+  };
+  const [signature, defender, yara] = await Promise.all([
+    engines.verifySignature(path).catch((): SignatureInfo => ({ checked: false, reason: 'engine_failed' })),
+    settle<DefenderRun>(engines.defender ? () => engines.defender!(path, signal) : undefined, { ran: false, reason: 'engine_disabled' }),
+    settle<YaraRun>(engines.yara ? () => engines.yara!(path, signal) : undefined, { ran: false, reason: 'engine_disabled' }),
+  ]);
+  if (signal.aborted) throw new AnalysisError('cancelled');
+
   const { signals, available } = buildSignals({
     typeId: type.id,
     entropy,
     packerHints: peRes?.ok ? peRes.pe.packerHints : [],
     signature,
     interestingCount: interestingStrings.length,
+    defender,
+    yara,
   });
 
-  const unavailableEngines = [
-    { engine: 'defender', reason: 'engine_not_integrated_yet' },
-    { engine: 'yara', reason: 'engine_not_integrated_yet' },
-    { engine: 'hash_reputation', reason: 'engine_not_integrated_yet' },
-  ];
+  const unavailableEngines: Array<{ engine: string; reason: string }> = [];
+  if (!defender.ran) unavailableEngines.push({ engine: 'defender', reason: defender.reason });
+  if (!yara.ran) unavailableEngines.push({ engine: 'yara', reason: yara.reason });
   if (!signature.checked) unavailableEngines.push({ engine: 'signature', reason: signature.reason ?? 'unknown' });
+  unavailableEngines.push({ engine: 'hash_reputation', reason: 'engine_not_integrated_yet' });
 
   onProgress({ processedBytes: s.totalBytes, totalBytes: st.size, stage: 'done' });
 
@@ -216,6 +269,8 @@ export async function analyzeFile(
     type,
     hashes: s.hashes,
     signature,
+    defender,
+    yara,
     entropy,
     pe: peRes?.ok ? peRes.pe : null,
     peError: peRes && !peRes.ok ? peRes.reason : null,

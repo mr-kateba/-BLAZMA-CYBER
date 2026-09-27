@@ -140,7 +140,8 @@
     "processes": "العمليات",
     "uptime": "مدة التشغيل",
     "cpuHistory": "استخدام المعالج (آخر {{n}} قراءة)",
-    "sampling": "جارٍ القياس…"
+    "sampling": "جارٍ القياس…",
+    "quarantineCount": "الحجر: {{count}} عنصر"
   },
   "status": {
     "defenderOn": "Microsoft Defender: الحماية الفورية مفعّلة",
@@ -196,6 +197,14 @@
     "privacy": {
       "title": "مركز الخصوصية",
       "desc": "وضع عدم الاتصال، نشاط الشبكة، مسح البيانات."
+    },
+    "quickScan": {
+      "title": "فحص سريع",
+      "desc": "فحص سريع بـ Microsoft Defender للمواقع الشائعة."
+    },
+    "yara": {
+      "title": "فاحص YARA",
+      "desc": "طابق الملفات مع قواعد YARA-X المحلية."
     }
   },
   "planned": {
@@ -306,7 +315,19 @@
       "signature": "التحقق من التوقيع",
       "hash_reputation": "سمعة الهاش"
     },
-    "falsePositives": "قد تُنتج المؤشرات الاستدلالية نتائج خاطئة. راجع الأدلة قبل اتخاذ أي إجراء."
+    "falsePositives": "قد تُنتج المؤشرات الاستدلالية نتائج خاطئة. راجع الأدلة قبل اتخاذ أي إجراء.",
+    "engines": "محركات الكشف",
+    "defenderClean": "لم يُعثر على تهديدات",
+    "defenderThreat": "رُصد تهديد",
+    "yaraMatched": "تطابقت {{count}} قاعدة",
+    "yaraNone": "لم تتطابق أي قاعدة ({{rules}} ملف قواعد)",
+    "notRun": "لم يعمل",
+    "quarantineThis": "انقل الملف إلى الحجر",
+    "quarantineTitle": "نقل إلى الحجر؟",
+    "quarantineBody": "سيُزال «{{name}}» من مكانه ويُخزّن بشكل آمن في الحجر. يمكنك استعادته لاحقًا.",
+    "quarantined": "نُقل الملف إلى الحجر",
+    "inQuarantine": "هذا الملف موجود في الحجر",
+    "scanning": "تشغيل محركات الكشف"
   },
   "verdict": {
     "no_detections": "لا توجد اكتشافات",
@@ -328,7 +349,10 @@
       "signature_untrusted": "التوقيع موجود لكنه غير موثوق",
       "high_entropy": "إنتروبيا إجمالية مرتفعة ({{value}} بت/بايت) — احتمال ضغط أو تشفير",
       "packer_sections": "أسماء أقسام مرتبطة ببرامج الضغط: {{names}}",
-      "interesting_strings": "{{count}} نصوص تشير إلى مضيفات سكربتات أو مواقع استمرارية"
+      "interesting_strings": "{{count}} نصوص تشير إلى مضيفات سكربتات أو مواقع استمرارية",
+      "defender_clean": "لم يجد Microsoft Defender أي تهديد",
+      "defender_detection": "رصد Microsoft Defender: {{name}}",
+      "yara_match": "تطابقت قاعدة YARA: {{rule}}"
     }
   },
   "hashlab": {
@@ -465,7 +489,12 @@
     "platform": "المنصة",
     "electron": "Electron",
     "dataDir": "مجلد البيانات",
-    "license": "تراخيص المكونات الخارجية مذكورة في THIRD-PARTY-NOTICES.md."
+    "license": "تراخيص المكونات الخارجية مذكورة في THIRD-PARTY-NOTICES.md.",
+    "defenderOnAnalyze": "الفحص بـ Microsoft Defender أثناء تحليل الملفات",
+    "defenderOnAnalyzeDesc": "فحص للتقرير فقط للملف المحلَّل (Windows).",
+    "yaraOnAnalyze": "تشغيل قواعد YARA أثناء تحليل الملفات",
+    "yaraOnAnalyzeDesc": "يستخدم القواعد المفعّلة في فاحص YARA.",
+    "configure": "إعداد"
   },
   "activity": {
     "kind": {
@@ -473,17 +502,24 @@
       "hash_file": "هاش ملف",
       "hash_text": "هاش نص",
       "hash_identify": "التعرف على هاش",
-      "hash_compare": "مقارنة هاشات"
+      "hash_compare": "مقارنة هاشات",
+      "defender_scan": "فحص Defender",
+      "yara_scan": "فحص YARA",
+      "quarantine": "نقل إلى الحجر",
+      "restore": "استعادة من الحجر"
     },
     "summary": {
       "hashed": "حُسبت الهاشات",
-      "hashed_text": "حُسبت الهاشات"
+      "hashed_text": "حُسبت الهاشات",
+      "quarantined": "نُقل إلى الحجر",
+      "restored": "استُعيد من الحجر",
+      "yara_scanned": "اكتمل فحص YARA"
     }
   },
   "errors": {
     "title": "حدث خطأ",
     "file_not_found": "الملف لم يعد موجودًا.",
-    "access_denied": "تم رفض الوصول. قد يكون الملف مقفلًا أو يتطلب صلاحيات المدير.",
+    "access_denied": "تم رفض الوصول. قد يكون الملف مقفلًا، أو يتطلب صلاحيات المدير، أو حجبه برنامج الحماية.",
     "not_a_file": "هذا ليس ملفًا عاديًا.",
     "file_unreadable": "تعذّرت قراءة الملف.",
     "cancelled": "أُلغيت العملية.",
@@ -511,6 +547,156 @@
     "invalid_api_key_format": "لا يبدو هذا مفتاح API صالحًا.",
     "engine_not_integrated_yet": "لم يُدمج بعد (مخطط)",
     "open_failed": "تعذّر فتح المجلد.",
-    "unknown": "سبب غير معروف"
+    "unknown": "سبب غير معروف",
+    "quarantine_failed": "تعذّر نقل الملف إلى الحجر.",
+    "quarantine_not_found": "هذا العنصر لم يعد موجودًا في الحجر.",
+    "restore_target_exists": "يوجد ملف بالفعل في الموقع المحدد. اختر موقعًا آخر.",
+    "restore_failed": "تعذّرت استعادة الملف.",
+    "restore_hash_mismatch": "أُوقفت الاستعادة: النسخة المخزّنة لا تطابق هاش الملف الأصلي.",
+    "defender_scan_failed": "فشل فحص Microsoft Defender.",
+    "defender_history_unavailable": "سجل تهديدات Defender غير متاح (قد يتطلب صلاحيات المدير).",
+    "yara_not_installed": "محرك YARA-X ‏(yr) غير مثبّت أو لم يُعثر عليه.",
+    "yara_path_missing": "ملف YARA-X المحدد لم يعد موجودًا.",
+    "yara_no_rules": "لا توجد قواعد YARA مفعّلة وصالحة.",
+    "yara_scan_failed": "فشل فحص YARA.",
+    "yara_rule_not_found": "القاعدة غير موجودة.",
+    "yara_rule_too_large": "ملف القواعد كبير جدًا (الحد الأقصى 1 م.ب).",
+    "yara_bad_extension": "اختر ملفًا بامتداد ‎.yar أو ‎.yara.",
+    "yara_invalid_engine": "هذا الملف ليس محرك YARA-X صالحًا للعمل.",
+    "engine_disabled": "معطّل من الإعدادات",
+    "engine_failed": "فشل تشغيل المحرك"
+  },
+  "defender": {
+    "status": {
+      "no_threats": "لم يُعثر على تهديدات",
+      "threats_found": "عُثر على تهديدات"
+    }
+  },
+  "security": {
+    "title": "مركز الأمان",
+    "subtitle": "فحوصات Microsoft Defender وسجل التهديدات والحجر.",
+    "tab": {
+      "overview": "نظرة عامة",
+      "scan": "فحص",
+      "quarantine": "الحجر",
+      "history": "سجل التهديدات"
+    },
+    "engine": "Microsoft Defender",
+    "realtime": "الحماية الفورية",
+    "antivirus": "مكافحة الفيروسات",
+    "definitions": "التعريفات",
+    "defAge": "{{version}} · عمرها {{age}} يوم",
+    "lastQuick": "آخر فحص سريع",
+    "lastFull": "آخر فحص كامل",
+    "yaraEngine": "YARA-X",
+    "quarantineItems": "عناصر في الحجر",
+    "windowsOnly": "فحص Microsoft Defender متاح على Windows فقط.",
+    "quick": "فحص سريع",
+    "quickDesc": "يفحص المواقع التي تتواجد فيها البرمجيات الخبيثة عادةً.",
+    "full": "فحص كامل",
+    "fullDesc": "يفحص كل الملفات والبرامج العاملة. قد يستغرق ساعات.",
+    "fileScan": "فحص ملف",
+    "fileDesc": "افحص ملفًا واحدًا بـ Defender (تقرير فقط).",
+    "folderScan": "فحص مجلد",
+    "folderDesc": "افحص مجلدًا بـ Defender (تقرير فقط).",
+    "start": "ابدأ",
+    "running": "جارٍ الفحص بـ Microsoft Defender…",
+    "elapsed": "المدة: {{time}}",
+    "policyNote": "الفحص السريع والكامل يتبعان إعدادات Defender نفسه: قد يعالج Defender التهديدات تلقائيًا.",
+    "reportOnlyNote": "فحص الملف والمجلد يعرض النتيجة فقط — والقرار لك.",
+    "resultClean": "لم يُعثر على تهديدات",
+    "resultThreats": "عُثر على {{count}} تهديد",
+    "duration": "المدة: {{time}}",
+    "scanAgain": "فحص جديد",
+    "q": {
+      "empty": "الحجر فارغ",
+      "emptyHint": "الملفات التي تنقلها إلى الحجر من محلل الملفات أو الفحوصات تظهر هنا.",
+      "protectNote": "الملفات في الحجر مخزّنة بشكل مُحيَّد — لا يمكن فتحها أو تشغيلها حتى تستعيدها.",
+      "name": "الملف",
+      "original": "الموقع الأصلي",
+      "size": "الحجم",
+      "date": "تاريخ الحجر",
+      "type": "النوع",
+      "actions": "الإجراءات",
+      "restore": "استعادة",
+      "restoreTo": "استعادة إلى…",
+      "delete": "حذف نهائي",
+      "rescan": "إعادة الفحص",
+      "restoreTitle": "استعادة الملف؟",
+      "restoreBody": "سيُعاد «{{name}}» إلى {{path}}. لا تستعد إلا الملفات التي تثق بها.",
+      "deleteTitle": "حذف نهائي؟",
+      "deleteBody": "سيُحذف «{{name}}» نهائيًا. لا يمكن التراجع عن ذلك.",
+      "restored": "استُعيد إلى {{path}}",
+      "deleted": "حُذف نهائيًا",
+      "rescanTitle": "نتيجة إعادة الفحص"
+    },
+    "h": {
+      "empty": "لا توجد تهديدات في سجل Defender",
+      "name": "التهديد",
+      "detected": "وقت الرصد",
+      "resources": "العناصر المتأثرة",
+      "action": "الإجراء",
+      "actionOk": "تمت المعالجة",
+      "actionFail": "لم تُعالَج",
+      "severity": "الخطورة"
+    }
+  },
+  "yara": {
+    "title": "فاحص YARA",
+    "subtitle": "افحص الملفات والمجلدات بقواعد YARA-X المحلية.",
+    "tab": {
+      "scan": "فحص",
+      "rules": "القواعد",
+      "engine": "المحرك"
+    },
+    "engineInstalled": "محرك YARA-X {{version}} جاهز",
+    "engineMissing": "محرك YARA-X غير مثبّت",
+    "enginePath": "الملف التنفيذي",
+    "chooseEngine": "اختر ملف yr…",
+    "useDefault": "استخدم yr من PATH",
+    "installHelp": "ثبّت أداة سطر الأوامر الرسمية لـ YARA-X ‏(yr) من صفحة إصدارات VirusTotal/yara-x، ثم اخترها هنا. لا ينزّل BLAZMA CYBER المحركات تلقائيًا أبدًا.",
+    "engineSaved": "تم ضبط محرك YARA-X",
+    "target": "الهدف",
+    "chooseFile": "اختر ملفًا…",
+    "chooseFolder": "اختر مجلدًا…",
+    "recursive": "تضمين المجلدات الفرعية",
+    "start": "افحص",
+    "running": "جارٍ الفحص بـ YARA-X…",
+    "summary": "فُحص {{files}} ملف · تطابق {{matched}} · {{rules}} ملف قواعد",
+    "noMatches": "لم تتطابق أي قاعدة.",
+    "col": {
+      "file": "الملف",
+      "rule": "القاعدة",
+      "namespace": "النطاق",
+      "tags": "الوسوم",
+      "description": "الوصف"
+    },
+    "rules": {
+      "count": "{{enabled}} من {{total}} ملف قواعد مفعّل",
+      "origin": {
+        "builtin": "مدمجة",
+        "custom": "مخصصة",
+        "imported": "مستوردة"
+      },
+      "valid": "صالحة",
+      "invalid": "بها أخطاء",
+      "unchecked": "لم تُتحقق",
+      "validateAll": "تحقق من الكل",
+      "newRule": "قاعدة جديدة",
+      "import": "استيراد ملف ‎.yar…",
+      "importNote": "لا تُستورد القواعد إلا من ملفات تختارها أنت. لا يُنزَّل أي شيء تلقائيًا.",
+      "name": "الاسم",
+      "source": "نص القاعدة",
+      "save": "حفظ القاعدة",
+      "view": "عرض",
+      "hide": "إخفاء",
+      "delete": "حذف",
+      "deleteTitle": "حذف ملف القواعد؟",
+      "deleteBody": "سيُحذف «{{name}}».",
+      "saved": "حُفظت القاعدة",
+      "savedInvalid": "حُفظت القاعدة لكنها معطّلة لوجود أخطاء",
+      "savedUnchecked": "حُفظت القاعدة (دون تحقق — المحرك غير مثبّت)",
+      "empty": "لا توجد قواعد"
+    }
   }
 }

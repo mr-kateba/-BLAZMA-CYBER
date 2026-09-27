@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import {
-  AlertOctagon, Binary, CircleCheck, CircleHelp, FileSearch, Fingerprint, Link2, ListTree, RotateCcw, ShieldAlert,
-  TriangleAlert, X, type LucideIcon,
+  AlertOctagon, Binary, CircleCheck, CircleHelp, FileSearch, Fingerprint, Link2, ListTree, RotateCcw, ScanSearch, ShieldAlert,
+  ShieldCheck, ShieldHalf, TriangleAlert, X, type LucideIcon,
 } from 'lucide-react';
 import type { FileAnalysis, TaskProgress } from '../../shared/api';
 import type { Verdict } from '../../core/detection';
 import { entropyLabel } from '../../core/entropy';
 import { Badge, Card, CopyButton, DataTable, ErrorState, FileDrop, IconTile, Ltr, Notice, Progress, type Tone } from '../components/ui';
 import { useI18n } from '../i18n/I18nProvider';
+import { useApp } from '../components/AppContext';
 import { formatBytes, formatDateTime, formatDuration, newTaskId } from '../format';
 
 const VERDICT: Record<Verdict, { tone: Tone; icon: LucideIcon }> = {
@@ -38,8 +39,18 @@ export function HashRows({ hashes, highlight }: { hashes: Record<string, string>
   );
 }
 
-function Result({ r, onReset }: { r: FileAnalysis; onReset: () => void }) {
+export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAnalysis; onReset: () => void; inQuarantine?: boolean }) {
   const { t, locale } = useI18n();
+  const { confirm, toast } = useApp();
+  const [quarantined, setQuarantined] = useState(false);
+  const moveToQuarantine = async () => {
+    if (!(await confirm({ title: t('file.quarantineTitle'), body: t('file.quarantineBody', { name: r.name }), confirmLabel: t('file.quarantineThis'), danger: true }))) return;
+    const q = await window.blazma.quarantine.add(r.path, `verdict:${r.assessment.verdict}`);
+    if (q.ok) {
+      setQuarantined(true);
+      toast('green', t('file.quarantined'));
+    } else toast('red', t(`errors.${q.error}`));
+  };
   const v = VERDICT[r.assessment.verdict];
   const VIcon = v.icon;
   const sig = r.signature;
@@ -56,10 +67,59 @@ function Result({ r, onReset }: { r: FileAnalysis; onReset: () => void }) {
           <div className="v-title">{t(`verdict.${r.assessment.verdict}`)}</div>
           <div className="muted small">{t(`verdict.desc.${r.assessment.verdict}`)}</div>
         </div>
-        <button className="btn" onClick={onReset}>
-          <RotateCcw size={15} /> {t('file.analyzeAnother')}
-        </button>
+        <div className="row-wrap" style={{ justifyContent: 'flex-end' }}>
+          {inQuarantine ? (
+            <Badge tone="cyan" icon={ShieldCheck}>{t('file.inQuarantine')}</Badge>
+          ) : quarantined ? (
+            <Badge tone="green" icon={ShieldCheck}>{t('file.quarantined')}</Badge>
+          ) : (
+            <button className="btn danger" onClick={() => void moveToQuarantine()}>
+              <ShieldCheck size={15} /> {t('file.quarantineThis')}
+            </button>
+          )}
+          <button className="btn" onClick={onReset}>
+            <RotateCcw size={15} /> {t(inQuarantine ? 'common.close' : 'file.analyzeAnother')}
+          </button>
+        </div>
       </div>
+
+      <Card title={t('file.engines')} icon={ScanSearch} tone="blue">
+        <div className="grid g-2">
+          <div className="row" style={{ alignItems: 'flex-start', gap: 12 }}>
+            <IconTile icon={ShieldHalf} tone={!r.defender.ran ? 'gray' : r.defender.threats.length ? 'red' : 'green'} small />
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontWeight: 600 }}>{t('file.engine.defender')}</div>
+              {!r.defender.ran ? (
+                <div className="small dim">{t('file.notRun')} · {t(`errors.${r.defender.reason}`)}</div>
+              ) : r.defender.threats.length === 0 ? (
+                <Badge tone="green">{t('file.defenderClean')}</Badge>
+              ) : (
+                <div className="col" style={{ gap: 4, alignItems: 'flex-start' }}>
+                  {r.defender.threats.map((x) => <Badge key={x} tone="red">{t('file.defenderThreat')}: {x}</Badge>)}
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="row" style={{ alignItems: 'flex-start', gap: 12 }}>
+            <IconTile icon={ScanSearch} tone={!r.yara.ran ? 'gray' : r.yara.matches.length ? 'amber' : 'green'} small />
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontWeight: 600 }}>{t('file.engine.yara')}</div>
+              {!r.yara.ran ? (
+                <div className="small dim">{t('file.notRun')} · {t(`errors.${r.yara.reason}`)}</div>
+              ) : r.yara.matches.length === 0 ? (
+                <Badge tone="green">{t('file.yaraNone', { rules: r.yara.rulesUsed })}</Badge>
+              ) : (
+                <div className="col" style={{ gap: 4, alignItems: 'flex-start' }}>
+                  <Badge tone="amber">{t('file.yaraMatched', { count: r.yara.matches.length })}</Badge>
+                  {r.yara.matches.map((m, i) => (
+                    <div key={i} className="small"><Ltr mono>{m.rule}</Ltr>{m.meta.description ? <span className="dim"> — {String(m.meta.description)}</span> : null}</div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </Card>
 
       <div className="grid g-2">
         <Card title={t('file.reasons')} icon={ShieldAlert} tone={v.tone}>
@@ -268,9 +328,9 @@ export function FileAnalyzer() {
               <X size={14} /> {t('common.cancel')}
             </button>
           </div>
-          <Progress value={pct} indeterminate={!state.progress || state.progress.stage === 'analyzing'} />
+          <Progress value={pct} indeterminate={!state.progress || state.progress.stage === 'analyzing' || state.progress.stage === 'scanning'} />
           <div className="row small muted" style={{ marginTop: 8 }}>
-            <span>{t(state.progress?.stage === 'analyzing' ? 'file.processing' : 'file.hashing')}</span>
+            <span>{t(state.progress?.stage === 'scanning' ? 'file.scanning' : state.progress?.stage === 'analyzing' ? 'file.processing' : 'file.hashing')}</span>
             <span className="spacer" />
             {state.progress && <span>{formatBytes(t, state.progress.processedBytes)} / {formatBytes(t, state.progress.totalBytes)} · <Ltr>{Math.round(pct)}%</Ltr></span>}
           </div>
@@ -284,7 +344,7 @@ export function FileAnalyzer() {
         </Card>
       )}
 
-      {state.kind === 'done' && <Result r={state.result} onReset={() => setState({ kind: 'idle' })} />}
+      {state.kind === 'done' && <AnalysisResult r={state.result} onReset={() => setState({ kind: 'idle' })} />}
     </div>
   );
 }

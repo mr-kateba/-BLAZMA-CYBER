@@ -40,12 +40,12 @@ and are included with distributed builds.
 
 | Engine | License | Planned integration | Assessment |
 |---|---|---|---|
-| YARA-X (VirusTotal) | BSD-3-Clause | Adapter to the `yr` CLI or official bindings | Actively maintained successor of YARA, memory-safe (Rust). Preferred. |
+| YARA-X (VirusTotal) | BSD-3-Clause | **Integrated**: adapter to the user-installed `yr` CLI (tested with 1.20.0). Not bundled. | Actively maintained successor of YARA, memory-safe (Rust). |
 | YARA (libyara) | BSD-3-Clause | Fallback only | Mature, in maintenance mode; YARA-X recommended by its authors. |
 | hashcat | MIT | User-installed executable, invoked by verified path with argument arrays | Compatible license; GPU acceleration; JSON status output. |
 | John the Ripper (jumbo) | GPL-2.0 core, mixed for contributions | User-installed executable only (never linked or bundled) | Best format coverage via `*2john` extractors; separate-process use avoids license coupling. |
 | 7-Zip | LGPL-2.1 (+ unRAR restriction, BSD parts) | User-installed `7z.exe` | Safe archive listing for analysis/quarantine. |
-| Microsoft Defender (`MpCmdRun.exe`) | OS component | execFile with argument arrays | Detect availability; respect passive mode. |
+| Microsoft Defender (`MpCmdRun.exe`) | OS component | **Integrated**: execFile with argument arrays | Detect availability; report-only file/folder scans. |
 
 Rejected: unmaintained npm "hash identifier" and "PE parser" packages (small, easily implemented
 and fully tested in-house: `src/core/hash-id.ts`, `src/core/pe.ts`); i18next (unnecessary for

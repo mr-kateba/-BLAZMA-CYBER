@@ -140,7 +140,8 @@
     "processes": "Processes",
     "uptime": "Uptime",
     "cpuHistory": "CPU usage (last {{n}} samples)",
-    "sampling": "Sampling…"
+    "sampling": "Sampling…",
+    "quarantineCount": "Quarantine: {{count}} item(s)"
   },
   "status": {
     "defenderOn": "Microsoft Defender: real-time protection on",
@@ -196,6 +197,14 @@
     "privacy": {
       "title": "Privacy Center",
       "desc": "Offline Mode, network activity, clear data."
+    },
+    "quickScan": {
+      "title": "Quick Scan",
+      "desc": "Microsoft Defender quick scan of common locations."
+    },
+    "yara": {
+      "title": "YARA Scanner",
+      "desc": "Match files against local YARA-X rules."
     }
   },
   "planned": {
@@ -306,7 +315,19 @@
       "signature": "Signature verification",
       "hash_reputation": "Hash reputation"
     },
-    "falsePositives": "Heuristics can produce false positives. Review the evidence before acting."
+    "falsePositives": "Heuristics can produce false positives. Review the evidence before acting.",
+    "engines": "Detection engines",
+    "defenderClean": "No threats found",
+    "defenderThreat": "Threat detected",
+    "yaraMatched": "{{count}} rule(s) matched",
+    "yaraNone": "No rule matched ({{rules}} rule files)",
+    "notRun": "Not run",
+    "quarantineThis": "Quarantine this file",
+    "quarantineTitle": "Move to quarantine?",
+    "quarantineBody": "“{{name}}” will be removed from its location and stored neutralized in quarantine. You can restore it later.",
+    "quarantined": "Moved to quarantine",
+    "inQuarantine": "This file is in quarantine",
+    "scanning": "Running detection engines"
   },
   "verdict": {
     "no_detections": "No detections",
@@ -328,7 +349,10 @@
       "signature_untrusted": "The signature is present but not trusted",
       "high_entropy": "High overall entropy ({{value}} bits/byte) — possible packing or encryption",
       "packer_sections": "Section names associated with packers: {{names}}",
-      "interesting_strings": "{{count}} strings reference script hosts or persistence locations"
+      "interesting_strings": "{{count}} strings reference script hosts or persistence locations",
+      "defender_clean": "Microsoft Defender found no threats",
+      "defender_detection": "Microsoft Defender detected: {{name}}",
+      "yara_match": "YARA rule matched: {{rule}}"
     }
   },
   "hashlab": {
@@ -465,7 +489,12 @@
     "platform": "Platform",
     "electron": "Electron",
     "dataDir": "Data folder",
-    "license": "Third-party licenses are listed in THIRD-PARTY-NOTICES.md."
+    "license": "Third-party licenses are listed in THIRD-PARTY-NOTICES.md.",
+    "defenderOnAnalyze": "Scan with Microsoft Defender during file analysis",
+    "defenderOnAnalyzeDesc": "Report-only scan of the analyzed file (Windows).",
+    "yaraOnAnalyze": "Run YARA rules during file analysis",
+    "yaraOnAnalyzeDesc": "Uses the enabled rules in the YARA Scanner.",
+    "configure": "Configure"
   },
   "activity": {
     "kind": {
@@ -473,17 +502,24 @@
       "hash_file": "File hash",
       "hash_text": "Text hash",
       "hash_identify": "Hash identification",
-      "hash_compare": "Hash comparison"
+      "hash_compare": "Hash comparison",
+      "defender_scan": "Defender scan",
+      "yara_scan": "YARA scan",
+      "quarantine": "Quarantined",
+      "restore": "Restored"
     },
     "summary": {
       "hashed": "Hashes calculated",
-      "hashed_text": "Hashes calculated"
+      "hashed_text": "Hashes calculated",
+      "quarantined": "Moved to quarantine",
+      "restored": "Restored from quarantine",
+      "yara_scanned": "YARA scan completed"
     }
   },
   "errors": {
     "title": "Something went wrong",
     "file_not_found": "The file no longer exists.",
-    "access_denied": "Access denied. The file may be locked or require administrator rights.",
+    "access_denied": "Access denied. The file may be locked, require administrator rights, or have been blocked by your antivirus.",
     "not_a_file": "This is not a regular file.",
     "file_unreadable": "The file could not be read.",
     "cancelled": "Operation cancelled.",
@@ -511,6 +547,156 @@
     "invalid_api_key_format": "That does not look like a valid API key.",
     "engine_not_integrated_yet": "Not integrated yet (planned)",
     "open_failed": "Could not open the folder.",
-    "unknown": "Unknown reason"
+    "unknown": "Unknown reason",
+    "quarantine_failed": "The file could not be moved to quarantine.",
+    "quarantine_not_found": "This quarantine item no longer exists.",
+    "restore_target_exists": "A file already exists at the destination. Choose another location.",
+    "restore_failed": "The file could not be restored.",
+    "restore_hash_mismatch": "Restore stopped: the stored copy does not match the original hash.",
+    "defender_scan_failed": "The Microsoft Defender scan failed.",
+    "defender_history_unavailable": "Defender threat history is not accessible (it may require administrator rights).",
+    "yara_not_installed": "YARA-X (yr) is not installed or not found.",
+    "yara_path_missing": "The configured YARA-X executable no longer exists.",
+    "yara_no_rules": "No enabled, valid YARA rules.",
+    "yara_scan_failed": "The YARA scan failed.",
+    "yara_rule_not_found": "Rule not found.",
+    "yara_rule_too_large": "The rule file is too large (max 1 MB).",
+    "yara_bad_extension": "Choose a .yar or .yara file.",
+    "yara_invalid_engine": "That file is not a working YARA-X executable.",
+    "engine_disabled": "Disabled in settings",
+    "engine_failed": "The engine failed to run"
+  },
+  "defender": {
+    "status": {
+      "no_threats": "No threats found",
+      "threats_found": "Threats found"
+    }
+  },
+  "security": {
+    "title": "Security Center",
+    "subtitle": "Microsoft Defender scans, threat history and quarantine.",
+    "tab": {
+      "overview": "Overview",
+      "scan": "Scan",
+      "quarantine": "Quarantine",
+      "history": "Threat history"
+    },
+    "engine": "Microsoft Defender",
+    "realtime": "Real-time protection",
+    "antivirus": "Antivirus",
+    "definitions": "Definitions",
+    "defAge": "{{version}} · {{age}} day(s) old",
+    "lastQuick": "Last quick scan",
+    "lastFull": "Last full scan",
+    "yaraEngine": "YARA-X",
+    "quarantineItems": "Items in quarantine",
+    "windowsOnly": "Microsoft Defender scanning is available on Windows only.",
+    "quick": "Quick scan",
+    "quickDesc": "Checks the locations where malware is most commonly found.",
+    "full": "Full scan",
+    "fullDesc": "Checks every file and running program. Can take hours.",
+    "fileScan": "File scan",
+    "fileDesc": "Scan one file with Defender (report only).",
+    "folderScan": "Folder scan",
+    "folderDesc": "Scan a folder with Defender (report only).",
+    "start": "Start",
+    "running": "Scanning with Microsoft Defender…",
+    "elapsed": "Elapsed: {{time}}",
+    "policyNote": "Quick and full scans follow Defender's own settings: threats may be handled automatically by Defender.",
+    "reportOnlyNote": "File and folder scans only report — you decide what to do.",
+    "resultClean": "No threats found",
+    "resultThreats": "{{count}} threat(s) found",
+    "duration": "Duration: {{time}}",
+    "scanAgain": "New scan",
+    "q": {
+      "empty": "Quarantine is empty",
+      "emptyHint": "Files you quarantine from the File Analyzer or scans appear here.",
+      "protectNote": "Quarantined files are stored neutralized — they cannot be opened or run until you restore them.",
+      "name": "File",
+      "original": "Original location",
+      "size": "Size",
+      "date": "Quarantined",
+      "type": "Type",
+      "actions": "Actions",
+      "restore": "Restore",
+      "restoreTo": "Restore to…",
+      "delete": "Delete permanently",
+      "rescan": "Re-scan",
+      "restoreTitle": "Restore file?",
+      "restoreBody": "“{{name}}” will be returned to {{path}}. Only restore files you trust.",
+      "deleteTitle": "Delete permanently?",
+      "deleteBody": "“{{name}}” will be permanently deleted. This cannot be undone.",
+      "restored": "Restored to {{path}}",
+      "deleted": "Deleted permanently",
+      "rescanTitle": "Re-scan result"
+    },
+    "h": {
+      "empty": "No threats in Defender's history",
+      "name": "Threat",
+      "detected": "Detected",
+      "resources": "Affected items",
+      "action": "Action",
+      "actionOk": "Handled",
+      "actionFail": "Not handled",
+      "severity": "Severity"
+    }
+  },
+  "yara": {
+    "title": "YARA Scanner",
+    "subtitle": "Scan files and folders with local YARA-X rules.",
+    "tab": {
+      "scan": "Scan",
+      "rules": "Rules",
+      "engine": "Engine"
+    },
+    "engineInstalled": "YARA-X {{version}} is ready",
+    "engineMissing": "YARA-X is not installed",
+    "enginePath": "Executable",
+    "chooseEngine": "Choose yr executable…",
+    "useDefault": "Use yr from PATH",
+    "installHelp": "Install the official YARA-X command-line tool (yr) from the VirusTotal/yara-x releases page, then select it here. BLAZMA CYBER never downloads engines automatically.",
+    "engineSaved": "YARA-X engine configured",
+    "target": "Target",
+    "chooseFile": "Choose file…",
+    "chooseFolder": "Choose folder…",
+    "recursive": "Include subfolders",
+    "start": "Scan",
+    "running": "Scanning with YARA-X…",
+    "summary": "{{files}} file(s) scanned · {{matched}} matched · {{rules}} rule file(s)",
+    "noMatches": "No rule matched.",
+    "col": {
+      "file": "File",
+      "rule": "Rule",
+      "namespace": "Namespace",
+      "tags": "Tags",
+      "description": "Description"
+    },
+    "rules": {
+      "count": "{{enabled}} of {{total}} rule files enabled",
+      "origin": {
+        "builtin": "Built-in",
+        "custom": "Custom",
+        "imported": "Imported"
+      },
+      "valid": "Valid",
+      "invalid": "Has errors",
+      "unchecked": "Not validated",
+      "validateAll": "Validate all",
+      "newRule": "New rule",
+      "import": "Import .yar file…",
+      "importNote": "Rules are only imported from files you choose. Nothing is downloaded automatically.",
+      "name": "Name",
+      "source": "Rule source",
+      "save": "Save rule",
+      "view": "View",
+      "hide": "Hide",
+      "delete": "Delete",
+      "deleteTitle": "Delete rule file?",
+      "deleteBody": "“{{name}}” will be deleted.",
+      "saved": "Rule saved",
+      "savedInvalid": "Rule saved but disabled: it has errors",
+      "savedUnchecked": "Rule saved (not validated — engine not installed)",
+      "empty": "No rules"
+    }
   }
 }

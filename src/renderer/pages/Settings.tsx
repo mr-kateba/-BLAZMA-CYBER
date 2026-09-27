@@ -145,28 +145,35 @@ function ApiKeys({ secure }: { secure: boolean | null }) {
 
 function Engines() {
   const { t } = useI18n();
+  const { settings, updateSettings, navigate } = useApp();
   const sec = usePoll(async () => {
     const r = await window.blazma.system.security();
     return r.ok ? r.data : null;
   }, null);
+  const yara = usePoll(() => window.blazma.yara.engine(), null);
   const d = sec.data?.defender;
-  const defenderBadge = !sec.data ? null : d?.available ? (
-    <Badge tone="green">{t('settings.engineStatus.available')}</Badge>
-  ) : (
-    <Badge tone="amber">{t('settings.engineStatus.unavailable')}</Badge>
-  );
   return (
     <Card>
       <p className="muted small" style={{ marginTop: 0 }}>{t('settings.enginesDesc')}</p>
       <Row title={t('settings.builtin')} desc={t('settings.builtinDesc')}>
         <Badge tone="green">{t('settings.engineStatus.available')}</Badge>
       </Row>
-      <Row title="Microsoft Defender" desc={d && !d.available && d.reason ? t(`errors.${d.reason}`) : d?.signatureVersion ? t('status.signatures', { version: d.signatureVersion, age: d.signatureAgeDays ?? '?' }) : undefined}>
-        {defenderBadge}
-        <Badge tone="purple">{t('common.comingSoon', { phase: 2 })}</Badge>
+      <Row
+        title="Microsoft Defender"
+        desc={!sec.data ? undefined : !sec.data.platformSupported ? t('security.windowsOnly') : d && !d.available ? t(`errors.${d.reason ?? 'defender_unavailable'}`) : d?.signatureVersion ? t('status.signatures', { version: d.signatureVersion, age: d.signatureAgeDays ?? '?' }) : undefined}
+      >
+        {sec.data && <Badge tone={d?.available ? 'green' : 'amber'}>{t(d?.available ? 'settings.engineStatus.available' : 'settings.engineStatus.unavailable')}</Badge>}
+        <button className="btn sm" onClick={() => navigate('security-center')}>{t('settings.configure')}</button>
       </Row>
-      <Row title="YARA-X" desc={t('planned.modules.yara')}>
-        <Badge tone="purple">{t('settings.engineStatus.planned')} · {t('common.phase', { phase: 2 })}</Badge>
+      <Row title={t('settings.defenderOnAnalyze')} desc={t('settings.defenderOnAnalyzeDesc')}>
+        <Toggle checked={settings.defenderOnAnalyze} label={t('settings.defenderOnAnalyze')} onChange={(v) => void updateSettings({ defenderOnAnalyze: v })} />
+      </Row>
+      <Row title="YARA-X" desc={yara.data?.available ? `${yara.data.path ?? ''}` : yara.data ? t(`errors.${yara.data.reason ?? 'yara_not_installed'}`) : undefined}>
+        {yara.data && <Badge tone={yara.data.available ? 'green' : 'amber'}>{yara.data.available ? t('yara.engineInstalled', { version: yara.data.version ?? '' }) : t('settings.engineStatus.unavailable')}</Badge>}
+        <button className="btn sm" onClick={() => navigate('yara')}>{t('settings.configure')}</button>
+      </Row>
+      <Row title={t('settings.yaraOnAnalyze')} desc={t('settings.yaraOnAnalyzeDesc')}>
+        <Toggle checked={settings.yaraOnAnalyze} label={t('settings.yaraOnAnalyze')} onChange={(v) => void updateSettings({ yaraOnAnalyze: v })} />
       </Row>
       <Row title={t('nav.passwordRecovery')} desc={t('planned.modules.passwordRecovery')}>
         <Badge tone="purple">{t('settings.engineStatus.planned')} · {t('common.phase', { phase: 5 })}</Badge>
