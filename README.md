@@ -85,10 +85,12 @@ The launcher checks prerequisites and prints clear errors (English + Arabic). It
 anything unless you pass `-Install`.
 
 ## Download the installer
-CI builds the Windows installer on every change: **Actions → latest green CI run → Artifacts →
-`installer-windows-unsigned`** (sign-in required; kept 14 days). It is unsigned, so SmartScreen
-shows "Windows protected your PC" → **More info → Run anyway**. Step-by-step (Arabic):
-[README.ar.md](README.ar.md).
+Get it from **[Releases](https://github.com/mr-kateba/-BLAZMA-CYBER/releases)** (latest pre-release:
+[`BLAZMA-CYBER-0.1.0-x64-setup.exe`](https://github.com/mr-kateba/-BLAZMA-CYBER/releases/download/v0.1.0-beta.1/BLAZMA-CYBER-0.1.0-x64-setup.exe)).
+It is unsigned, so SmartScreen shows "Windows protected your PC" → **More info → Run anyway**.
+Verify it with `SHA256SUMS.txt` or `gh attestation verify <file> -R mr-kateba/-BLAZMA-CYBER`
+(GitHub build provenance). Development builds: **Actions → CI → Artifacts** (sign-in, 14 days).
+Step-by-step in Arabic: [README.ar.md](README.ar.md).
 
 ## Building the installer
 ```powershell

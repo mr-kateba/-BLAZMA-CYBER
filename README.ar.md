@@ -16,18 +16,21 @@
 
 ## الطريقة 1: تنزيل المثبّت الجاهز (الأسهل)
 
-المثبّت يُبنى تلقائيًا على Windows حقيقي في GitHub Actions بعد كل تعديل.
-
 ### 1) التنزيل
-1. سجّل دخولك إلى GitHub (التنزيل يحتاج حسابًا له صلاحية على المستودع).
-2. افتح تبويب **Actions** في المستودع.
-3. اختر آخر تشغيل باسم **CI** عليه علامة ✅ خضراء.
-4. انزل لأسفل الصفحة إلى قسم **Artifacts**.
-5. اضغط **installer-windows-unsigned** → يُنزَّل ملف مضغوط `zip`.
-6. فك الضغط → ستجد `BLAZMA-CYBER-0.1.0-x64-setup.exe`.
+- افتح صفحة **[الإصدارات (Releases)](https://github.com/mr-kateba/-BLAZMA-CYBER/releases)** — تظهر أيضًا في
+  يمين صفحة المستودع الرئيسية تحت **Releases**.
+- نزّل `BLAZMA-CYBER-0.1.0-x64-setup.exe` من قسم **Assets**. لا يحتاج تسجيل دخول.
+- رابط مباشر لآخر إصدار تجريبي (v0.1.0-beta.1):
+  https://github.com/mr-kateba/-BLAZMA-CYBER/releases/download/v0.1.0-beta.1/BLAZMA-CYBER-0.1.0-x64-setup.exe
 
-> الملف يبقى متاحًا **14 يومًا** فقط بعد كل تشغيل. إذا انتهت المدة، افتح تشغيلًا أحدث،
-> أو شغّل الفحص يدويًا من **Actions → CI → Run workflow**.
+#### (اختياري) تحقّق أن الملف سليم وأصلي
+- **البصمة:** في PowerShell: `Get-FileHash .\BLAZMA-CYBER-0.1.0-x64-setup.exe -Algorithm SHA256`
+  ويجب أن تطابق القيمة في ملف `SHA256SUMS.txt` وفي صفحة الإصدار.
+- **شهادة مصدر البناء (من GitHub):** `gh attestation verify .\BLAZMA-CYBER-0.1.0-x64-setup.exe -R mr-kateba/-BLAZMA-CYBER`
+  تثبت أن الملف بُني من هذا المستودع عبر GitHub Actions ولم يُعدَّل بعدها (تحتاج أداة [GitHub CLI](https://cli.github.com)).
+
+> نسخ أحدث للمطوّرين تُبنى تلقائيًا بعد كل تعديل في **Actions → CI → Artifacts →
+> installer-windows-unsigned** (تحتاج تسجيل دخول، وتبقى 14 يومًا).
 
 ### 2) التثبيت
 1. شغّل `BLAZMA-CYBER-0.1.0-x64-setup.exe`.
