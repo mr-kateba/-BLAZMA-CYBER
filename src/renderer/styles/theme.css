@@ -1660,3 +1660,56 @@ table.data tbody tr:hover td {
 .attack-tech:hover {
   border-color: rgba(139, 92, 246, 0.5);
 }
+
+/* Network traffic: summary numbers and protocol bars */
+.tstats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+.tstat {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: rgba(8, 15, 34, 0.45);
+}
+.tstat-l {
+  font-size: 12px;
+  color: var(--text-3);
+}
+.tstat-v {
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+.proto-row {
+  display: grid;
+  grid-template-columns: minmax(90px, 140px) minmax(0, 1fr) 90px 120px;
+  align-items: center;
+  gap: 12px;
+}
+.proto-name {
+  font-weight: 600;
+  font-size: 13px;
+}
+.proto-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(100, 130, 190, 0.14);
+  overflow: hidden;
+}
+.proto-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--cyan);
+}
+.proto-bar span.ok {
+  background: var(--green);
+}
+.proto-bar span.warn {
+  background: var(--amber);
+}
+.proto-val {
+  text-align: end;
+}

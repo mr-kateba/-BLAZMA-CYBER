@@ -158,7 +158,7 @@ const TOOLS: Tool[] = [
 const ACTIVITY_ICON: Record<ActivityEntry['kind'], LucideIcon> = {
   file_analysis: FileSearch, hash_file: Hash, hash_text: Hash, hash_identify: Hash, hash_compare: Hash,
   defender_scan: ShieldCheck, yara_scan: FileSearch, quarantine: ShieldCheck, restore: RefreshCw,
-  ip_lookup: Earth, domain_lookup: Link2, reputation_lookup: Globe, osint_lookup: Globe, email_check: Mail, event_hunt: ScrollText, memory_scan: MemoryStick,
+  ip_lookup: Earth, domain_lookup: Link2, reputation_lookup: Globe, osint_lookup: Globe, email_check: Mail, event_hunt: ScrollText, memory_scan: MemoryStick, traffic_analysis: Activity,
   forensics: MonitorCog, port_check: Network, discovery: Network,
 };
 

@@ -216,3 +216,25 @@ describe.runIf(WIN && manifest?.['hollows-hunter'])('HollowsHunter on real runni
     expect(r.scanned).toBeGreaterThan(0);
   }, 900_000);
 });
+
+describe.runIf(WIN)('Network traffic capture on real Windows (pktmon)', () => {
+  it('captures through the elevated pktmon path and reads the pcapng it produces', async () => {
+    process.env.BLAZMA_DATA_DIR ??= mkdtempSync(join(tmpdir(), 'blazma-cap-'));
+    const { captureEnvironment, liveCapture } = await import('../src/main/services/traffic');
+    const env = captureEnvironment();
+    console.log('Capture environment:', JSON.stringify(env));
+    expect(env.pktmon).toBe(true);
+    const r = await liveCapture({ seconds: 15, backend: 'pktmon', iface: null, keep: true }, new AbortController().signal);
+    const rep = r.report;
+    console.log('pktmon capture:', JSON.stringify({
+      packets: rep.packets, bytes: rep.bytes, unreadable: rep.unreadable, readError: r.readError, devices: rep.devices.length,
+      protocols: rep.protocols.slice(0, 8).map((p) => `${p.name}:${p.packets}`), findings: rep.findings.map((f) => f.id), ms: r.durationMs,
+    }));
+    expect(r.readError).toBeNull();
+    expect(r.source.keptPath).toBeTruthy();
+    expect(existsSync(r.source.keptPath!)).toBe(true);
+    // A CI runner always has some traffic (the Actions agent talks to GitHub).
+    expect(rep.packets).toBeGreaterThan(0);
+    expect(rep.unreadable).toBeLessThan(rep.packets);
+  }, 300_000);
+});

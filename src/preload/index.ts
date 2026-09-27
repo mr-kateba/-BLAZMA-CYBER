@@ -107,6 +107,15 @@ const api: BlazmaApi = {
     tamper: () => invoke('device:tamper'),
     openSettings: (link) => invoke('device:openSettings', link),
   },
+  traffic: {
+    environment: () => invoke('traffic:environment'),
+    interfaces: () => invoke('traffic:interfaces'),
+    pickFile: () => invoke('traffic:pickFile'),
+    analyzeFile: (path, taskId) => invoke('traffic:analyzeFile', path, taskId),
+    capture: (options, taskId) => invoke('traffic:capture', options, taskId),
+    openInWireshark: (path) => invoke('traffic:openInWireshark', path),
+    openCapturesFolder: () => invoke('traffic:openCapturesFolder'),
+  },
   osint: {
     lookup: (type, value, options) => invoke('osint:lookup', type, value, options),
     openPivot: (type, value, pivotId) => invoke('osint:openPivot', type, value, pivotId),

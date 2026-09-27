@@ -249,7 +249,11 @@ export function DataTable<R>({ columns, rows, rowKey, maxHeight }: { columns: Co
 }
 
 /** Drag-and-drop file area. Paths are resolved through the preload (webUtils), never guessed. */
-export function FileDrop({ onFile, title, hint, activeText, browseLabel }: { onFile: (path: string) => void; title: string; hint: string; activeText: string; browseLabel: string }) {
+export function FileDrop({ onFile, title, hint, activeText, browseLabel, onBrowse }: {
+  onFile: (path: string) => void; title: string; hint: string; activeText: string; browseLabel: string;
+  /** Custom file dialog (e.g. one with a file-type filter); defaults to the generic picker. */
+  onBrowse?: () => void;
+}) {
   const [active, setActive] = useState(false);
   const depth = useRef(0);
   return (
@@ -284,6 +288,7 @@ export function FileDrop({ onFile, title, hint, activeText, browseLabel }: { onF
       <button
         className="btn primary"
         onClick={async () => {
+          if (onBrowse) return onBrowse();
           const p = await window.blazma.files.pickFile();
           if (p) onFile(p);
         }}

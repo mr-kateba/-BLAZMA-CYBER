@@ -32,7 +32,7 @@ export function dataDir(): string {
   return process.env.BLAZMA_DATA_DIR || portableDataDir() || app.getPath('userData');
 }
 
-export function subDir(name: 'logs' | 'temp' | 'state' | 'secrets' | 'quarantine' | 'yara' | 'cases' | 'reports'): string {
+export function subDir(name: 'logs' | 'temp' | 'state' | 'secrets' | 'quarantine' | 'yara' | 'cases' | 'reports' | 'captures'): string {
   const dir = join(dataDir(), name);
   mkdirSync(dir, { recursive: true, mode: 0o700 });
   return dir;

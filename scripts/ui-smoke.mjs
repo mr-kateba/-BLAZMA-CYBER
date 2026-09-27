@@ -396,6 +396,22 @@ try {
   await win.waitForTimeout(300);
   await win.screenshot({ path: join(out, '37-osint-accounts-offline-ar.png') });
 
+  // Network traffic: analyse a real capture file (synthetic fixture) end to end — reader, parser,
+  // analyzer, findings, devices with manufacturers, and the cleartext view without secrets.
+  await win.locator('.nav-item', { hasText: 'حركة الشبكة' }).click();
+  await win.locator('h1', { hasText: 'حركة الشبكة' }).waitFor();
+  await stubOpen(resolve('tests/fixtures/traffic/sample.pcapng'));
+  await win.getByRole('button', { name: 'اختر ملف التقاط…' }).click();
+  await win.getByText('ملخص الحركة').waitFor({ timeout: 60000 });
+  await win.getByText('نمط فحص منافذ من 192.168.1.66').waitFor();
+  await win.getByText('جهازان يدّعيان العنوان 192.168.1.1').waitFor();
+  assert.ok(await win.getByText('Apple', { exact: true }).count() >= 1, 'device manufacturer shown');
+  await win.waitForTimeout(300);
+  await win.screenshot({ path: join(out, '38-network-traffic-ar.png'), fullPage: true });
+  await win.getByRole('tab', { name: /غير المشفّر/ }).click();
+  await win.getByText('plain.example').first().waitFor();
+  assert.equal(await win.getByText(/SECRET/).count(), 0, 'no secret from the capture may reach the UI');
+
   // Phase D: phishing email check (local only). A classic phishing sample: spoofed display name,
   // DMARC fail, a link that shows paypal.com but goes to an IP, and a double-extension attachment.
   const phish = [

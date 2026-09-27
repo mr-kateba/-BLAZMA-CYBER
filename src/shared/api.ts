@@ -23,6 +23,7 @@ import type { DieSummary } from '../core/die';
 import type { CtSummary, GithubProfile, OsintPivot, OsintTargetType, WaybackSnapshot } from '../core/osint';
 import type { AccountStatus, AccountUnknownReason, UsernameGroup } from '../core/username-check';
 import type { MacKind } from '../core/oui';
+import type { TrafficReport } from '../core/traffic/analyzer';
 
 export type Theme = 'dark' | 'midnight';
 export type StartPage = 'dashboard' | 'file-analyzer' | 'hash-lab' | 'privacy';
@@ -290,7 +291,7 @@ export interface ActivityEntry {
   kind:
     | 'file_analysis' | 'hash_file' | 'hash_text' | 'hash_identify' | 'hash_compare'
     | 'defender_scan' | 'yara_scan' | 'quarantine' | 'restore'
-    | 'ip_lookup' | 'domain_lookup' | 'reputation_lookup' | 'osint_lookup' | 'email_check' | 'event_hunt' | 'memory_scan'
+    | 'ip_lookup' | 'domain_lookup' | 'reputation_lookup' | 'osint_lookup' | 'email_check' | 'event_hunt' | 'memory_scan' | 'traffic_analysis'
     | 'forensics' | 'port_check' | 'discovery';
   /** Displayable subject, e.g. a filename. Never a secret. */
   subject: string;
@@ -507,6 +508,7 @@ export interface DomainLookupResult {
 export type { OsintTargetType } from '../core/osint';
 export type { AccountStatus, AccountUnknownReason, UsernameGroup } from '../core/username-check';
 export type { MacKind } from '../core/oui';
+export type { TrafficReport, TrafficFinding, TrafficDevice, TrafficConversation, FindingSeverity } from '../core/traffic/analyzer';
 export type { EmailAnalysis, EmailAttachment, EmailLink, EmailSignal, AuthResult } from '../core/email';
 
 /** Pwned Passwords answer. Never contains the password or its hash. */
@@ -576,6 +578,47 @@ export interface AccountsResult {
   durationMs: number;
   /** Where the site list and detection rules come from (WhatsMyName commit). */
   source: string;
+}
+
+export interface CaptureEnvironment {
+  platform: 'windows' | 'other';
+  /** Wireshark's dumpcap + Npcap installed: unelevated live capture. */
+  dumpcap: boolean;
+  npcap: boolean;
+  /** Wireshark itself, to open saved captures. */
+  wireshark: boolean;
+  /** Windows' built-in packet monitor (needs administrator rights, asked per capture). */
+  pktmon: boolean;
+}
+
+export interface CaptureInterface {
+  id: string;
+  name: string;
+  loopback: boolean;
+}
+
+export interface TrafficCaptureOptions {
+  seconds: 15 | 30 | 60 | 120 | 300;
+  backend: 'pktmon' | 'dumpcap';
+  /** dumpcap interface index (from traffic.interfaces()); null = first interface. */
+  iface: string | null;
+  /** Keep the .pcapng in Blazma's captures folder after analysis. */
+  keep: boolean;
+}
+
+export interface TrafficResult {
+  report: TrafficReport;
+  /** Set when the file ended in a damaged record: the report covers everything before it. */
+  readError: string | null;
+  source: {
+    kind: 'file' | 'live';
+    name: string | null;
+    sizeBytes: number;
+    backend: 'pktmon' | 'dumpcap' | null;
+    seconds: number | null;
+    keptPath: string | null;
+  };
+  durationMs: number;
 }
 
 export interface OsintResult {
@@ -1040,6 +1083,18 @@ export interface BlazmaApi {
     tamper(): Promise<Result<TamperReport>>;
     /** Opens a fixed Windows settings page (never changes a setting). */
     openSettings(link: SettingsLink): Promise<Result<true>>;
+  };
+  traffic: {
+    environment(): Promise<Result<CaptureEnvironment>>;
+    interfaces(): Promise<Result<CaptureInterface[]>>;
+    /** File dialog for .pcap / .pcapng / .cap files. */
+    pickFile(): Promise<string | null>;
+    analyzeFile(path: string, taskId: string): Promise<Result<TrafficResult>>;
+    /** Explicit, time-limited live capture (pktmon asks for administrator rights each time). */
+    capture(options: TrafficCaptureOptions, taskId: string): Promise<Result<TrafficResult>>;
+    /** Opens a capture Blazma kept or the user picked, in the user's Wireshark. */
+    openInWireshark(path: string): Promise<Result<true>>;
+    openCapturesFolder(): Promise<Result<true>>;
   };
   osint: {
     lookup(type: OsintTargetType, value: string, options: OsintOptions): Promise<Result<OsintResult>>;

@@ -11,6 +11,7 @@ import { DefenderError, findMpCmdRun, getThreatHistory, runDefenderScan } from '
 import { YaraError, YaraService } from './services/yara';
 import { IntelError, IntelService } from './services/intel';
 import { OsintService } from './services/osint';
+import { analyzeFile as analyzeCapture, captureEnvironment, captureInterfaces, liveCapture, openInWireshark, parseLiveOptions } from './services/traffic';
 import { accountProfileUrl, accountSiteCounts, checkUsernameAccounts } from './services/username-accounts';
 import { bundledEngine, bundledRulePack } from './services/bundled';
 import { runCapa, runDie } from './services/static-engines';
@@ -521,6 +522,47 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
     const { url, site } = accountProfileUrl(username, siteId);
     await gate.run({ module: 'osint', service: `browser:accounts:${site.id}`, host: new URL(url).host, dataKind: 'privacy.data.username' }, () => shell.openExternal(url));
     return { ok: true, data: undefined };
+  });
+
+  // ---- Network traffic (observe only) ----
+  // Paths the renderer may hand back to "open in Wireshark": files the user picked in our dialog or
+  // captures Blazma kept. Anything else is refused (the renderer is untrusted).
+  const trafficPaths = new Set<string>();
+  handle('traffic:environment', () => ({ ok: true, data: captureEnvironment() }));
+  handle('traffic:interfaces', async () => ({ ok: true, data: await captureInterfaces() }));
+  handle('traffic:pickFile', async () => {
+    const win = getWindow();
+    const opts = { properties: ['openFile' as const], filters: [{ name: 'Packet capture', extensions: ['pcapng', 'pcap', 'cap'] }] };
+    const r = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts);
+    const path = r.canceled ? null : (r.filePaths[0] ?? null);
+    if (path) trafficPaths.add(path);
+    return path;
+  });
+  handle('traffic:analyzeFile', (path: unknown, taskId: unknown) =>
+    runTask(taskId, async (signal) => {
+      const r = await analyzeCapture(path, signal, (done, total) => progress(taskId as string)({ processedBytes: done, totalBytes: total, stage: 'analyzing' }));
+      history.record({ kind: 'traffic_analysis', subject: r.source.name ?? 'capture', summaryKey: 'activity.summary.traffic_analyzed' });
+      return r;
+    }),
+  );
+  handle('traffic:capture', (options: unknown, taskId: unknown) => {
+    const opts = parseLiveOptions(options);
+    return runTask(taskId, async (signal) => {
+      const r = await liveCapture(opts, signal, (done, total) => progress(taskId as string)({ processedBytes: done, totalBytes: total, stage: 'scanning' }));
+      if (r.source.keptPath) trafficPaths.add(r.source.keptPath);
+      history.record({ kind: 'traffic_analysis', subject: `${opts.backend} ${opts.seconds}s`, summaryKey: 'activity.summary.traffic_captured' });
+      logger.security('traffic_capture', { backend: opts.backend, seconds: opts.seconds, packets: r.report.packets, kept: !!r.source.keptPath });
+      return r;
+    });
+  });
+  handle('traffic:openInWireshark', async (path: unknown) => {
+    if (typeof path !== 'string' || !trafficPaths.has(path)) return fail('invalid_input');
+    await openInWireshark(path);
+    return { ok: true, data: true };
+  });
+  handle('traffic:openCapturesFolder', async () => {
+    const err = await shell.openPath(subDir('captures'));
+    return err ? fail('open_failed') : { ok: true, data: true };
   });
 
   // ---- Forensics (read-only) ----

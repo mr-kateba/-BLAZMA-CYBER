@@ -25,7 +25,8 @@
       "forensics": "Forensics",
       "investigations": "Investigations",
       "privacy": "Privacy",
-      "settings": "Settings"
+      "settings": "Settings",
+      "network": "Network"
     },
     "ipIntel": "IP Intelligence",
     "domainIntel": "Domain Intelligence",
@@ -59,7 +60,8 @@
     "passwordCheck": "Was my password leaked?",
     "extensions": "Browser extensions",
     "eventLogs": "Event log hunting",
-    "memoryScan": "Memory implant scan"
+    "memoryScan": "Memory implant scan",
+    "networkTraffic": "Network traffic"
   },
   "topbar": {
     "search": "Search tools…",
@@ -614,7 +616,8 @@
       "osint_lookup": "OSINT lookup",
       "email_check": "Email check",
       "event_hunt": "Event log hunting",
-      "memory_scan": "Memory scan"
+      "memory_scan": "Memory scan",
+      "traffic_analysis": "Traffic analysis"
     },
     "summary": {
       "hashed": "Hashes calculated",
@@ -628,7 +631,9 @@
       "discovered": "Network discovered",
       "event_hunt": "event logs analyzed",
       "memory_suspicious": "suspicious programs found",
-      "memory_clean": "nothing suspicious in memory"
+      "memory_clean": "nothing suspicious in memory",
+      "traffic_analyzed": "capture analysed",
+      "traffic_captured": "live capture analysed"
     }
   },
   "errors": {
@@ -733,7 +738,11 @@
     "watch_failed": "The Downloads folder could not be watched.",
     "evtx_expected": "Choose a Windows event log file (.evtx).",
     "not_a_folder": "This is not a folder.",
-    "elevation_cancelled": "Administrator permission was not given, so this computer’s logs were not scanned."
+    "elevation_cancelled": "Administrator permission was not given, so this computer’s logs were not scanned.",
+    "capture_elevation_cancelled": "Administrator permission was not given, so nothing was captured.",
+    "capture_failed": "The capture could not be completed.",
+    "not_a_capture": "This file is not a packet capture (pcap / pcapng).",
+    "file_too_large": "The file is too large for this analysis."
   },
   "defender": {
     "status": {
@@ -1422,7 +1431,8 @@
       "networkToolkit": "Network Toolkit",
       "manual": "Manual",
       "quarantine": "Quarantine",
-      "osint": "OSINT Workspace"
+      "osint": "OSINT Workspace",
+      "traffic": "Network traffic"
     }
   },
   "hunt": {
@@ -1889,6 +1899,10 @@
     "attack": {
       "title": "What is MITRE ATT&CK?",
       "text": "A public catalogue of the techniques attackers use, grouped by the stage of an attack — from getting in, to staying hidden, to stealing data. Mapping matches to it shows which stages of an attack may have happened."
+    },
+    "packet_capture": {
+      "title": "What is a packet capture?",
+      "text": "Everything a computer sends or receives on a network travels in small packets. A capture records them for a short time so they can be examined: which devices talk, to whom, with which protocol, and whether it is encrypted. Blazma reads only what travels in the clear (like website names in HTTPS handshakes) and never decrypts anything."
     }
   },
   "mode": {
@@ -2372,5 +2386,143 @@
     "count": "{{n}} match(es)",
     "notice": "MITRE ATT&CK® is a registered trademark of The MITRE Corporation; © The MITRE Corporation, reproduced with permission.",
     "was": "was {{id}}"
+  },
+  "traffic": {
+    "title": "Network traffic",
+    "subtitle": "See what is really on your network: devices, conversations, protocols, DNS, HTTPS sites and unencrypted traffic — from a short live capture or a capture file.",
+    "observeOnly": "Blazma only observes: it never sends, blocks, redirects or decrypts anything. Capture only networks you own or are allowed to monitor.",
+    "liveTitle": "Live capture",
+    "liveSub": "A short, time-limited capture on this computer",
+    "backend": "Capture with",
+    "backendDumpcap": "Wireshark (dumpcap)",
+    "backendPktmon": "Windows pktmon",
+    "notInstalled": "not installed",
+    "pktmonNote": "Built into Windows — nothing to install. Windows asks for administrator permission for each capture.",
+    "dumpcapNote": "Uses the dumpcap tool installed with Wireshark and Npcap. No administrator permission needed.",
+    "wiresharkTip": "Tip: with Wireshark (and Npcap) installed, captures run without administrator permission and you can open saved captures in Wireshark.",
+    "interface": "Network adapter",
+    "duration": "Duration",
+    "seconds": "{{n}} seconds",
+    "minutes": "{{n}} min",
+    "keep": "Keep the capture file (.pcapng)",
+    "start": "Start capture",
+    "confirmTitle": "Start a live capture?",
+    "confirmBody": "Blazma will record network traffic on this computer for {{seconds}} seconds, analyse it locally, and delete the recording unless you chose to keep it. Only continue on a network you own or are allowed to monitor.",
+    "confirmBodyPktmon": "Blazma will record network traffic on this computer for {{seconds}} seconds with Windows pktmon, analyse it locally, and delete the recording unless you chose to keep it. Windows will ask for administrator permission. Only continue on a network you own or are allowed to monitor.",
+    "fileTitle": "Analyse a capture file",
+    "fileSub": ".pcapng / .pcap from Wireshark, tcpdump or pktmon — read locally, never uploaded",
+    "dropTitle": "Drop a capture file here",
+    "dropHint": "pcapng, pcap or cap — analysed on this computer",
+    "pickCapture": "Choose a capture file…",
+    "capturing": "Capturing… {{done}} / {{total}} s",
+    "analyzing": "Analysing the capture…",
+    "reading": "Reading {{done}} of {{total}}…",
+    "stopEarly": "Stop now",
+    "pktmonRunning": "pktmon runs with administrator rights until the time is up, then the capture is analysed.",
+    "resultTitle": "Traffic summary",
+    "sourceLive": "Live capture · {{seconds}} s · {{backend}}",
+    "again": "New analysis",
+    "packets": "Packets",
+    "volume": "Volume",
+    "devices": "Devices",
+    "encryptedShare": "Encrypted",
+    "span": "Time span",
+    "processed": "analysed in {{time}}",
+    "unreadable": "{{n}} frame(s) with an unsupported link layer were skipped",
+    "truncated": "This capture is very large: totals are exact, but some rows beyond the table limits were not kept.",
+    "readError": "The file ends with a damaged record. Everything before it was analysed.",
+    "keptAt": "Saved to",
+    "openWireshark": "Open in Wireshark",
+    "openFolder": "Open captures folder",
+    "findingsTitle": "Findings",
+    "findingsSub": "Patterns worth a look — each states what was measured. A pattern is a lead, not proof.",
+    "noFindings": "No suspicious patterns in this capture.",
+    "what": "What was seen:",
+    "next": "What to do:",
+    "severity": {
+      "high": "Look now",
+      "medium": "Worth checking",
+      "low": "Note",
+      "info": "Info"
+    },
+    "protocolsTitle": "Protocols",
+    "encrypted": "Encrypted",
+    "cleartext": "Unencrypted",
+    "tab": {
+      "devices": "Devices",
+      "conversations": "Conversations",
+      "external": "Internet hosts",
+      "dns": "DNS",
+      "https": "HTTPS sites",
+      "cleartext": "Unencrypted"
+    },
+    "none": "Nothing to show.",
+    "noCleartext": "No unencrypted logins or web pages were seen.",
+    "cleartextNote": "Only the protocol, addresses, host and path are shown. Passwords, cookies, form data and query strings are never read into Blazma.",
+    "dnsSummary": "{{queries}} lookups · {{failures}} failed",
+    "col": {
+      "addresses": "Addresses",
+      "sent": "Sent",
+      "received": "Received",
+      "client": "From",
+      "server": "To",
+      "protocol": "Protocol",
+      "bytes": "Data",
+      "names": "Names seen",
+      "name": "Name",
+      "count": "Count",
+      "types": "Types",
+      "failed": "Failed",
+      "site": "Site",
+      "version": "TLS version",
+      "detail": "Request"
+    },
+    "finding": {
+      "port_scan": {
+        "title": "Port-scan pattern from {{src}}",
+        "body": "{{src}} tried to open {{ports}} different ports on {{dst}} in this capture (the threshold is 25). Scanners, network tools and some backup or discovery software produce the same pattern.",
+        "next": "If you don't know what {{src}} is, find the device (Network Toolkit → Neighbors) and check what is running on it."
+      },
+      "host_sweep": {
+        "title": "{{src}} contacted {{hosts}} devices on port {{port}}",
+        "body": "One device tried the same port on {{hosts}} different devices — the shape of a network sweep. Inventory and management tools do this too.",
+        "next": "Check whether {{src}} runs discovery or management software. A worm spreading on the network produces the same pattern."
+      },
+      "arp_conflict": {
+        "title": "Two devices claim the address {{ip}}",
+        "body": "ARP answers for {{ip}} came from more than one hardware address ({{macs}}). This is what ARP spoofing (a man-in-the-middle technique) looks like; a plain IP-address conflict or a failover pair looks the same.",
+        "next": "If {{ip}} is your router, check which MAC belongs to it (on the router's label or admin page). An unknown second MAC is worth investigating."
+      },
+      "multiple_dhcp": {
+        "title": "More than one DHCP server answered",
+        "body": "Addresses were handed out by: {{servers}}. A network normally has one DHCP server; a second one can be a misconfigured device — or a rogue server redirecting traffic.",
+        "next": "Identify each server. Anything other than your router (or your known DHCP server) should be switched off."
+      },
+      "exposed_service": {
+        "title": "Connection attempt from the internet to port {{port}} on {{dst}}",
+        "body": "{{src}} (an internet address) tried to connect to port {{port}} on {{dst}}. When the device answered, the service is reachable from the internet. Remote-access and database ports are favourite targets.",
+        "next": "Unless you deliberately published this service, close the port forwarding on your router and check the device for unexpected sign-ins."
+      },
+      "cleartext_login": {
+        "title": "{{protocol}} is used without encryption",
+        "body": "{{count}} packet(s) of {{protocol}} crossed the network in clear text. Anyone on the path can read user names and passwords sent this way.",
+        "next": "Switch to the encrypted variant (SFTP/FTPS, SSH instead of Telnet, IMAPS/POP3S/SMTPS) or turn the service off."
+      },
+      "plain_http": {
+        "title": "Unencrypted websites were visited ({{hosts}})",
+        "body": "Plain HTTP was used with {{hosts}} internet host(s), e.g. {{examples}}. Pages, forms and downloads over HTTP can be read or altered on the way.",
+        "next": "Prefer HTTPS; avoid entering passwords on these sites. Blazma shows only the host and path, never form data or cookies."
+      },
+      "weak_tls": {
+        "title": "Outdated encryption ({{version}}) with {{server}}",
+        "body": "The server {{server}} {{name}} agreed to {{version}}, which is deprecated and has known weaknesses.",
+        "next": "If this is your server or device, update it to TLS 1.2 or newer. If it is a website, avoid sending sensitive data to it."
+      },
+      "dns_failures": {
+        "title": "{{client}} looked up {{names}} names that don't exist",
+        "body": "Many failed lookups (e.g. {{examples}}) can come from a misconfigured app — or from malware generating random domain names to find its control server.",
+        "next": "Check which programs run on {{client}} and scan it (Security Center, Memory scan)."
+      }
+    }
   }
 }
