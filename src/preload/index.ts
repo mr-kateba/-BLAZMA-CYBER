@@ -82,6 +82,7 @@ const api: BlazmaApi = {
   },
   device: {
     security: (force) => invoke('device:security', force === true),
+    tamper: () => invoke('device:tamper'),
     openSettings: (link) => invoke('device:openSettings', link),
   },
   osint: {

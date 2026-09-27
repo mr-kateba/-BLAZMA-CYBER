@@ -11,6 +11,7 @@ import { findMpCmdRun, getThreatHistory, runDefenderScan } from '../src/main/ser
 import { NetToolsService } from '../src/main/services/nettools';
 import { NetworkGate } from '../src/core/network-gate';
 import { deviceSecurity } from '../src/main/services/device-security';
+import { tamperChecks } from '../src/main/services/tamper';
 import { runCapa, runDie } from '../src/main/services/static-engines';
 import { YaraService } from '../src/main/services/yara';
 import { readdirSync, readFileSync, copyFileSync } from 'node:fs';
@@ -120,6 +121,14 @@ describe.runIf(WIN)('Windows integration (real PowerShell / Defender / Authentic
     expect(r.checks.length).toBeGreaterThan(10);
     // Facts that any Windows machine exposes without admin rights must be known.
     for (const id of ['firewall', 'uac', 'smb1', 'rdp', 'exec_policy', 'guest']) expect(r.checks.find((c) => c.id === id)?.status, id).not.toBe('unknown');
+  }, 120_000);
+
+  it('Tamper checks read the hosts file, proxy, DNS servers and user-added roots', async () => {
+    const r = await tamperChecks();
+    console.log('Tamper:', JSON.stringify(r.findings.map((f) => ({ id: f.id, status: f.status, reason: f.reason, items: f.items.map((i) => `${i.note}:${i.value}`).slice(0, 5) }))));
+    for (const f of r.findings) expect(f.status, f.id).not.toBe('unknown');
+    // A stock runner has not had its security sites hijacked.
+    expect(r.findings.find((f) => f.id === 'hosts')!.status).not.toBe('fail');
   }, 120_000);
 });
 

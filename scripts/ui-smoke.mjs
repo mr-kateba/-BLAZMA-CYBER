@@ -65,6 +65,10 @@ try {
   } else {
     await win.getByText('متاح على Windows فقط.').first().waitFor({ timeout: 30000 });
   }
+  // Signs of tampering: the hosts file is read on every OS; the other checks are Windows-only.
+  await win.getByText('علامات العبث بالإعدادات').waitFor();
+  await win.locator('.devsec-title', { hasText: 'ملف hosts' }).waitFor({ timeout: 60000 });
+  assert.equal(await win.locator('.devsec-title', { hasText: 'شهادات موثوقة مضافة' }).count(), 1);
   await win.waitForTimeout(300);
   await win.screenshot({ path: join(out, '28-device-security-ar.png'), fullPage: true });
   await win.locator('.nav-item', { hasText: 'لوحة التحكم' }).click();

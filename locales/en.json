@@ -1764,6 +1764,10 @@
     "k_anonymity": {
       "title": "How can it check without seeing my password?",
       "text": "Your password is turned into a fingerprint (SHA-1) on this computer. Only the first 5 characters of that fingerprint are sent. The service replies with hundreds of leaked fingerprints that start the same way, and BLAZMA compares them here. The service never learns your password or which one you checked."
+    },
+    "tampering": {
+      "title": "What is tampering?",
+      "text": "Some malware quietly changes Windows settings instead of showing itself: it redirects websites, routes your traffic through its own server, or installs a certificate so it can read encrypted pages. These checks look for such changes. Some legitimate programs make similar changes, so each result explains what was found."
     }
   },
   "mode": {
@@ -1979,5 +1983,56 @@
     "notFoundAdvice": "This password is not in the known breach lists. That does not prove it is strong — use a different password for every site.",
     "source": "Source: Have I Been Pwned — Pwned Passwords · checked {{time}}",
     "another": "Check another"
+  },
+  "tamper": {
+    "title": "Signs of tampering",
+    "subtitle": "Settings that malware changes to spy on you or block security updates. Read-only.",
+    "status": {
+      "pass": "Nothing unusual",
+      "warn": "Check this",
+      "fail": "Suspicious",
+      "unknown": "Could not check"
+    },
+    "detail": {
+      "hosts": "{{hijacked}} security site(s) redirected or blocked · {{redirected}} other redirect(s) · {{blocked}} blocked name(s)",
+      "noProxy": "No proxy is set — your browser connects directly.",
+      "dns": "{{count}} DNS server(s) in use",
+      "roots": "{{count}} certificate(s) added for your account"
+    },
+    "check": {
+      "hosts": {
+        "title": "Hosts file",
+        "why": "The hosts file overrides where website names point. Malware uses it to block antivirus and Windows updates or to send you to fake copies of real sites. Ad-blockers also use it to block names (that is normal).",
+        "fix": "If you did not add these lines, run a full antivirus scan, then remove them: open Notepad as administrator and edit C:\\Windows\\System32\\drivers\\etc\\hosts."
+      },
+      "proxy": {
+        "title": "Web proxy",
+        "why": "A proxy receives all your web traffic before it goes out. Workplaces and some security programs use one on purpose; malware sets one to watch or change what you browse.",
+        "fix": "If you did not set this (and this is not a work computer), turn it off in Settings → Network & internet → Proxy, then run a full antivirus scan."
+      },
+      "dns": {
+        "title": "DNS servers",
+        "why": "DNS servers turn website names into addresses. \"DNS changer\" malware points them to its own servers to send you to fake sites. Your router or a well-known provider is normal.",
+        "fix": "If you do not recognise a server, set DNS back to automatic in Settings → Network & internet → your connection → DNS server assignment, and check your router settings too."
+      },
+      "root_certs": {
+        "title": "Added trusted certificates",
+        "why": "Root certificates decide which secure (HTTPS) sites your computer trusts. A certificate added by a program lets it read and change your encrypted traffic. Developer tools (Fiddler, Burp, mitmproxy) and some antivirus products add one on purpose.",
+        "fix": "If you do not recognise a certificate, remove it: run certmgr.msc → Trusted Root Certification Authorities → Certificates, then run a full antivirus scan."
+      }
+    },
+    "note": {
+      "hosts_blocks_security": "Blocks a security or update website",
+      "hosts_redirects_security": "Sends a security or update website to another address",
+      "hosts_redirect": "Sends this name to a different address",
+      "proxy_local": "A program on this computer receives your web traffic",
+      "proxy_server": "Your web traffic goes through this server",
+      "pac": "Proxy settings are loaded from this address",
+      "pac_insecure": "Proxy settings are loaded without encryption — they could be swapped on the way",
+      "dns_local": "Your router or local network",
+      "dns_known": "A well-known public DNS provider",
+      "dns_unknown": "Not a well-known provider — make sure you set it yourself",
+      "root_user_added": "Added to your account, not part of Windows"
+    }
   }
 }

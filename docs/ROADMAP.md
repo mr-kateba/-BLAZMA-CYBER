@@ -94,7 +94,7 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 
 ## Phase E — Deeper protection — IN PROGRESS
 - DONE E1 System proxy: NetworkGate's HTTP transport is Chromium's network stack (in-memory session, no cookies, no disk cache) — Windows proxy settings incl. PAC/WPAD and the Windows certificate store are honoured; manual redirects are returned to the gate hop by hop (Electron's fetch would cancel them, so they use net.request). Verified through an HTTP proxy on Linux (200/301/404/abort/POST). DNS queries and TLS certificate checks still connect directly
-- TODO E2 Tamper checks: hosts file, proxy, DNS servers, user-added root certificates
+- DONE E2 "Signs of tampering" on Device Security: hosts file (security/update sites blocked or redirected = suspicious; ad-block style entries counted, not flagged), web proxy / PAC (PAC over http = suspicious), DNS servers of connected adapters (router and well-known providers fine, unknown public servers "check this"), user-added trusted root certificates (HKCU physical store, subject + thumbprint). Query-only script; hosts file read on every OS
 - TODO E3 Browser extensions audit (Edge/Chrome/Brave/Firefox, read-only)
 - TODO E4 Downloads watcher (opt-in, static analysis only)
 - TODO E5 Hayabusa event-log hunting (bundled)

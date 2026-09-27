@@ -11,6 +11,7 @@ import type { EncryptionInfo } from '../core/encrypted';
 import type { ExtractedIocs } from '../core/ioc';
 import type { Assessment } from '../core/detection';
 import type { DeviceSecurityReport, SettingsLink } from '../core/device-security';
+import type { TamperReport } from '../core/tamper';
 import type { CapaSummary } from '../core/capa';
 import type { EmailAnalysis } from '../core/email';
 import type { DieSummary } from '../core/die';
@@ -500,6 +501,7 @@ export interface PwnedResult {
 export type { AttackRef, Capability, CapaSummary } from '../core/capa';
 export type { DieDetection, DieSummary } from '../core/die';
 export type { DeviceCheck, DeviceSecurityReport, SettingsLink } from '../core/device-security';
+export type { TamperFinding, TamperItem, TamperReport } from '../core/tamper';
 
 export interface OsintOptions {
   /** Certificate Transparency (crt.sh) — domain */
@@ -950,6 +952,8 @@ export interface BlazmaApi {
   device: {
     /** Read-only Device Security Score (Windows). */
     security(force?: boolean): Promise<Result<DeviceSecurityReport>>;
+    /** Signs of tampering: hosts file, proxy, DNS servers, user-added root certificates (read-only). */
+    tamper(): Promise<Result<TamperReport>>;
     /** Opens a fixed Windows settings page (never changes a setting). */
     openSettings(link: SettingsLink): Promise<Result<true>>;
   };

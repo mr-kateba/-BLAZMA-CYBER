@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { BadgeCheck, ChevronDown, CircleCheck, CircleHelp, CircleX, ExternalLink, RefreshCw, TriangleAlert } from 'lucide-react';
-import type { DeviceCheck, DeviceSecurityReport } from '../../shared/api';
-import { Badge, Card, ErrorState, Gauge, IconTile, Notice, Skeleton, type Tone } from '../components/ui';
+import { BadgeCheck, ChevronDown, CircleCheck, CircleHelp, CircleX, ExternalLink, FileWarning, RefreshCw, TriangleAlert } from 'lucide-react';
+import type { DeviceCheck, DeviceSecurityReport, TamperFinding, TamperReport } from '../../shared/api';
+import { Badge, Card, ErrorState, Gauge, IconTile, Ltr, Notice, Skeleton, type Tone } from '../components/ui';
 import { useApp } from '../components/AppContext';
 import { useI18n } from '../i18n/I18nProvider';
 import { formatDateTime } from '../format';
@@ -17,8 +17,11 @@ export function DeviceSecurity() {
   const [state, setState] = useState<{ loading: boolean; report?: DeviceSecurityReport; error?: string }>({ loading: true });
   const [open, setOpen] = useState<string | null>(null);
 
+  const [tamper, setTamper] = useState<{ loading: boolean; report?: TamperReport; error?: string }>({ loading: true });
   const run = useCallback(async (force = false) => {
     setState({ loading: true });
+    setTamper({ loading: true });
+    void window.blazma.device.tamper().then((x) => setTamper(x.ok ? { loading: false, report: x.data } : { loading: false, error: x.error }));
     const r = await window.blazma.device.security(force);
     setState(r.ok ? { loading: false, report: r.data } : { loading: false, error: r.error });
   }, []);
@@ -103,7 +106,52 @@ export function DeviceSecurity() {
             {!r.elevated && <div className="tiny dim">{t('devsec.adminNote')}</div>}
           </>
         )}
+
+        <Card title={t('tamper.title')} subtitle={t('tamper.subtitle')} icon={FileWarning} tone="purple" explain="tampering">
+          {tamper.loading && <Skeleton h={80} />}
+          {tamper.error && <ErrorState code={tamper.error} />}
+          {tamper.report && (
+            <div className="col" style={{ gap: 8 }}>
+              {[...tamper.report.findings].sort((a, b) => ORDER[a.status] - ORDER[b.status]).map((f) => <TamperRow key={f.id} f={f} />)}
+            </div>
+          )}
+        </Card>
       </div>
+    </div>
+  );
+}
+
+function TamperRow({ f }: { f: TamperFinding }) {
+  const { t } = useI18n();
+  const [expanded, setExpanded] = useState(f.status === 'fail');
+  const Icon = ICON[f.status];
+  return (
+    <div className={`devsec-row tone-${TONE[f.status]}`}>
+      <button className="devsec-head" aria-expanded={expanded} onClick={() => setExpanded(!expanded)}>
+        <Icon size={18} className="devsec-icon" />
+        <span className="devsec-title">{t(`tamper.check.${f.id}.title`)}</span>
+        <span className="spacer" />
+        <Badge tone={TONE[f.status]}>{t(`tamper.status.${f.status}`)}</Badge>
+        <ChevronDown size={16} className={`devsec-chevron ${expanded ? 'open' : ''}`} />
+      </button>
+      {f.detail && <div className="small muted devsec-detail">{t(f.detail.key, f.detail.vars)}</div>}
+      {f.status === 'unknown' && f.reason && <div className="small dim devsec-detail">{t(`errors.${f.reason}`)}</div>}
+      {expanded && (
+        <div className="devsec-body">
+          <div><strong>{t('devsec.why')}</strong> {t(`tamper.check.${f.id}.why`)}</div>
+          {f.items.length > 0 && (
+            <ul className="linksum-list">
+              {f.items.map((i, n) => (
+                <li key={n} className={`tone-${i.tone}`}>
+                  <Ltr mono breakAll>{i.value}</Ltr>
+                  <div className="tiny dim">{t(`tamper.note.${i.note}`)}</div>
+                </li>
+              ))}
+            </ul>
+          )}
+          {(f.status === 'warn' || f.status === 'fail') && <div><strong>{t('devsec.fix')}</strong> {t(`tamper.check.${f.id}.fix`)}</div>}
+        </div>
+      )}
     </div>
   );
 }
