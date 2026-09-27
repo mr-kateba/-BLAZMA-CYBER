@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { detectEncryption, isRecoverableFormat } from '../src/core/encrypted';
 
-const SCRATCH = '/tmp/claude-0/-home-user--BLAZMA-CYBER/068987f9-8729-5c36-97c5-4a7e2c2ce311/scratchpad';
+// zipcrypto.zip: a real archive made with `zip -e` (one 12-byte text file). The PDFs are minimal
+// hand-written files exercising each /Encrypt scheme.
+const FIX = join(__dirname, 'fixtures', 'encrypted');
 const head = (b: Buffer | Uint8Array) => detectEncryption(b.subarray(0, 64), b);
 
 // Local ZIP header builder: PK\x03\x04, version, flags, method...
@@ -23,9 +26,7 @@ describe('encrypted-file detection', () => {
   });
 
   it('matches a REAL ZipCrypto archive produced by the zip tool', () => {
-    const f = `${SCRATCH}/zipcrypto.zip`;
-    if (!existsSync(f)) return;
-    expect(head(readFileSync(f))).toMatchObject({ encrypted: true, format: 'zip', scheme: 'zip-zipcrypto', strength: 'weak' });
+    expect(head(readFileSync(join(FIX, 'zipcrypto.zip')))).toMatchObject({ encrypted: true, format: 'zip', scheme: 'zip-zipcrypto', strength: 'weak' });
   });
 
   it('detects 7z, RAR4 and RAR5 containers', () => {
@@ -41,8 +42,7 @@ describe('encrypted-file detection', () => {
     expect(head(rc4)).toMatchObject({ scheme: 'pdf-rc4', strength: 'weak' });
     expect(head(Buffer.from('%PDF-1.4\n1 0 obj<</Type/Catalog>>'))).toMatchObject({ encrypted: false, format: 'pdf' });
     for (const [file, scheme] of [['enc.pdf', 'pdf-aes-256'], ['rc4.pdf', 'pdf-rc4'], ['plain.pdf', null]] as const) {
-      const f = `${SCRATCH}/${file}`;
-      if (existsSync(f)) expect(head(readFileSync(f)), file).toMatchObject({ format: 'pdf', scheme });
+      expect(head(readFileSync(join(FIX, file))), file).toMatchObject({ format: 'pdf', scheme });
     }
   });
 

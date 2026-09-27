@@ -97,6 +97,8 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
 - `xvfb-run -a node scripts/ui-smoke.mjs <sample.exe>` runs the real app end-to-end (Linux) and
   refreshes `docs/screenshots/`. Set `BLAZMA_TEST_YR=/path/to/yr` to also run the YARA-X +
   quarantine flow and the real-engine tests in `tests/yara.test.ts`.
+- CI (`.github/workflows/ci.yml`) runs the checks on real Windows, including
+  `tests/windows-integration.test.ts` (real PowerShell/Defender/Authenticode), the UI E2E and the installer build.
 - Never commit the EICAR test string contiguously: assemble it at runtime from two halves
   (antivirus would otherwise flag the repository/app itself).
 - Network tests use mocks/localhost only. Never test against random public targets.
