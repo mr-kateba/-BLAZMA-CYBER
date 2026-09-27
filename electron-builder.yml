@@ -1,0 +1,64 @@
+# Packaging configuration (electron-builder, MIT). Build the Windows installer on Windows:
+#   npm run dist:win     → release/BLAZMA-CYBER-<version>-x64-setup.exe (NSIS, per-user, no elevation)
+#   npm run dist:dir     → unpacked app for the current OS (quick verification)
+# Code signing is configured only through environment variables (CSC_LINK / CSC_KEY_PASSWORD or
+# WIN_CSC_LINK / WIN_CSC_KEY_PASSWORD). Never commit certificates or passwords.
+appId: com.blazmacyber.workbench
+productName: BLAZMA CYBER
+artifactName: BLAZMA-CYBER-${version}-${arch}.${ext}
+directories:
+  output: release
+  buildResources: build
+
+# Everything is bundled by esbuild/Vite: the app needs only dist/ and package.json at runtime.
+files:
+  - dist/**/*
+  - "!**/*.map"
+  - package.json
+asar: true
+electronLanguages:
+  - en-US
+  - ar
+
+# Electron fuses flipped at package time (hardening against running the signed binary as a
+# generic Node runtime or loading modified app code).
+electronFuses:
+  runAsNode: false
+  enableCookieEncryption: true
+  enableNodeOptionsEnvironmentVariable: false
+  enableNodeCliInspectArguments: false
+  enableEmbeddedAsarIntegrityValidation: true
+  onlyLoadAppFromAsar: true
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  icon: build/icon.ico
+  # Least privilege: the app always starts unelevated.
+  requestedExecutionLevel: asInvoker
+
+nsis:
+  artifactName: BLAZMA-CYBER-${version}-${arch}-setup.${ext}
+  oneClick: false
+  perMachine: false
+  allowElevation: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: BLAZMA CYBER
+  # User data (settings, cases, quarantine) is kept on uninstall; the Privacy Center clears it.
+  deleteAppDataOnUninstall: false
+  unicode: true
+  multiLanguageInstaller: true
+  installerLanguages:
+    - en_US
+    - ar_SA
+
+linux:
+  target: dir
+  icon: build/icon.png
+  category: Utility
+
+# No auto-update and no publishing: BLAZMA never phones home.
+publish: null

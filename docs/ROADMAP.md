@@ -70,7 +70,10 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 
 ## Phase 7 — Polish
 - TODO Integrated PowerShell terminal (separate from GUI operations; needs a pty — listed in the UI as planned)
-- TODO Packaging (electron-builder NSIS/MSIX), code signing
+- DONE Packaging config (electron-builder.yml): per-user NSIS (asInvoker, no elevation, Arabic + English installer), asar, hardened Electron fuses (RunAsNode off, NODE_OPTIONS/inspect off, asar integrity, only-load-from-asar), no publish/auto-update; app icon generated from the logo SVG (scripts/make-icon.mjs)
+- DONE Packaged-app smoke test (scripts/package-smoke.mjs via CDP) — verified on Linux; `electron-builder --win --dir` also succeeds on Linux
+- IN PROGRESS Windows installer: `npm run dist:win` must run on Windows (the NSIS uninstaller step needs Wine elsewhere) — not yet built/verified
+- TODO Code signing (certificate via CSC_LINK / CSC_KEY_PASSWORD env vars only; never committed)
 - TODO Accessibility audit, keyboard navigation review
 - TODO Performance profiling, security review, docs with screenshots from Windows
 
