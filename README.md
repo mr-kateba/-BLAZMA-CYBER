@@ -107,7 +107,7 @@ anything unless you pass `-Install`.
 
 ## Download the installer
 Get it from **[Releases](https://github.com/mr-kateba/Blazma-Cyber/releases)** (latest release:
-[`Blazma-Cyber-1.0.0-x64-setup.exe`](https://github.com/mr-kateba/Blazma-Cyber/releases/download/v1.0.0/Blazma-Cyber-1.0.0-x64-setup.exe)).
+[`Blazma-Cyber-1.0.1-x64-setup.exe`](https://github.com/mr-kateba/Blazma-Cyber/releases/download/v1.0.1/Blazma-Cyber-1.0.1-x64-setup.exe)).
 It is unsigned, so SmartScreen shows "Windows protected your PC" → **More info → Run anyway**.
 Verify it with `SHA256SUMS.txt` or `gh attestation verify <file> -R mr-kateba/Blazma-Cyber`
 (GitHub build provenance). Development builds: **Actions → CI → Artifacts** (sign-in, 14 days).
