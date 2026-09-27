@@ -707,7 +707,8 @@
     "email_msg_unsupported": "Outlook .msg files are not supported yet. In Outlook use File → Save As → “.eml”, or paste the message source.",
     "email_too_large": "The email is larger than 25 MB.",
     "not_an_email": "This doesn't look like an email (no From/Subject/Received headers).",
-    "email_expired": "This email is no longer in memory — check it again."
+    "email_expired": "This email is no longer in memory — check it again.",
+    "watch_failed": "The Downloads folder could not be watched."
   },
   "defender": {
     "status": {
@@ -1773,6 +1774,10 @@
     "extension_permissions": {
       "title": "Why do permissions matter?",
       "text": "An extension can only do what its permissions allow. \"All websites\" means it can read and change every page you open — including your email and bank. Many useful extensions need that, but so do malicious ones. Keep only extensions you know and use."
+    },
+    "downloads_watch": {
+      "title": "What does watching downloads do?",
+      "text": "When a download finishes, BLAZMA checks it the same way as \"Scan a file\": it reads the file without opening or running it. You get a notification only if something looks suspicious. It works only while BLAZMA is open and never moves or deletes files."
     }
   },
   "mode": {
@@ -2122,6 +2127,25 @@
       "opera": "Opera",
       "chromium": "Chromium",
       "firefox": "Firefox"
+    }
+  },
+  "downloads": {
+    "title": "Check new downloads automatically",
+    "subtitle": "Every finished download is scanned without being opened.",
+    "toggle": "Check new downloads automatically",
+    "on": "Watching: ",
+    "off": "Off. Turn it on to scan each new download while BLAZMA is open.",
+    "none": "No new downloads yet.",
+    "note": "Only while BLAZMA is open. Files are read, never opened, moved or deleted. A notification appears only for suspicious results.",
+    "details": "Show details",
+    "status": {
+      "queued": "Waiting",
+      "analyzing": "Scanning…"
+    },
+    "notify": {
+      "suspicious": "Suspicious download",
+      "malicious": "Dangerous download",
+      "body": "{{name}} — click to see why. Do not open it."
     }
   }
 }

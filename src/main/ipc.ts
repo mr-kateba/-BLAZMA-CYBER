@@ -1,4 +1,4 @@
-import { app, dialog, ipcMain, safeStorage, shell, type BrowserWindow, type IpcMainInvokeEvent } from 'electron';
+import { app, dialog, ipcMain, Notification, safeStorage, shell, type BrowserWindow, type IpcMainInvokeEvent } from 'electron';
 import { rmSync, mkdirSync } from 'node:fs';
 import type { ClearTarget, Result } from '../shared/api';
 import { identifyHash } from '../core/hash-id';
@@ -20,6 +20,10 @@ import { checkPwnedPassword, PwnedError } from './services/pwned';
 import { deviceSecurity, DeviceSecurityError, openSettingsPage } from './services/device-security';
 import { tamperChecks } from './services/tamper';
 import { auditExtensions } from './services/extensions';
+import { DownloadsWatcher } from './services/downloads-watch';
+import { createTranslator, type Dict } from '../core/i18n';
+import enDict from '../../locales/en.json';
+import arDict from '../../locales/ar.json';
 import { externalLinkHost } from '../core/intel';
 import * as forensics from './services/forensics';
 import { NetToolsError, NetToolsService } from './services/nettools';
@@ -109,6 +113,34 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
         : undefined,
     };
   };
+  // Opt-in Downloads watcher: static analysis only, while the app is open.
+  const downloads = new DownloadsWatcher({
+    folder: () => app.getPath('downloads'),
+    analyze: async (path, signal) => {
+      const res = await analyzeFile(path, signal, () => {}, analysisEngines());
+      history.record({ kind: 'file_analysis', subject: res.name, summaryKey: `verdict.${res.assessment.verdict}` });
+      logger.info('download_analyzed', { type: res.type.id, size: res.sizeBytes, verdict: res.assessment.verdict });
+      return res;
+    },
+    onChange: (s) => getWindow()?.webContents.send('downloads:state', s),
+    onFlagged: (ev) => {
+      if (!settings.get().notifications || !Notification.isSupported()) return;
+      const lang = settings.get().language ?? 'en';
+      const t = createTranslator((lang === 'ar' ? arDict : enDict) as Dict, enDict as Dict);
+      const n = new Notification({ title: t(`downloads.notify.${ev.verdict}`), body: t('downloads.notify.body', { name: ev.name }) });
+      n.on('click', () => {
+        const w = getWindow();
+        if (!w) return;
+        if (w.isMinimized()) w.restore();
+        w.focus();
+        w.webContents.send('downloads:open', ev);
+      });
+      n.show();
+    },
+  });
+  if (settings.get().watchDownloads) downloads.setEnabled(true);
+  app.on('before-quit', () => downloads.stop());
+
   const idArg = (v: unknown): string => {
     if (typeof v !== 'string' || !/^[a-z0-9-]{1,64}$/.test(v)) throw new QuarantineError('invalid_input');
     return v;
@@ -182,11 +214,13 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
     const next = settings.update(patch);
     setLogLevel(next.logLevel);
     if (before.offlineMode !== next.offlineMode) logger.security('offline_mode_changed', { offlineMode: next.offlineMode });
+    if (before.watchDownloads !== next.watchDownloads) downloads.setEnabled(next.watchDownloads);
     return { ok: true, data: next };
   });
 
   handle('system:snapshot', async () => ({ ok: true, data: await getSystemSnapshot() }));
   handle('system:security', async () => ({ ok: true, data: (await getWindowsFacts()).security }));
+  handle('downloads:state', () => ({ ok: true, data: downloads.state() }));
   handle('extensions:audit', async () => ({ ok: true, data: await auditExtensions() }));
   handle('device:tamper', async () => ({ ok: true, data: await tamperChecks() }));
   handle('device:security', async (force: unknown) => {

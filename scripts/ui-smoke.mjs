@@ -27,6 +27,8 @@ if (process.platform === 'linux') {
   };
   put('a'.repeat(32), 'Free PDF Converter', { permissions: ['webRequest', 'cookies'], host_permissions: ['<all_urls>'] });
   put('b'.repeat(32), 'Simple Notes', { permissions: ['storage'] });
+  mkdirSync(join(dataDir, 'Downloads'), { recursive: true });
+  writeFileSync(join(xdg, 'user-dirs.dirs'), `XDG_DOWNLOAD_DIR="${join(dataDir, 'Downloads')}"\n`);
   writeFileSync(join(prof, 'Secure Preferences'), JSON.stringify({ extensions: { settings: { ['a'.repeat(32)]: { location: 4, state: 1 }, ['b'.repeat(32)]: { location: 1, state: 1 } } } }));
 }
 const sample = process.argv[2];
@@ -414,6 +416,24 @@ try {
   await win.getByText('مفتاح abuse.ch المجاني', { exact: false }).waitFor();
   await win.waitForTimeout(300);
   await win.screenshot({ path: join(out, '33-reputation-abusech-ar.png'), fullPage: true });
+
+  // Phase E4: opt-in Downloads watcher — a finished download is scanned (read only) and listed.
+  const dlDir = await app.evaluate(({ app: a }) => a.getPath('downloads'));
+  const dlName = `blazma-e2e-${Date.now()}.txt`;
+  await win.locator('.nav-item', { hasText: 'لوحة التحكم' }).click();
+  await win.getByRole('switch', { name: 'افحص التنزيلات الجديدة تلقائيًا' }).click();
+  await win.getByText('قيد المراقبة', { exact: false }).waitFor();
+  mkdirSync(dlDir, { recursive: true });
+  writeFileSync(join(dlDir, `${dlName}.crdownload`), 'downloaded text');
+  await win.waitForTimeout(500);
+  const { renameSync } = await import('node:fs');
+  renameSync(join(dlDir, `${dlName}.crdownload`), join(dlDir, dlName));
+  const dlRow = win.locator('.row', { hasText: dlName });
+  await dlRow.getByRole('button', { name: 'اعرض التفاصيل' }).waitFor({ timeout: 120000 });
+  await win.waitForTimeout(300);
+  await win.screenshot({ path: join(out, '35-downloads-watch-ar.png') });
+  await win.getByRole('switch', { name: 'افحص التنزيلات الجديدة تلقائيًا' }).click();
+  rmSync(join(dlDir, dlName), { force: true });
 
   // Phase E3: browser extensions audit (read-only).
   await win.locator('.nav-item', { hasText: 'إضافات المتصفح' }).click();

@@ -10,6 +10,7 @@ import { useApp } from '../components/AppContext';
 import { useI18n } from '../i18n/I18nProvider';
 import { formatBytes, formatDateTime, formatDuration } from '../format';
 import { visibleNav, type PageId } from '../nav';
+import { DownloadsWatchCard } from '../components/DownloadsWatch';
 
 const HISTORY = 30;
 
@@ -245,6 +246,7 @@ export function Dashboard() {
       </div>
 
       <SecurityHero />
+      <div style={{ marginBottom: 20 }}><DownloadsWatchCard /></div>
 
       {snap.error && !s ? (
         <Card><ErrorState code={snap.error} onRetry={snap.reload} /></Card>

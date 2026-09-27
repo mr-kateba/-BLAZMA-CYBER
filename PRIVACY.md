@@ -45,6 +45,9 @@ Private, loopback and reserved IP addresses are **never** sent to external servi
 resolver may be asked for reverse DNS). Files are **never uploaded**: reputation uses hashes only.
 File upload is not implemented; if it is ever added it will require explicit confirmation.
 
+The optional **Downloads watcher** (off by default) is local only: it reads new files in your
+Downloads folder while BLAZMA is open, never opens, moves, deletes or uploads them.
+
 Cases, reports and threat-hunting searches are **local only**: they are stored under the app's
 data folder, are never uploaded, and can be removed from the Privacy Center (clear data → cases / reports).
 

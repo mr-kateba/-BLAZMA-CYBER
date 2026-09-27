@@ -80,6 +80,19 @@ const api: BlazmaApi = {
   password: {
     checkPwned: (password) => invoke('password:checkPwned', password),
   },
+  downloads: {
+    state: () => invoke('downloads:state'),
+    onState: (cb) => {
+      const listener = (_e: unknown, s: Parameters<typeof cb>[0]) => cb(s);
+      ipcRenderer.on('downloads:state', listener);
+      return () => ipcRenderer.removeListener('downloads:state', listener);
+    },
+    onOpen: (cb) => {
+      const listener = (_e: unknown, ev: Parameters<typeof cb>[0]) => cb(ev);
+      ipcRenderer.on('downloads:open', listener);
+      return () => ipcRenderer.removeListener('downloads:open', listener);
+    },
+  },
   extensions: {
     audit: () => invoke('extensions:audit'),
   },

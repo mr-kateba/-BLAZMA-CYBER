@@ -13,6 +13,7 @@ import type { Assessment } from '../core/detection';
 import type { DeviceSecurityReport, SettingsLink } from '../core/device-security';
 import type { TamperReport } from '../core/tamper';
 import type { ExtensionAudit } from '../core/extensions';
+import type { DownloadEvent, DownloadsWatchState } from '../core/downloads';
 import type { CapaSummary } from '../core/capa';
 import type { EmailAnalysis } from '../core/email';
 import type { DieSummary } from '../core/die';
@@ -45,6 +46,8 @@ export interface Settings {
   capaOnAnalyze: boolean;
   /** Run the bundled Detect It Easy (compiler / packer identification) in File Analyzer. */
   dieOnAnalyze: boolean;
+  /** While BLAZMA is open, analyze new downloads statically (opt-in). */
+  watchDownloads: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -65,6 +68,7 @@ export const DEFAULT_SETTINGS: Settings = {
   yaraOnAnalyze: true,
   capaOnAnalyze: true,
   dieOnAnalyze: true,
+  watchDownloads: false,
 };
 
 /** Result wrapper: modules never throw across IPC; they return a translatable error code. */
@@ -503,6 +507,7 @@ export type { AttackRef, Capability, CapaSummary } from '../core/capa';
 export type { DieDetection, DieSummary } from '../core/die';
 export type { DeviceCheck, DeviceSecurityReport, SettingsLink } from '../core/device-security';
 export type { TamperFinding, TamperItem, TamperReport } from '../core/tamper';
+export type { DownloadEvent, DownloadsWatchState } from '../core/downloads';
 export type { BrowserExtension, BrowserId, ExtensionAudit, ExtensionFlag, ExtensionRisk } from '../core/extensions';
 
 export interface OsintOptions {
@@ -950,6 +955,13 @@ export interface BlazmaApi {
   password: {
     /** "Was my password leaked?" — sends only a 5-char SHA-1 prefix (k-anonymity) through NetworkGate. */
     checkPwned(password: string): Promise<Result<PwnedResult>>;
+  };
+  downloads: {
+    /** State of the opt-in Downloads watcher (enabled via settings.watchDownloads). */
+    state(): Promise<Result<DownloadsWatchState>>;
+    onState(cb: (s: DownloadsWatchState) => void): () => void;
+    /** Fired when the user clicks a "suspicious download" notification. */
+    onOpen(cb: (ev: DownloadEvent) => void): () => void;
   };
   extensions: {
     /** Read-only audit of browser extensions (Chromium browsers + Firefox) for the current user. */

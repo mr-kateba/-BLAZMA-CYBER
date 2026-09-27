@@ -5,6 +5,7 @@ import { Logo } from './components/Logo';
 import { useApp } from './components/AppContext';
 import { useI18n } from './i18n/I18nProvider';
 import { findItem, labelKeyFor, visibleNav, type PageId } from './nav';
+import { DownloadsOpenListener } from './components/DownloadsWatch';
 import { Dashboard } from './pages/Dashboard';
 
 // Every page except the dashboard is loaded on first visit (smaller startup bundle).
@@ -212,6 +213,7 @@ export function Shell() {
     <>
       <div className="app-bg" />
       <GlobalDrop />
+      <DownloadsOpenListener />
       <div className="shell">
         <header className="topbar">
           <div className="brand">

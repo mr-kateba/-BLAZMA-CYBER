@@ -22,6 +22,7 @@ const VALIDATORS: { [K in keyof Settings]: (v: unknown) => boolean } = {
   yaraOnAnalyze: (v) => typeof v === 'boolean',
   capaOnAnalyze: (v) => typeof v === 'boolean',
   dieOnAnalyze: (v) => typeof v === 'boolean',
+  watchDownloads: (v) => typeof v === 'boolean',
 };
 
 /** Keeps only known keys with valid values; used for both loaded files and IPC patches. */
