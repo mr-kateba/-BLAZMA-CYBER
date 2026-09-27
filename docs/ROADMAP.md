@@ -75,6 +75,11 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE Build hygiene: pages lazy-loaded (startup bundle 543 → 383 kB), Vite `import.meta.dirname`, actions/checkout + setup-node v5
 - TODO (owner, GitHub settings) Rename the default branch to `main`
 
+## Phase B — Regular users — IN PROGRESS
+- DONE B1 Device Security Score: 16 read-only checks (Defender, tamper protection, firewall, updates, UAC, SMBv1, RDP/NLA, Secure Boot, drive encryption, auto sign-in, Guest, LSA protection, memory integrity, PowerShell policy, TPM), unknown ≠ pass, plain-language why/fix, fixed "open Windows setting" links; dashboard hero with score + "Scan a file" / "Check a link"; verified on Windows in CI
+- TODO B2 "What does this mean?" explanations
+- TODO B3 Simple/expert mode, first-launch intro, drag-and-drop anywhere, plain summaries
+
 ## Phase 7 — Polish
 - DONE Terminal: opens the regular Windows terminal (Windows Terminal, else PowerShell) in its own window — no in-app terminal by decision (the GUI never runs commands from user input)
 - DONE Packaging config (electron-builder.yml): per-user NSIS (asInvoker, no elevation, Arabic + English installer), asar, hardened Electron fuses (RunAsNode off, NODE_OPTIONS/inspect off, asar integrity, only-load-from-asar), no publish/auto-update; app icon generated from the logo SVG (scripts/make-icon.mjs)

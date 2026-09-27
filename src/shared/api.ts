@@ -10,6 +10,7 @@ import type { PeInfo } from '../core/pe';
 import type { EncryptionInfo } from '../core/encrypted';
 import type { ExtractedIocs } from '../core/ioc';
 import type { Assessment } from '../core/detection';
+import type { DeviceSecurityReport, SettingsLink } from '../core/device-security';
 import type { CtSummary, GithubProfile, OsintPivot, OsintTargetType, WaybackSnapshot } from '../core/osint';
 
 export type Theme = 'dark' | 'midnight';
@@ -440,6 +441,7 @@ export interface DomainLookupResult {
 }
 
 export type { OsintTargetType } from '../core/osint';
+export type { DeviceCheck, DeviceSecurityReport, SettingsLink } from '../core/device-security';
 
 export interface OsintOptions {
   /** Certificate Transparency (crt.sh) — domain */
@@ -872,6 +874,12 @@ export interface BlazmaApi {
     importFile(): Promise<Result<YaraRuleFile | null>>;
     remove(id: string): Promise<Result<YaraRuleFile[]>>;
     scan(target: string, recursive: boolean, taskId: string): Promise<Result<YaraScanResult>>;
+  };
+  device: {
+    /** Read-only Device Security Score (Windows). */
+    security(force?: boolean): Promise<Result<DeviceSecurityReport>>;
+    /** Opens a fixed Windows settings page (never changes a setting). */
+    openSettings(link: SettingsLink): Promise<Result<true>>;
   };
   osint: {
     lookup(type: OsintTargetType, value: string, options: OsintOptions): Promise<Result<OsintResult>>;

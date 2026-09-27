@@ -1366,7 +1366,86 @@ table.data tbody tr:hover td {
 
 /* Sidebar items that open something outside BLAZMA (e.g. the Windows terminal) */
 .nav-external {
-  margin-inline-start: auto;
+  margin-inline-start: 2px;
   opacity: 0.55;
   flex-shrink: 0;
+}
+
+/* Device Security checks */
+.devsec-row {
+  border: 1px solid var(--border);
+  border-inline-start: 3px solid var(--tone, var(--border));
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+.devsec-row.tone-red { --tone: var(--red); }
+.devsec-row.tone-amber { --tone: var(--amber); }
+.devsec-row.tone-green { --tone: var(--green); }
+.devsec-row.tone-gray { --tone: var(--text-3); }
+.devsec-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 4px 0;
+  text-align: start;
+}
+.devsec-icon { color: var(--tone); flex-shrink: 0; }
+.devsec-title { font-weight: 600; }
+.devsec-chevron { transition: transform 0.15s; opacity: 0.6; }
+.devsec-chevron.open { transform: rotate(180deg); }
+.devsec-detail { padding-inline-start: 28px; }
+.devsec-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0 4px;
+  padding-inline-start: 28px;
+  line-height: 1.7;
+}
+.devsec-body .btn { align-self: flex-start; }
+
+/* Dashboard hero: security score + main actions */
+.hero {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.hero-score {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+  flex: 1;
+  min-width: 260px;
+}
+.hero-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 240px;
+}
+.btn.big {
+  height: 46px;
+  font-size: 15px;
+  padding-inline: 20px;
+  justify-content: center;
+}
+.link-like {
+  color: var(--cyan, #22d3ee);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }

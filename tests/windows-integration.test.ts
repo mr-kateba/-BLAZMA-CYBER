@@ -10,6 +10,7 @@ import * as forensics from '../src/main/services/forensics';
 import { findMpCmdRun, getThreatHistory, runDefenderScan } from '../src/main/services/defender';
 import { NetToolsService } from '../src/main/services/nettools';
 import { NetworkGate } from '../src/core/network-gate';
+import { deviceSecurity } from '../src/main/services/device-security';
 
 const WIN = process.platform === 'win32';
 const SYS = join(process.env.SystemRoot ?? 'C:\\Windows', 'System32');
@@ -108,4 +109,13 @@ describe.runIf(WIN)('Windows integration (real PowerShell / Defender / Authentic
     expect(r.status).toBe('threats_found');
     expect(r.threats.join(' ')).toMatch(/EICAR/i);
   }, 300_000);
+
+  it('Device Security Score runs the real read-only probes', async () => {
+    const r = await deviceSecurity();
+    console.log('Device security:', JSON.stringify({ score: r.score, grade: r.grade, checks: r.checks.map((c) => `${c.id}=${c.status}${c.reason ? `(${c.reason})` : ''}`) }));
+    expect(r.score).not.toBeNull();
+    expect(r.checks.length).toBeGreaterThan(10);
+    // Facts that any Windows machine exposes without admin rights must be known.
+    for (const id of ['firewall', 'uac', 'smb1', 'rdp', 'exec_policy', 'guest']) expect(r.checks.find((c) => c.id === id)?.status, id).not.toBe('unknown');
+  }, 120_000);
 });

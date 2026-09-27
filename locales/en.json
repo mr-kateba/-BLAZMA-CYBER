@@ -48,7 +48,8 @@
     "planned": "Soon",
     "plannedTooltip": "Planned for phase {{phase}} — not available yet",
     "terminal": "Terminal",
-    "externalTooltip": "Opens Windows Terminal (or PowerShell) in a separate window"
+    "externalTooltip": "Opens Windows Terminal (or PowerShell) in a separate window",
+    "deviceSecurity": "Device Security"
   },
   "topbar": {
     "search": "Search tools…",
@@ -143,7 +144,13 @@
     "uptime": "Uptime",
     "cpuHistory": "CPU usage (last {{n}} samples)",
     "sampling": "Sampling…",
-    "quarantineCount": "Quarantine: {{count}} item(s)"
+    "quarantineCount": "Quarantine: {{count}} item(s)",
+    "hero": {
+      "details": "See details and how to fix",
+      "scanFile": "Scan a file",
+      "checkLink": "Check a link or website",
+      "hint": "Files are read, never opened or uploaded."
+    }
   },
   "status": {
     "defenderOn": "Microsoft Defender: real-time protection on",
@@ -645,7 +652,11 @@
     "note_not_found": "This note no longer exists.",
     "report_not_found": "This report no longer exists.",
     "invalid_osint_target": "This value isn't valid for the selected target type.",
-    "terminal_unavailable": "Could not open Windows Terminal or PowerShell."
+    "terminal_unavailable": "Could not open Windows Terminal or PowerShell.",
+    "not_readable": "This setting could not be read on this device.",
+    "not_supported": "Not supported on this device (for example, legacy BIOS).",
+    "encryption_unavailable": "Drive encryption is not available or could not be read on this device/edition.",
+    "needs_admin": "Can only be read with administrator rights."
   },
   "defender": {
     "status": {
@@ -1452,5 +1463,132 @@
       "windows-terminal": "Windows Terminal opened in a separate window.",
       "powershell": "PowerShell opened in a separate window."
     }
+  },
+  "devsec": {
+    "title": "Device Security",
+    "subtitle": "A read-only check of the most important Windows protections, explained simply.",
+    "readOnly": "BLAZMA only reads these settings — it never changes them. For each weakness you get the reason and the steps to fix it yourself.",
+    "rescan": "Check again",
+    "scanning": "Checking your device… (this can take up to a minute)",
+    "score": "Security score",
+    "grade": {
+      "good": "Well protected",
+      "fair": "Needs attention",
+      "poor": "At risk",
+      "none": "Not enough information"
+    },
+    "gradeHint": {
+      "good": "Your main protections are on. Keep Windows and your antivirus updated.",
+      "fair": "Some important protections are off. Start with the red items below.",
+      "poor": "Several key protections are off. Fix the red items first — each has step-by-step instructions.",
+      "none": "No check could be completed on this device."
+    },
+    "count": {
+      "fail": "{{n}} to fix",
+      "warn": "{{n}} to review",
+      "pass": "{{n}} OK",
+      "unknown": "{{n}} unknown"
+    },
+    "checkedAt": "Checked {{time}}",
+    "checks": "Checks",
+    "checksSub": "Tap an item to see why it matters and how to fix it.",
+    "status": {
+      "pass": "OK",
+      "warn": "Review",
+      "fail": "Fix",
+      "unknown": "Unknown"
+    },
+    "why": "Why it matters:",
+    "fix": "How to fix:",
+    "openSettings": "Open the Windows setting",
+    "adminNote": "Some facts (like the TPM chip) can only be read by an administrator. BLAZMA runs without administrator rights, so they are shown as unknown instead of guessed.",
+    "detail": {
+      "days": "{{days}} days ago",
+      "profilesOff": "Off for: {{profiles}}",
+      "value": "Current: {{value}}"
+    },
+    "check": {
+      "defender_realtime": {
+        "title": "Real-time antivirus protection",
+        "why": "It scans files the moment they are opened or downloaded. Without it, malware can run before anything notices.",
+        "fix": "Open Windows Security → Virus & threat protection → Manage settings, and turn on Real-time protection."
+      },
+      "defender_signatures": {
+        "title": "Antivirus definitions are up to date",
+        "why": "New threats appear every day. Old definitions can't recognise them.",
+        "fix": "Open Windows Security → Virus & threat protection → Protection updates → Check for updates."
+      },
+      "tamper_protection": {
+        "title": "Tamper protection",
+        "why": "Stops malware from switching off your antivirus behind your back.",
+        "fix": "Open Windows Security → Virus & threat protection → Manage settings, and turn on Tamper Protection."
+      },
+      "firewall": {
+        "title": "Firewall is on for every network",
+        "why": "The firewall blocks unwanted connections from other devices and the internet, especially on public Wi-Fi.",
+        "fix": "Open Windows Security → Firewall & network protection, and turn the firewall on for Domain, Private and Public networks."
+      },
+      "updates": {
+        "title": "Windows is updated",
+        "why": "Most attacks use security holes that updates already fixed. An unpatched PC is an easy target.",
+        "fix": "Open Settings → Windows Update → Check for updates, install everything and restart."
+      },
+      "uac": {
+        "title": "User Account Control (UAC)",
+        "why": "UAC asks before a program makes system changes, so malware can't silently take administrator rights.",
+        "fix": "Search for “Change User Account Control settings” in the Start menu and set it to at least the default (notify when apps try to make changes)."
+      },
+      "smb1": {
+        "title": "Old SMBv1 file sharing is off",
+        "why": "SMBv1 is an outdated protocol used by worms like WannaCry to spread between PCs.",
+        "fix": "Search for “Turn Windows features on or off”, untick “SMB 1.0/CIFS File Sharing Support” and restart."
+      },
+      "rdp": {
+        "title": "Remote Desktop",
+        "why": "Remote Desktop exposed to the network is a favourite way for attackers to break in. If you don't use it, keep it off.",
+        "fix": "Open Settings → System → Remote Desktop and turn it off. If you need it, keep “Require Network Level Authentication” on."
+      },
+      "secure_boot": {
+        "title": "Secure Boot",
+        "why": "Stops malicious code from loading before Windows starts (bootkits).",
+        "fix": "Enable Secure Boot in your PC's UEFI/BIOS settings (the manufacturer's manual shows how). Don't change BIOS settings if you're unsure."
+      },
+      "encryption": {
+        "title": "System drive encryption (BitLocker / Device encryption)",
+        "why": "If your laptop is lost or stolen, encryption keeps your files unreadable.",
+        "fix": "Open Settings → Privacy & security → Device encryption (or search “Manage BitLocker”) and turn it on. Save the recovery key somewhere safe."
+      },
+      "auto_logon": {
+        "title": "Automatic sign-in is off",
+        "why": "Automatic sign-in stores your password on the PC and lets anyone who turns it on use your account.",
+        "fix": "Turn off automatic sign-in (for example with Sysinternals Autologon, or remove AutoAdminLogon in the registry if you know how)."
+      },
+      "guest": {
+        "title": "Guest account is disabled",
+        "why": "An enabled Guest account lets anyone use the PC without a password.",
+        "fix": "Ask an administrator to disable the Guest account (Computer Management → Local Users and Groups)."
+      },
+      "lsa_protection": {
+        "title": "LSA protection (credential theft)",
+        "why": "Makes it harder for malware to steal passwords from memory.",
+        "fix": "Open Windows Security → Device security → Core isolation details and turn on Local Security Authority protection, then restart."
+      },
+      "vbs": {
+        "title": "Core isolation / memory integrity",
+        "why": "Uses virtualization to protect the heart of Windows from malicious drivers and code.",
+        "fix": "Open Windows Security → Device security → Core isolation details and turn on Memory integrity (if your drivers support it)."
+      },
+      "exec_policy": {
+        "title": "PowerShell script policy",
+        "why": "“Unrestricted” or “Bypass” lets any script run without warnings, which malware likes.",
+        "fix": "In PowerShell as administrator run: Set-ExecutionPolicy RemoteSigned (only if you understand the change)."
+      },
+      "tpm": {
+        "title": "TPM security chip",
+        "why": "The TPM stores encryption keys safely and is required by Windows 11 security features.",
+        "fix": "Enable TPM (fTPM/PTT) in the UEFI/BIOS settings if it is present but turned off."
+      }
+    },
+    "scanningShort": "Checking…"
   }
 }

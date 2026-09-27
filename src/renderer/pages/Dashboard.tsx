@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   Activity, ChevronRight, Cpu, Earth, FileSearch, FolderPlus, Globe, HardDrive, Hash, KeyRound, Link2, MemoryStick,
-  Monitor, MonitorCog, Network, RefreshCw, Router, ScanSearch, ShieldCheck, Wifi, type LucideIcon,
+  Monitor, MonitorCog, Network, RefreshCw, Router, ScanSearch, ShieldCheck, Wifi, ArrowLeft, ArrowRight, type LucideIcon,
 } from 'lucide-react';
 import type { ActivityEntry, SecurityStatus, SystemSnapshot } from '../../shared/api';
 import { Card, Dot, EmptyState, ErrorState, Gauge, IconTile, Ltr, Progress, Skeleton, Sparkline, usePoll, Badge, type Tone } from '../components/ui';
@@ -161,6 +161,44 @@ const ACTIVITY_ICON: Record<ActivityEntry['kind'], LucideIcon> = {
   forensics: MonitorCog, port_check: Network, discovery: Network,
 };
 
+/** Top of the dashboard: device security score + the two actions a regular user needs most. */
+function SecurityHero() {
+  const { t, dir } = useI18n();
+  const { navigate } = useApp();
+  const [state, setState] = useState<{ score: number | null; grade: 'good' | 'fair' | 'poor' | null; error?: string } | null>(null);
+  useEffect(() => {
+    let alive = true;
+    // Non-blocking: the dashboard renders immediately; the score arrives when PowerShell answers.
+    void window.blazma.device.security().then((r) => {
+      if (alive) setState(r.ok ? { score: r.data.score, grade: r.data.grade } : { score: null, grade: null, error: r.error });
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+  const Arrow = dir === 'rtl' ? ArrowLeft : ArrowRight;
+  const color = state?.grade === 'good' ? '#22c55e' : state?.grade === 'fair' ? '#f59e0b' : state?.grade === 'poor' ? '#ef4444' : '#64748b';
+  return (
+    <div className="card hero" style={{ position: 'relative' }}>
+      <button className="hero-score" onClick={() => navigate('device-security')} aria-label={t('devsec.title')}>
+        {state ? <Gauge value={state.score} label={t('devsec.score')} unit="/100" size={112} color={color} /> : <Skeleton w={112} h={112} style={{ borderRadius: '50%' }} />}
+        <div className="col" style={{ gap: 4, alignItems: 'flex-start', textAlign: 'start' }}>
+          <div className="stat-label">{t('devsec.title')}</div>
+          <div className="stat-value" style={{ fontSize: 18 }}>
+            {!state ? t('devsec.scanningShort') : state.error ? t(`errors.${state.error}`) : state.grade ? t(`devsec.grade.${state.grade}`) : t('devsec.grade.none')}
+          </div>
+          <span className="small link-like">{t('dashboard.hero.details')} <Arrow size={13} /></span>
+        </div>
+      </button>
+      <div className="hero-actions">
+        <button className="btn primary big" onClick={() => navigate('file-analyzer')}><FileSearch size={18} /> {t('dashboard.hero.scanFile')}</button>
+        <button className="btn big" onClick={() => navigate('domain-intel')}><Link2 size={18} /> {t('dashboard.hero.checkLink')}</button>
+        <div className="tiny dim">{t('dashboard.hero.hint')}</div>
+      </div>
+    </div>
+  );
+}
+
 export function Dashboard() {
   const { t, locale } = useI18n();
   const { navigate } = useApp();
@@ -202,6 +240,8 @@ export function Dashboard() {
           <div className="page-sub">{t('dashboard.subtitle')}</div>
         </div>
       </div>
+
+      <SecurityHero />
 
       {snap.error && !s ? (
         <Card><ErrorState code={snap.error} onRetry={snap.reload} /></Card>

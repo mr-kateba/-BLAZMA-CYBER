@@ -24,12 +24,15 @@ const PasswordRecovery = lazy(() => import('./pages/PasswordRecovery').then((m) 
 const Cases = lazy(() => import('./pages/Cases').then((m) => ({ default: m.Cases })));
 const Reports = lazy(() => import('./pages/Reports').then((m) => ({ default: m.Reports })));
 const ThreatHunting = lazy(() => import('./pages/ThreatHunting').then((m) => ({ default: m.ThreatHunting })));
+const DeviceSecurity = lazy(() => import('./pages/DeviceSecurity').then((m) => ({ default: m.DeviceSecurity })));
 const Osint = lazy(() => import('./pages/Osint').then((m) => ({ default: m.Osint })));
 
 function Page({ id }: { id: PageId }) {
   switch (id) {
     case 'dashboard':
       return <Dashboard />;
+    case 'device-security':
+      return <DeviceSecurity />;
     case 'file-analyzer':
       return <FileAnalyzer />;
     case 'hash-lab':

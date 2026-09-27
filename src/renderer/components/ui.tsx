@@ -157,7 +157,7 @@ export function Tabs<T extends string>({ value, onChange, items }: { value: T; o
 }
 
 /** Circular gauge (SVG). Value 0..100 or null (loading). */
-export function Gauge({ value, label, color, size = 118 }: { value: number | null; label: string; color: string; size?: number }) {
+export function Gauge({ value, label, color, size = 118, unit = '%' }: { value: number | null; label: string; color: string; size?: number; unit?: string }) {
   const { dir } = useI18n();
   const r = (size - 14) / 2;
   const c = 2 * Math.PI * r;
@@ -183,7 +183,7 @@ export function Gauge({ value, label, color, size = 118 }: { value: number | nul
       <div className="gauge-center">
         <div>
           <div className="gauge-label">{label}</div>
-          <div className="gauge-value">{value === null ? '—' : `${Math.round(v)}%`}</div>
+          <div className="gauge-value">{value === null ? '—' : `${Math.round(v)}${unit}`}</div>
         </div>
       </div>
     </div>

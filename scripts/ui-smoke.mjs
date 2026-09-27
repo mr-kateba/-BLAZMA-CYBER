@@ -51,6 +51,23 @@ try {
   await win.waitForTimeout(7000); // let CPU samples accumulate (real data)
   await win.screenshot({ path: join(out, '02-dashboard-ar.png') });
 
+  // Device Security Score: the dashboard hero and the page. Real score on Windows; elsewhere the
+  // app says it's Windows-only (never a made-up score).
+  await win.getByRole('button', { name: 'افحص ملفًا' }).waitFor();
+  await win.locator('.nav-item', { hasText: 'أمان جهازي' }).click();
+  if (process.platform === 'win32') {
+    await win.getByText('الفحوص', { exact: true }).waitFor({ timeout: 90000 });
+    const rows = await win.locator('.devsec-row').count();
+    assert.ok(rows >= 10, `device security should list its checks (got ${rows})`);
+    await win.locator('.devsec-head').first().click();
+    await win.getByText('لماذا يهم:').first().waitFor();
+  } else {
+    await win.getByText('متاح على Windows فقط.').first().waitFor({ timeout: 30000 });
+  }
+  await win.waitForTimeout(300);
+  await win.screenshot({ path: join(out, '28-device-security-ar.png'), fullPage: true });
+  await win.locator('.nav-item', { hasText: 'لوحة التحكم' }).click();
+
   // Drag & drop path resolution works inside the sandboxed preload (webUtils)
   const dropPath = await win.evaluate(() => window.blazma.files.pathForFile(new File(['x'], 'a.txt')));
   assert.equal(dropPath, '', 'in-memory File has no disk path, but the API must not throw');

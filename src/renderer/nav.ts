@@ -1,10 +1,10 @@
 import {
-  Crosshair, Earth, FileSearch, FolderOpen, Hash, KeyRound, Languages, Link2, MonitorCog, Network, Palette, Plug,
+  BadgeCheck, Crosshair, Earth, FileSearch, FolderOpen, Hash, KeyRound, Languages, Link2, MonitorCog, Network, Palette, Plug,
   ScanSearch, ScrollText, ShieldCheck, ShieldHalf, SquareTerminal, UserSearch, LayoutDashboard, Cpu, Scale, type LucideIcon,
 } from 'lucide-react';
 
 export type PageId =
-  | 'dashboard'
+  | 'dashboard' | 'device-security'
   | 'ip-intel' | 'domain-intel' | 'osint' | 'reputation'
   | 'security-center' | 'file-analyzer' | 'yara' | 'hash-lab'
   | 'password-recovery'
@@ -31,7 +31,12 @@ export interface NavSection {
 const p = (phase: number, key: string) => ({ phase, itemsKey: `planned.modules.${key}` });
 
 export const NAV: NavSection[] = [
-  { items: [{ id: 'dashboard', labelKey: 'nav.dashboard', icon: LayoutDashboard }] },
+  {
+    items: [
+      { id: 'dashboard', labelKey: 'nav.dashboard', icon: LayoutDashboard },
+      { id: 'device-security', labelKey: 'nav.deviceSecurity', icon: BadgeCheck },
+    ],
+  },
   {
     titleKey: 'nav.section.intelligence',
     items: [
