@@ -107,8 +107,12 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
 
 - Check license, maintenance and security before adding anything; record it in
   THIRD-PARTY-NOTICES.md. Prefer the standard library for small functions.
-- External engines (YARA-X, hashcat, John) are **adapters to separately installed/verified
-  executables** unless the license allows bundling. Never auto-download or auto-execute binaries.
+- External engines are **separate executables**. YARA-X (BSD-3), capa (Apache-2.0) and Detect It Easy
+  (MIT) are bundled in the Windows installer: fetched at BUILD time only by scripts/fetch-engines.mjs
+  and verified against SHA-256 pinned in engines.lock.json (update the lock via the "Engines inventory"
+  workflow). John/hashcat remain user-installed. The app never auto-downloads or auto-executes binaries.
+- ReversingLabs YARA rules (MIT) are vendored in engines/rules/ (pinned commit, compiled and
+  false-positive-checked with YARA-X); they install as a read-only "pack" (can be disabled, not deleted).
 
 ## Current implementation status (keep in sync with docs/ROADMAP.md)
 
@@ -140,6 +144,8 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
 | Date | Decision | Why |
 |------|----------|-----|
 | 2026-09 | License: GPL-3.0-or-later | Sensitive security tool: modified redistributions must stay open source; no-warranty clause; compatible with the engines we bundle; qualifies for free OSS code signing |
+| 2026-09 | Bundle YARA-X, capa, DIE + ReversingLabs rules; pin by GitHub asset SHA-256 | Everyday users shouldn't install engines; pinned hashes keep the supply chain verifiable |
+| 2026-09 | capa/DIE findings are weak evidence (capa ≥4 risky groups = strong); RL family rules are definitive, RL PUA is strong | Capabilities and packers also appear in legitimate software |
 | 2026-09 | Electron + React + TypeScript | Best RTL/Arabic rendering, rich UI, testable on any OS; hardened (sandbox, contextIsolation, CSP). Alternatives in docs/ARCHITECTURE.md |
 | 2026-09 | Custom tiny i18n instead of i18next | ~60 lines, fully tested, no dependency |
 | 2026-09 | Offline Mode default ON | Privacy-first; user opts in to online lookups |

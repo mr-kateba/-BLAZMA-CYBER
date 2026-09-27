@@ -19,6 +19,19 @@ and are included with distributed builds.
 | IBM Plex Sans Arabic (via @fontsource) | 5.3.0 | SIL Open Font License 1.1 | Arabic + Latin UI font, bundled locally (no web font requests) | https://github.com/IBM/plex |
 | JetBrains Mono (via @fontsource) | 5.3.0 | SIL Open Font License 1.1 | Monospace font for hashes/paths | https://github.com/JetBrains/JetBrainsMono |
 
+## Engines and rules bundled with the Windows installer
+
+Downloaded at build time from the official releases and verified against pinned SHA-256 digests
+(`engines.lock.json`, `scripts/fetch-engines.mjs`). They run as separate programs; each ships with its
+license text next to it (`resources/engines/<id>/LICENSE.txt`, `resources/rules/`).
+
+| Component | Version | License | Use | Source |
+|---|---|---|---|---|
+| YARA-X (`yr.exe`) | 1.20.0 | BSD-3-Clause | YARA rule scanning | https://github.com/VirusTotal/yara-x |
+| capa (Mandiant), includes capa-rules | 9.4.0 | Apache-2.0 | "What can this program do?" + MITRE ATT&CK mapping | https://github.com/mandiant/capa |
+| Detect It Easy (`diec.exe`) | 3.21 | MIT | Compiler / packer / installer identification | https://github.com/horsicq/DIE-engine |
+| ReversingLabs YARA rules (1,240 rules, commit e0a0be5) | 2025-11-03 | MIT | Malware family detection | https://github.com/reversinglabs/reversinglabs-yara-rules |
+
 ## Development-only components (not shipped)
 
 | Component | Version | License | Use |

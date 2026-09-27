@@ -325,7 +325,9 @@
       "defender": "Microsoft Defender",
       "yara": "YARA",
       "signature": "Signature verification",
-      "hash_reputation": "Hash reputation"
+      "hash_reputation": "Hash reputation",
+      "capa": "capa (capabilities)",
+      "die": "Detect It Easy"
     },
     "falsePositives": "Heuristics can produce false positives. Review the evidence before acting.",
     "engines": "Detection engines",
@@ -347,7 +349,18 @@
     "hashRepOffline": "Blocked by Offline Mode",
     "reassessed": "Assessment updated with hash reputation",
     "encryptedNotice": "This file is encrypted ({{scheme}}). Use Password Recovery to recover access to files you own.",
-    "dropAnywhere": "Drop the file to scan it — it is only read, never opened."
+    "dropAnywhere": "Drop the file to scan it — it is only read, never opened.",
+    "capa": {
+      "found": "{{count}} capabilities found",
+      "title": "What can this program do?",
+      "sub": "Behaviours capa (Mandiant) recognised by reading the code — the program was not run.",
+      "riskyTitle": "Behaviours often seen in malware (also in some legitimate tools):",
+      "attackNote": "Codes like T1055 are MITRE ATT&CK techniques — the common language security teams use for attacker behaviour ({{count}} here)."
+    },
+    "die": {
+      "none": "Nothing identified",
+      "builtWith": "Built with"
+    }
   },
   "verdict": {
     "no_detections": "No detections",
@@ -383,7 +396,9 @@
       "vt_malicious": "VirusTotal: {{count}} engines flag this file as malicious",
       "vt_suspicious": "VirusTotal: {{count}} engines flag this file as suspicious",
       "vt_clean": "VirusTotal: known file, no engine flags it",
-      "vt_unknown": "VirusTotal: hash not known"
+      "vt_unknown": "VirusTotal: hash not known",
+      "capa_risky": "capa found {{count}} kinds of behaviour often used by malware",
+      "packer_die": "Packed or protected with {{name}} (hides the code)"
     }
   },
   "hashlab": {
@@ -526,7 +541,8 @@
     "engineStatus": {
       "available": "Available",
       "unavailable": "Unavailable",
-      "planned": "Planned"
+      "planned": "Planned",
+      "bundled": "Included"
     },
     "builtin": "Built-in static analyzer",
     "builtinDesc": "Hashing, file type, PE structure, entropy, indicators.",
@@ -544,7 +560,10 @@
     "censysNote": "Censys lookups are not implemented yet; a stored key is not used.",
     "ipinfoNote": "Works without a token at low volume; a token raises limits.",
     "recoveryEngines": "Password recovery engines",
-    "recoveryEnginesDesc": "Optional external engines you install. BLAZMA CYBER only runs them; it never bundles or downloads them."
+    "recoveryEnginesDesc": "Optional external engines you install. BLAZMA CYBER only runs them; it never bundles or downloads them.",
+    "capaOnAnalyze": "Explain what programs can do (capa)",
+    "dieOnAnalyze": "Identify compiler / packer (Detect It Easy)",
+    "bundledNote": "Engines included with BLAZMA were downloaded from their official releases when this version was built and verified with pinned SHA-256 checksums. BLAZMA never downloads or updates programs by itself."
   },
   "activity": {
     "kind": {
@@ -668,7 +687,11 @@
     "not_readable": "This setting could not be read on this device.",
     "not_supported": "Not supported on this device (for example, legacy BIOS).",
     "encryption_unavailable": "Drive encryption is not available or could not be read on this device/edition.",
-    "needs_admin": "Can only be read with administrator rights."
+    "needs_admin": "Can only be read with administrator rights.",
+    "yara_pack_readonly": "Rule packs shipped with BLAZMA can be turned off but not deleted.",
+    "engine_not_bundled": "Not included in this build (it ships with the Windows installer).",
+    "engine_unsupported_file": "This engine does not support this file type.",
+    "engine_missing": "The engine's program could not be started."
   },
   "defender": {
     "status": {
@@ -780,7 +803,8 @@
       "origin": {
         "builtin": "Built-in",
         "custom": "Custom",
-        "imported": "Imported"
+        "imported": "Imported",
+        "pack": "Bundled pack"
       },
       "valid": "Valid",
       "invalid": "Has errors",
@@ -801,7 +825,8 @@
       "savedInvalid": "Rule saved but disabled: it has errors",
       "savedUnchecked": "Rule saved (not validated — engine not installed)",
       "empty": "No rules"
-    }
+    },
+    "engineBundled": "Included with BLAZMA (verified)"
   },
   "intel": {
     "lookup": "Look up",
@@ -1700,6 +1725,14 @@
     "ps_history": {
       "title": "PowerShell history",
       "text": "Commands previously typed in PowerShell on this account. Attackers who get in often run commands here, so unfamiliar lines deserve a look."
+    },
+    "capa": {
+      "title": "capa — program capabilities",
+      "text": "capa, a free tool by Mandiant (Google), reads a program's code and recognises what it is able to do — for example read files, connect to the internet, or inject code into other programs. It never runs the program. Having a capability doesn't mean it is used maliciously; it helps you understand the program."
+    },
+    "die": {
+      "title": "Detect It Easy — how the file was built",
+      "text": "Detect It Easy identifies the compiler, installer or packer used to create a file. Packers and protectors compress or hide a program's code; many legitimate apps use them, but malware uses them a lot to avoid detection."
     }
   },
   "mode": {
@@ -1739,6 +1772,55 @@
       "tlsExpired": "Its security certificate has expired.",
       "tlsOk": "It has a valid security certificate (padlock). Note: scam sites can have one too.",
       "noAddress": "The name doesn't point to any server right now."
+    }
+  },
+  "capa": {
+    "group": {
+      "anti-analysis": "Hiding from analysis",
+      "collection": "Collecting data",
+      "communication": "Network communication",
+      "compiler": "Compiler traces",
+      "data-manipulation": "Data processing (encoding, encryption, hashing)",
+      "executable": "Program structure",
+      "host-interaction": "Interaction with Windows (files, processes, registry…)",
+      "impact": "Damage / impact",
+      "internal": "Internal",
+      "lib": "Library",
+      "linking": "Linked libraries",
+      "load-code": "Loading code",
+      "malware-family": "Known malware family",
+      "nursery": "Experimental rules",
+      "persistence": "Staying on the system (persistence)",
+      "runtime": "Runtime",
+      "targeting": "Targeting",
+      "other": "Other"
+    },
+    "risk": {
+      "injection": "Injecting code into other programs",
+      "anti_analysis": "Anti-debugging / anti-VM / obfuscation",
+      "keylogging": "Keylogging",
+      "persistence": "Starting automatically with Windows",
+      "c2": "Remote control (command & control)",
+      "impact": "Destructive actions",
+      "credential_access": "Stealing passwords"
+    }
+  },
+  "die": {
+    "type": {
+      "compiler": "Compiler",
+      "linker": "Linker",
+      "packer": "Packer",
+      "protector": "Protector",
+      "installer": "Installer",
+      "library": "Library",
+      "tool": "Tool",
+      "sign tool": "Signing tool",
+      "cryptor": "Cryptor",
+      "overlay": "Overlay",
+      "archive": "Archive",
+      "format": "Format",
+      "language": "Language",
+      "operation system": "OS"
     }
   }
 }

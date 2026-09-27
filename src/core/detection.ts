@@ -11,7 +11,9 @@ export type SignalSource =
   | 'signature'
   | 'entropy'
   | 'hash_reputation'
-  | 'static';
+  | 'static'
+  | 'capa'
+  | 'packer';
 
 export interface Signal {
   source: SignalSource;

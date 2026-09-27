@@ -11,6 +11,9 @@ import { findMpCmdRun, getThreatHistory, runDefenderScan } from '../src/main/ser
 import { NetToolsService } from '../src/main/services/nettools';
 import { NetworkGate } from '../src/core/network-gate';
 import { deviceSecurity } from '../src/main/services/device-security';
+import { runCapa, runDie } from '../src/main/services/static-engines';
+import { YaraService } from '../src/main/services/yara';
+import { readdirSync, readFileSync, copyFileSync } from 'node:fs';
 
 const WIN = process.platform === 'win32';
 const SYS = join(process.env.SystemRoot ?? 'C:\\Windows', 'System32');
@@ -118,4 +121,50 @@ describe.runIf(WIN)('Windows integration (real PowerShell / Defender / Authentic
     // Facts that any Windows machine exposes without admin rights must be known.
     for (const id of ['firewall', 'uac', 'smb1', 'rdp', 'exec_policy', 'guest']) expect(r.checks.find((c) => c.id === id)?.status, id).not.toBe('unknown');
   }, 120_000);
+});
+
+// Engines bundled by scripts/fetch-engines.mjs (CI fetches and verifies them before the tests).
+const ENGINES = join(__dirname, '..', 'build', 'engines');
+const manifest = existsSync(join(ENGINES, 'manifest.json')) ? (JSON.parse(readFileSync(join(ENGINES, 'manifest.json'), 'utf8')).engines as Record<string, { exe: string; version: string }>) : null;
+const exe = (id: string) => (manifest?.[id] ? join(ENGINES, id, ...manifest[id]!.exe.split('/')) : null);
+
+describe.runIf(WIN && manifest)('Bundled engines on real Windows programs', () => {
+  const SYS = join(process.env.SystemRoot ?? 'C:\\Windows', 'System32');
+
+  it('capa explains what notepad.exe can do (without running it)', async () => {
+    const r = await runCapa(exe('capa')!, join(SYS, 'notepad.exe'), new AbortController().signal);
+    console.log('capa notepad:', JSON.stringify(r.ran ? { count: r.capabilities.length, sample: r.capabilities.slice(0, 8).map((c) => c.name), attack: r.attack.map((a) => a.id), risky: r.risky, ms: r.durationMs } : r));
+    expect(r.ran).toBe(true);
+    if (r.ran) expect(r.capabilities.length).toBeGreaterThan(0);
+  }, 300_000);
+
+  it('Detect It Easy identifies how notepad.exe was built', async () => {
+    const r = await runDie(exe('die')!, join(SYS, 'notepad.exe'), new AbortController().signal);
+    console.log('DIE notepad:', JSON.stringify(r));
+    expect(r.ran).toBe(true);
+    if (r.ran) expect(r.detections.some((d) => /microsoft/i.test(d.name))).toBe(true);
+  }, 120_000);
+
+  it('the ReversingLabs pack raises no false positive on Windows system programs', async () => {
+    process.env.BLAZMA_DATA_DIR ??= mkdtempSync(join(tmpdir(), 'blazma-data-'));
+    const pack = join(__dirname, '..', 'engines', 'rules', 'reversinglabs.yar');
+    const svc = new YaraService(() => null, { exe: () => exe('yara-x'), packs: () => [{ id: 'pack-reversinglabs', name: 'RL', path: pack }] });
+    expect(await svc.engine()).toMatchObject({ available: true, bundled: true });
+    // Only the pack: disable the starter rules so matches can only come from it.
+    for (const r of await svc.listRules()) if (r.origin !== 'pack') await svc.setEnabled(r.id, false);
+    const dir = mkdtempSync(join(tmpdir(), 'blazma-fp-'));
+    const files = readdirSync(SYS).filter((f) => /\.(exe|dll)$/i.test(f)).slice(0, 150);
+    for (const f of files) {
+      try {
+        copyFileSync(join(SYS, f), join(dir, f));
+      } catch {
+        /* locked system file: skip */
+      }
+    }
+    const res = await svc.scan(dir, { recursive: false, signal: new AbortController().signal, timeoutMs: 600_000 });
+    const hits = res.files.filter((x) => x.matches.length).map((x) => `${x.path.split(/[\\/]/).pop()}: ${x.matches.map((m) => m.rule).join(',')}`);
+    console.log(`RL pack on ${res.files.length} System32 files: ${hits.length} matches`, hits);
+    expect(hits).toEqual([]);
+    rmSync(dir, { recursive: true, force: true });
+  }, 900_000);
 });

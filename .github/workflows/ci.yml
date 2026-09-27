@@ -3,6 +3,7 @@
 #             tests/windows-integration.test.ts (real PowerShell, Defender, Authenticode).
 # - e2e:      drives the real Electron app through every module (Arabic + English).
 # - package:  builds the NSIS installer and smoke-tests the packaged app.
+# Windows jobs fetch the bundled engines (YARA-X, capa, Detect It Easy) and verify their pinned SHA-256.
 # Nothing here publishes anything, and no secrets are used (builds are unsigned).
 name: CI
 
@@ -37,6 +38,15 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - if: runner.os == 'Windows'
+        name: Cache bundled engines (keyed by engines.lock.json)
+        uses: actions/cache@v4
+        with:
+          path: build/engines
+          key: engines-${{ runner.os }}-${{ hashFiles('engines.lock.json', 'engines/licenses/**') }}
+      - if: runner.os == 'Windows'
+        name: Fetch and verify bundled engines (SHA-256 pinned)
+        run: node scripts/fetch-engines.mjs
       - run: npm run check
 
   e2e:
@@ -50,6 +60,13 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Cache bundled engines (keyed by engines.lock.json)
+        uses: actions/cache@v4
+        with:
+          path: build/engines
+          key: engines-${{ runner.os }}-${{ hashFiles('engines.lock.json', 'engines/licenses/**') }}
+      - name: Fetch and verify bundled engines (SHA-256 pinned)
+        run: node scripts/fetch-engines.mjs
       - run: npm run build
       - name: UI smoke test on the real app
         # pw:browser prints the Electron process output if it fails to start.
@@ -77,6 +94,13 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Cache bundled engines (keyed by engines.lock.json)
+        uses: actions/cache@v4
+        with:
+          path: build/engines
+          key: engines-${{ runner.os }}-${{ hashFiles('engines.lock.json', 'engines/licenses/**') }}
+      - name: Fetch and verify bundled engines (SHA-256 pinned)
+        run: node scripts/fetch-engines.mjs
       - run: npm run dist:win
       - name: Packaged app smoke test
         run: node scripts/package-smoke.mjs "release\win-unpacked\BLAZMA CYBER.exe"

@@ -11,6 +11,8 @@ import type { EncryptionInfo } from '../core/encrypted';
 import type { ExtractedIocs } from '../core/ioc';
 import type { Assessment } from '../core/detection';
 import type { DeviceSecurityReport, SettingsLink } from '../core/device-security';
+import type { CapaSummary } from '../core/capa';
+import type { DieSummary } from '../core/die';
 import type { CtSummary, GithubProfile, OsintPivot, OsintTargetType, WaybackSnapshot } from '../core/osint';
 
 export type Theme = 'dark' | 'midnight';
@@ -36,6 +38,10 @@ export interface Settings {
   defenderOnAnalyze: boolean;
   /** Run enabled YARA rules as part of File Analyzer. */
   yaraOnAnalyze: boolean;
+  /** Run the bundled capa ("what can this program do?") on programs in File Analyzer. */
+  capaOnAnalyze: boolean;
+  /** Run the bundled Detect It Easy (compiler / packer identification) in File Analyzer. */
+  dieOnAnalyze: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -54,6 +60,8 @@ export const DEFAULT_SETTINGS: Settings = {
   hashcatPath: null,
   defenderOnAnalyze: true,
   yaraOnAnalyze: true,
+  capaOnAnalyze: true,
+  dieOnAnalyze: true,
 };
 
 /** Result wrapper: modules never throw across IPC; they return a translatable error code. */
@@ -158,6 +166,10 @@ export interface SignatureInfo {
 
 /** Result of an optional engine inside an analysis: either it ran, or why it did not. */
 export type EngineRun<T> = ({ ran: true } & T) | { ran: false; reason: string };
+/** capa (Mandiant): capabilities with MITRE ATT&CK mapping. */
+export type CapaRun = EngineRun<CapaSummary & { durationMs: number }>;
+/** Detect It Easy: compiler / packer / installer identification. */
+export type DieRun = EngineRun<DieSummary>;
 
 export interface YaraMatch {
   rule: string;
@@ -183,7 +195,8 @@ export interface YaraRuleFile {
   id: string;
   name: string;
   enabled: boolean;
-  origin: 'builtin' | 'custom' | 'imported';
+  /** pack = a rule set shipped with BLAZMA (read-only; can be disabled, not deleted). */
+  origin: 'builtin' | 'custom' | 'imported' | 'pack';
   createdAt: string;
   sizeBytes: number;
   /** null = never validated (engine missing when saved). */
@@ -193,6 +206,8 @@ export interface YaraRuleFile {
 
 export interface YaraEngineInfo {
   available: boolean;
+  /** true when this is the YARA-X shipped with BLAZMA (verified at build time). */
+  bundled?: boolean;
   path?: string;
   version?: string;
   reason?: string;
@@ -243,6 +258,8 @@ export interface FileAnalysis {
   signature: SignatureInfo;
   defender: EngineRun<{ threats: string[] }>;
   yara: EngineRun<{ matches: YaraMatch[]; rulesUsed: number }>;
+  capa: CapaRun;
+  die: DieRun;
   entropy: number;
   pe: PeInfo | null;
   peError: string | null;
@@ -445,6 +462,8 @@ export interface DomainLookupResult {
 }
 
 export type { OsintTargetType } from '../core/osint';
+export type { AttackRef, Capability, CapaSummary } from '../core/capa';
+export type { DieDetection, DieSummary } from '../core/die';
 export type { DeviceCheck, DeviceSecurityReport, SettingsLink } from '../core/device-security';
 
 export interface OsintOptions {
@@ -820,6 +839,8 @@ export interface BlazmaApi {
     openDataFolder(): Promise<Result<true>>;
     /** Opens an allowlisted https result page in the default browser (gated, logged). */
     openLink(url: string): Promise<Result<true>>;
+    /** Engines shipped with this build (verified at build time); empty when none are bundled. */
+    bundledEngines(): Promise<Array<{ id: 'yara-x' | 'capa' | 'die'; name: string; version: string; license: string }>>;
     /** Opens the regular Windows terminal (Windows Terminal, else PowerShell) in its own window. */
     openTerminal(): Promise<Result<'windows-terminal' | 'powershell'>>;
   };

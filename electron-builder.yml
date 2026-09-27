@@ -17,6 +17,10 @@ files:
   - package.json
   - LICENSE
 asar: true
+# Rule packs (text, vendored in the repo) ship on every platform.
+extraResources:
+  - from: engines/rules
+    to: rules
 electronLanguages:
   - en-US
   - ar
@@ -38,6 +42,14 @@ win:
   icon: build/icon.ico
   # Least privilege: the app always starts unelevated.
   requestedExecutionLevel: asInvoker
+  # Engines fetched and SHA-256-verified by scripts/fetch-engines.mjs (see engines.lock.json).
+  extraResources:
+    - from: build/engines
+      to: engines
+      filter:
+        - "**/*"
+        - "!*.zip"
+        - "!**/.verified"
 
 nsis:
   artifactName: BLAZMA-CYBER-${version}-${arch}-setup.${ext}

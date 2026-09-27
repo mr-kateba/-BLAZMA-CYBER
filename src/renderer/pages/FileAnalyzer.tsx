@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
-  AlertOctagon, Binary, CircleCheck, CircleHelp, FileSearch, Fingerprint, Globe, Link2, ListTree, RotateCcw, ScanSearch, ShieldAlert,
+  AlertOctagon, AlertTriangle, Binary, Boxes, CircleCheck, Cpu, CircleHelp, FileSearch, Fingerprint, Globe, Link2, ListTree, RotateCcw, ScanSearch, ShieldAlert,
   ShieldCheck, ShieldHalf, TriangleAlert, X, type LucideIcon,
 } from 'lucide-react';
 import type { FileAnalysis, ReputationResult, TaskProgress } from '../../shared/api';
@@ -142,8 +142,34 @@ export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAn
               )}
             </div>
           </div>
+          <div className="row" style={{ alignItems: 'flex-start', gap: 12 }}>
+            <IconTile icon={Cpu} tone={!r.capa.ran ? 'gray' : r.capa.risky.length ? 'amber' : 'green'} small />
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontWeight: 600 }}>{t('file.engine.capa')}</div>
+              {!r.capa.ran ? (
+                <div className="small dim">{t('file.notRun')} · {t(`errors.${r.capa.reason === 'engine_not_applicable' ? 'engine_unsupported_file' : r.capa.reason}`)}</div>
+              ) : (
+                <Badge tone={r.capa.risky.length ? 'amber' : 'green'}>{t('file.capa.found', { count: r.capa.capabilities.length })}</Badge>
+              )}
+            </div>
+          </div>
+          <div className="row" style={{ alignItems: 'flex-start', gap: 12 }}>
+            <IconTile icon={Boxes} tone={!r.die.ran ? 'gray' : r.die.packers.length ? 'amber' : 'green'} small />
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontWeight: 600 }}>{t('file.engine.die')}</div>
+              {!r.die.ran ? (
+                <div className="small dim">{t('file.notRun')} · {t(`errors.${r.die.reason}`)}</div>
+              ) : r.die.detections.length === 0 ? (
+                <Badge tone="gray">{t('file.die.none')}</Badge>
+              ) : (
+                <div className="chip-list">{r.die.detections.slice(0, 6).map((d) => <span key={d.type + d.name} className="chip"><Ltr>{`${d.name}${d.version ? ` ${d.version}` : ''}`}</Ltr></span>)}</div>
+              )}
+            </div>
+          </div>
         </div>
       </Card>
+
+      {r.capa.ran && r.capa.capabilities.length > 0 && <CapaCard capa={r.capa} />}
 
       {rep.result ? (
         <ReputationCard r={rep.result} />
@@ -197,6 +223,19 @@ export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAn
             <dd>
               <Ltr>{r.entropy.toFixed(3)}</Ltr> / 8 · <Badge tone={entropyLabel(r.entropy) === 'high' ? 'amber' : 'gray'}>{t(`file.entropyLevel.${entropyLabel(r.entropy)}`)}</Badge>
             </dd>
+            {r.die.ran && r.die.detections.length > 0 && (
+              <>
+                <dt>{t('file.die.builtWith')}<Explain term="die" /></dt>
+                <dd className="col" style={{ gap: 2 }}>
+                  {r.die.detections.map((d) => (
+                    <span key={d.type + d.name} className="small">
+                      <span className="dim">{t(`die.type.${d.type.toLowerCase()}`) === `die.type.${d.type.toLowerCase()}` ? d.type : t(`die.type.${d.type.toLowerCase()}`)}: </span>
+                      <Ltr>{`${d.name}${d.version ? ` ${d.version}` : ''}${d.info ? ` (${d.info})` : ''}`}</Ltr>
+                    </span>
+                  ))}
+                </dd>
+              </>
+            )}
             <dt>{t('file.duration')}</dt><dd>{formatDuration(t, r.durationMs)}</dd>
           </dl>
         </Card>
@@ -400,5 +439,40 @@ export function FileAnalyzer() {
 
       {state.kind === 'done' && <AnalysisResult r={state.result} onReset={() => setState({ kind: 'idle' })} />}
     </div>
+  );
+}
+
+/** "What can this program do?" — capa capabilities grouped by area, with MITRE ATT&CK techniques. */
+function CapaCard({ capa }: { capa: Extract<FileAnalysis['capa'], { ran: true }> }) {
+  const { t } = useI18n();
+  const groups = new Map<string, typeof capa.capabilities>();
+  for (const c of capa.capabilities) groups.set(c.group, [...(groups.get(c.group) ?? []), c]);
+  return (
+    <Card title={t('file.capa.title')} explain="capa" icon={Cpu} tone={capa.risky.length ? 'amber' : 'blue'} subtitle={t('file.capa.sub')}>
+      <div className="col" style={{ gap: 14 }}>
+        {capa.risky.length > 0 && (
+          <Notice tone="amber" icon={AlertTriangle}>
+            <div>{t('file.capa.riskyTitle')}</div>
+            <div className="chip-list" style={{ marginTop: 6 }}>{capa.risky.map((k) => <span key={k} className="chip">{t(`capa.risk.${k}`)}</span>)}</div>
+          </Notice>
+        )}
+        {[...groups.entries()].map(([g, list]) => (
+          <div key={g}>
+            <div className="small" style={{ fontWeight: 600, marginBottom: 6 }}>{t(`capa.group.${g}`, {}) === `capa.group.${g}` ? g : t(`capa.group.${g}`)} <span className="dim">({list.length})</span></div>
+            <div className="col" style={{ gap: 4 }}>
+              {list.map((c) => (
+                <div key={c.name} className="row-wrap small" style={{ gap: 6 }}>
+                  <Ltr>{c.name}</Ltr>
+                  {c.attack.map((a) => <span key={a.id} className="chip" title={`${a.tactic} — ${a.technique}`}><Ltr mono>{a.id}</Ltr></span>)}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+        {capa.attack.length > 0 && (
+          <div className="tiny dim">{t('file.capa.attackNote', { count: capa.attack.length })}</div>
+        )}
+      </div>
+    </Card>
   );
 }

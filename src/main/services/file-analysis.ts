@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { basename } from 'node:path';
-import type { EngineRun, FileAnalysis, HashResult, SignatureInfo, TaskProgress, YaraMatch } from '../../shared/api';
+import type { CapaRun, DieRun, EngineRun, FileAnalysis, HashResult, SignatureInfo, TaskProgress, YaraMatch } from '../../shared/api';
 import { validateAbsolutePath } from '../../core/validation';
 import { detectFileType } from '../../core/filetype';
 import { detectEncryption } from '../../core/encrypted';
@@ -138,12 +138,22 @@ export type YaraRun = EngineRun<{ matches: YaraMatch[]; rulesUsed: number }>;
 
 export interface AnalysisEngines {
   verifySignature: (path: string) => Promise<SignatureInfo>;
+  /** capa: only for programs (PE); reports capabilities with ATT&CK mapping. */
+  capa?: (path: string, signal: AbortSignal) => Promise<CapaRun>;
+  /** Detect It Easy: compiler / packer identification. */
+  die?: (path: string, signal: AbortSignal) => Promise<DieRun>;
   defender?: (path: string, signal: AbortSignal) => Promise<DefenderRun>;
   yara?: (path: string, signal: AbortSignal) => Promise<YaraRun>;
 }
 
-/** Maps a YARA rule's `severity` meta to evidence weight. Unknown/missing severity = strong. */
+/**
+ * Maps YARA rule metadata to evidence weight. Unknown/missing severity = strong.
+ * ReversingLabs rules describe named malware families (tc_detection_type): a match on a family rule is
+ * definitive, while "PUA" (potentially unwanted software) is only strong evidence.
+ */
 export function yaraWeight(meta: YaraMatch['meta']): Signal['weight'] {
+  const rlType = String(meta.tc_detection_type ?? '').toLowerCase();
+  if (rlType) return rlType === 'pua' ? 'strong' : 'malicious';
   const sev = String(meta.severity ?? '').toLowerCase();
   if (sev === 'malicious' || sev === 'critical') return 'malicious';
   if (sev === 'info' || sev === 'low' || sev === 'informational') return 'weak';
@@ -158,6 +168,8 @@ export function buildSignals(input: {
   interestingCount: number;
   defender?: DefenderRun;
   yara?: YaraRun;
+  capa?: CapaRun;
+  die?: DieRun;
 }): { signals: Signal[]; available: Set<SignalSource> } {
   const signals: Signal[] = [];
   const available = new Set<SignalSource>(['entropy', 'static']);
@@ -171,6 +183,20 @@ export function buildSignals(input: {
     for (const name of input.defender.threats) {
       signals.push({ source: 'defender', weight: 'malicious', reasonKey: 'assessment.reason.defender_detection', reasonArgs: { name } });
     }
+  }
+  // capa: risky behaviour groups are evidence to weigh, never a verdict on their own. Legitimate
+  // software sometimes shows one or two (e.g. anti-debugging in DRM); a combination is more telling.
+  if (input.capa?.ran && input.capa.risky.length > 0) {
+    signals.push({
+      source: 'capa',
+      weight: input.capa.risky.length >= 4 ? 'strong' : 'weak',
+      reasonKey: 'assessment.reason.capa_risky',
+      reasonArgs: { count: input.capa.risky.length },
+    });
+  }
+  // Detect It Easy: packers/protectors hide code (common in malware, also in some legitimate apps).
+  if (input.die?.ran && input.die.packers.length > 0) {
+    signals.push({ source: 'packer', weight: 'weak', reasonKey: 'assessment.reason.packer_die', reasonArgs: { name: input.die.packers.join(', ') } });
   }
   if (input.yara?.ran) {
     available.add('yara');
@@ -238,10 +264,15 @@ export async function analyzeFile(
       return { ran: false, reason: (e as { code?: string }).code ?? 'engine_failed' } as T;
     }
   };
-  const [signature, defender, yara] = await Promise.all([
+  const isProgram = type.id === 'pe';
+  const [signature, defender, yara, capa, die] = await Promise.all([
     engines.verifySignature(path).catch((): SignatureInfo => ({ checked: false, reason: 'engine_failed' })),
     settle<DefenderRun>(engines.defender ? () => engines.defender!(path, signal) : undefined, { ran: false, reason: 'engine_disabled' }),
     settle<YaraRun>(engines.yara ? () => engines.yara!(path, signal) : undefined, { ran: false, reason: 'engine_disabled' }),
+    isProgram
+      ? settle<CapaRun>(engines.capa ? () => engines.capa!(path, signal) : undefined, { ran: false, reason: 'engine_disabled' })
+      : Promise.resolve<CapaRun>({ ran: false, reason: 'engine_not_applicable' }),
+    settle<DieRun>(engines.die ? () => engines.die!(path, signal) : undefined, { ran: false, reason: 'engine_disabled' }),
   ]);
   if (signal.aborted) throw new AnalysisError('cancelled');
 
@@ -253,12 +284,16 @@ export async function analyzeFile(
     interestingCount: interestingStrings.length,
     defender,
     yara,
+    capa,
+    die,
   });
 
   const unavailableEngines: Array<{ engine: string; reason: string }> = [];
   if (!defender.ran) unavailableEngines.push({ engine: 'defender', reason: defender.reason });
   if (!yara.ran) unavailableEngines.push({ engine: 'yara', reason: yara.reason });
   if (!signature.checked) unavailableEngines.push({ engine: 'signature', reason: signature.reason ?? 'unknown' });
+  if (!capa.ran && capa.reason !== 'engine_not_applicable') unavailableEngines.push({ engine: 'capa', reason: capa.reason });
+  if (!die.ran) unavailableEngines.push({ engine: 'die', reason: die.reason });
   unavailableEngines.push({ engine: 'hash_reputation', reason: 'engine_not_integrated_yet' });
 
   onProgress({ processedBytes: s.totalBytes, totalBytes: st.size, stage: 'done' });
@@ -275,6 +310,8 @@ export async function analyzeFile(
     signature,
     defender,
     yara,
+    capa,
+    die,
     entropy,
     pe: peRes?.ok ? peRes.pe : null,
     peError: peRes && !peRes.ok ? peRes.reason : null,

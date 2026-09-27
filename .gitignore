@@ -11,3 +11,4 @@ test-results/
 screenshots-tmp/
 .DS_Store
 Thumbs.db
+build/engines/

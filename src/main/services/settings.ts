@@ -20,6 +20,8 @@ const VALIDATORS: { [K in keyof Settings]: (v: unknown) => boolean } = {
   hashcatPath: (v) => v === null || (typeof v === 'string' && validateAbsolutePath(v).ok),
   defenderOnAnalyze: (v) => typeof v === 'boolean',
   yaraOnAnalyze: (v) => typeof v === 'boolean',
+  capaOnAnalyze: (v) => typeof v === 'boolean',
+  dieOnAnalyze: (v) => typeof v === 'boolean',
 };
 
 /** Keeps only known keys with valid values; used for both loaded files and IPC patches. */

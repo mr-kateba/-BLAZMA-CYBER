@@ -69,7 +69,9 @@ describe('file analysis', () => {
     expect(r.defender).toEqual({ ran: true, threats: ['Virus:DOS/EICAR_Test_File'] });
     expect(r.yara).toEqual({ ran: false, reason: 'yara_not_installed' });
     expect(r.assessment.verdict).toBe('malicious');
-    expect(r.unavailableEngines.map((e) => e.engine)).toEqual(['yara', 'signature', 'hash_reputation']);
+    expect(r.unavailableEngines.map((e) => e.engine)).toEqual(['yara', 'signature', 'die', 'hash_reputation']);
+    // capa only applies to programs: not listed as "unavailable" for other file types.
+    expect(r.capa).toEqual({ ran: false, reason: 'engine_not_applicable' });
   });
   it('maps YARA severity meta to evidence weight', () => {
     expect(yaraWeight({ severity: 'malicious' })).toBe('malicious');

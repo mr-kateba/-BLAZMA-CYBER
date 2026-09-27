@@ -11,6 +11,7 @@ const api: BlazmaApi = {
     openDataFolder: () => invoke('app:openDataFolder'),
     openLink: (url) => invoke('app:openLink', url),
     openTerminal: () => invoke('app:openTerminal'),
+    bundledEngines: () => invoke('app:bundledEngines'),
   },
   settings: {
     get: () => invoke('settings:get'),

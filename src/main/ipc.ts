@@ -11,6 +11,8 @@ import { DefenderError, findMpCmdRun, getThreatHistory, runDefenderScan } from '
 import { YaraError, YaraService } from './services/yara';
 import { IntelError, IntelService } from './services/intel';
 import { OsintService } from './services/osint';
+import { bundledEngine, bundledRulePack } from './services/bundled';
+import { runCapa, runDie } from './services/static-engines';
 import { openTerminal, TerminalError } from './services/terminal';
 import { deviceSecurity, DeviceSecurityError, openSettingsPage } from './services/device-security';
 import { externalLinkHost } from '../core/intel';
@@ -66,14 +68,25 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
   const reports = new ReportService();
   const recovery = new RecoveryService((kind) => (kind === 'john' ? settings.get().johnPath : settings.get().hashcatPath));
   const engineKind = (v: unknown): RecoveryEngineKind => { if (v !== 'john' && v !== 'hashcat') throw new RecoveryError('invalid_input'); return v; };
-  const yara = new YaraService(() => settings.get().yaraPath);
+  const yara = new YaraService(() => settings.get().yaraPath, {
+    exe: () => bundledEngine('yara-x')?.path ?? null,
+    packs: () => {
+      const p = bundledRulePack('reversinglabs.yar');
+      return p ? [{ id: 'pack-reversinglabs', name: 'ReversingLabs — 1240 rules (MIT)', path: p }] : [];
+    },
+  });
   const hunt = new HuntService(cases, history, quarantine, yara);
 
   /** Engines used by File Analyzer, according to settings and platform. */
   const analysisEngines = (): AnalysisEngines => {
     const cfg = settings.get();
+    const capaExe = bundledEngine('capa')?.path;
+    const dieExe = bundledEngine('die')?.path;
     return {
       verifySignature,
+      // Enabled but not shipped in this build (e.g. a Linux dev build): say so, don't pretend it's off.
+      capa: !cfg.capaOnAnalyze ? undefined : capaExe ? (path, signal) => runCapa(capaExe, path, signal) : async () => ({ ran: false, reason: 'engine_not_bundled' }),
+      die: !cfg.dieOnAnalyze ? undefined : dieExe ? (path, signal) => runDie(dieExe, path, signal) : async () => ({ ran: false, reason: 'engine_not_bundled' }),
       defender: cfg.defenderOnAnalyze
         ? async (path, signal) => {
             if (process.platform !== 'win32') return { ran: false, reason: 'unsupported_platform' };
@@ -141,6 +154,12 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
     await gate.run({ module: 'reputation', service: 'browser:link', host, dataKind: 'privacy.data.indicator' }, () => shell.openExternal(url as string));
     return { ok: true, data: true };
   });
+  handle('app:bundledEngines', () =>
+    (['yara-x', 'capa', 'die'] as const).flatMap((id) => {
+      const e = bundledEngine(id);
+      return e ? [{ id, name: e.name, version: e.version, license: e.license }] : [];
+    }),
+  );
   handle('app:openTerminal', async () => {
     const kind = await openTerminal();
     logger.info('terminal_opened', { kind });

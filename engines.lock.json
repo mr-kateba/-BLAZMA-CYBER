@@ -1,0 +1,49 @@
+{
+  "$comment": "Engines bundled into the Windows installer. Downloaded at BUILD time only (scripts/fetch-engines.mjs) from the official GitHub releases and verified against the SHA-256 digests below, which GitHub computed for the uploaded release assets (see .github/workflows/engines-inventory.yml). A mismatch fails the build. The app never downloads or updates engines by itself.",
+  "engines": [
+    {
+      "id": "yara-x",
+      "name": "YARA-X",
+      "version": "1.20.0",
+      "license": "BSD-3-Clause",
+      "homepage": "https://github.com/VirusTotal/yara-x",
+      "url": "https://github.com/VirusTotal/yara-x/releases/download/v1.20.0/yara-x-v1.20.0-x86_64-pc-windows-msvc.zip",
+      "size": 8640562,
+      "sha256": "b1e2840bac593aea353d2b2b341f5a862c9d61c0c406d9abbbad9e1fa35163a1",
+      "exe": "yr.exe"
+    },
+    {
+      "id": "capa",
+      "name": "capa (Mandiant)",
+      "version": "9.4.0",
+      "license": "Apache-2.0",
+      "homepage": "https://github.com/mandiant/capa",
+      "url": "https://github.com/mandiant/capa/releases/download/v9.4.0/capa-v9.4.0-windows.zip",
+      "size": 35994071,
+      "sha256": "670ab1a58b81f59cb57533bf4021ac1e7033fbe9b5d5cc180f796976081e3bb5",
+      "exe": "capa.exe"
+    },
+    {
+      "id": "die",
+      "name": "Detect It Easy",
+      "version": "3.21",
+      "license": "MIT",
+      "homepage": "https://github.com/horsicq/DIE-engine",
+      "url": "https://github.com/horsicq/DIE-engine/releases/download/3.21/die_win64_portable_3.21_x64.zip",
+      "size": 25197854,
+      "sha256": "078f2934f267392247f9c7b759a1c2457a48bc2000b25b80c2f129955ee4a3b9",
+      "exe": "diec.exe"
+    }
+  ],
+  "rules": [
+    {
+      "id": "reversinglabs",
+      "name": "ReversingLabs YARA rules",
+      "license": "MIT",
+      "homepage": "https://github.com/reversinglabs/reversinglabs-yara-rules",
+      "commit": "e0a0be54aa1e11ccfd6854e4f19e9476f328fd84",
+      "file": "engines/rules/reversinglabs.yar",
+      "rules": 1240
+    }
+  ]
+}

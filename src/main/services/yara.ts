@@ -7,6 +7,7 @@
 // - Rule "updates" are imports from local files the user chooses. Nothing is fetched from the internet.
 
 import { execFile } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { basename, dirname, join } from 'node:path';
@@ -52,7 +53,11 @@ export class YaraService {
   private readonly rulesDir = join(this.root, 'rules');
   private readonly indexFile = join(this.root, 'index.json');
 
-  constructor(private readonly configuredPath: () => string | null) {}
+  constructor(
+    private readonly configuredPath: () => string | null,
+    /** Engine and rule packs shipped with BLAZMA (see services/bundled.ts). */
+    private readonly bundled: { exe: () => string | null; packs: () => Array<{ id: string; name: string; path: string }> } = { exe: () => null, packs: () => [] },
+  ) {}
 
   private read(): YaraRuleFile[] {
     const raw = readJson<unknown>(this.indexFile, null);
@@ -77,6 +82,23 @@ export class YaraService {
       list.push({ id: b.id, name: b.name, enabled: true, origin: 'builtin', createdAt: new Date().toISOString(), sizeBytes: Buffer.byteLength(b.source), valid: null });
       changed = true;
     }
+    // Rule packs shipped with BLAZMA: installed on first run and refreshed when a new app version
+    // ships a different pack. The user's enabled/disabled choice is kept.
+    for (const p of this.bundled.packs()) {
+      const src = await readFile(p.path);
+      const hash = createHash('sha256').update(src).digest('hex');
+      const cur = list.find((r) => r.id === p.id);
+      const installed = existsSync(this.rulePath(p.id)) ? createHash('sha256').update(await readFile(this.rulePath(p.id))).digest('hex') : null;
+      if (installed !== hash) await writeFile(this.rulePath(p.id), src, { mode: 0o600 });
+      if (!cur) {
+        list.push({ id: p.id, name: p.name, enabled: true, origin: 'pack', createdAt: new Date().toISOString(), sizeBytes: src.length, valid: null });
+        changed = true;
+      } else if (installed !== hash) {
+        Object.assign(cur, { name: p.name, sizeBytes: src.length, valid: null });
+        delete cur.error;
+        changed = true;
+      }
+    }
     if (changed) this.write(list);
   }
 
@@ -86,14 +108,16 @@ export class YaraService {
   }
 
   async engine(): Promise<YaraEngineInfo> {
+    // Order: the executable the user chose → the one shipped with BLAZMA → `yr` on PATH.
     const configured = this.configuredPath();
-    const candidates = configured ? [configured] : ['yr'];
     if (configured && !existsSync(configured)) return { available: false, reason: 'yara_path_missing' };
+    const shipped = this.bundled.exe();
+    const candidates = configured ? [configured] : [...(shipped ? [shipped] : []), 'yr'];
     for (const exe of candidates) {
       try {
         const r = await run(exe, ['--version'], { timeoutMs: 10_000 });
         const m = /(\d+\.\d+\.\d+)/.exec(`${r.stdout} ${r.stderr}`);
-        if (r.code === 0 && m) return { available: true, path: exe, version: m[1] };
+        if (r.code === 0 && m) return { available: true, path: exe, version: m[1], ...(exe === shipped ? { bundled: true } : {}) };
       } catch {
         /* try next */
       }
@@ -113,7 +137,11 @@ export class YaraService {
     // Run from the rule's folder with a relative name (see scan() for why).
     const r = await run(exe, ['check', basename(path)], { timeoutMs: 30_000, cwd: dirname(path) });
     const text = `${r.stdout}\n${r.stderr}`;
-    if (r.code !== 0 || /\berror\b/i.test(text)) return text.trim().slice(0, 2000) || 'invalid';
+    // YARA-X: exit 0 = [ PASS ], exit 2 = [ WARN ] (valid, with warnings such as deprecated fields),
+    // exit 1 = [ FAIL ]. Diagnostics start with "error[Exxx]:". Don't match the bare word "error":
+    // warnings quote rule source, which may legitimately contain it.
+    const failed = /\[\s*FAIL\s*\]/.test(text) || /^error(\[|:)/m.test(text) || (r.code !== 0 && !/\[\s*WARN\s*\]/.test(text));
+    if (failed) return text.trim().slice(0, 2000) || 'invalid';
     return null;
   }
 
@@ -144,8 +172,12 @@ export class YaraService {
 
   async getSource(id: unknown): Promise<string> {
     if (typeof id !== 'string' || !ID_RE.test(id)) throw new YaraError('invalid_input');
-    if (!(await this.listRules()).some((r) => r.id === id)) throw new YaraError('yara_rule_not_found');
-    return readFile(this.rulePath(id), 'utf8');
+    const rule = (await this.listRules()).find((r) => r.id === id);
+    if (!rule) throw new YaraError('yara_rule_not_found');
+    const text = await readFile(this.rulePath(id), 'utf8');
+    // Packs are large (MBs): show the beginning only; the full file stays on disk.
+    if (rule.origin === 'pack' && text.length > 200_000) return `${text.slice(0, 200_000)}\n\n// … (${text.length - 200_000} more characters — the full pack is used when scanning)\n`;
+    return text;
   }
 
   /** Saves (creates or replaces) a custom rule. Validated with the engine when available. */
@@ -197,7 +229,9 @@ export class YaraService {
   async remove(id: unknown): Promise<YaraRuleFile[]> {
     if (typeof id !== 'string' || !ID_RE.test(id)) throw new YaraError('invalid_input');
     const list = await this.listRules();
-    if (!list.some((r) => r.id === id)) throw new YaraError('yara_rule_not_found');
+    const rule = list.find((r) => r.id === id);
+    if (!rule) throw new YaraError('yara_rule_not_found');
+    if (rule.origin === 'pack') throw new YaraError('yara_pack_readonly');
     await rm(this.rulePath(id), { force: true });
     const next = list.filter((r) => r.id !== id);
     this.write(next);

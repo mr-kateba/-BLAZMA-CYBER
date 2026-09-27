@@ -44,6 +44,10 @@ malware samples or third-party data in reports.
   the main process from the validated target and a known link id (the renderer cannot supply a URL),
   are https-only, open only after confirmation, and are blocked in Offline Mode. Email lookups never
   contact mail servers.
+- **Bundled engines (supply chain)** — YARA-X, capa and Detect It Easy are downloaded only when a
+  release is built, from their official GitHub releases, and must match SHA-256 digests pinned in
+  `engines.lock.json` (taken from GitHub's own asset digests); any mismatch fails the build. The app
+  never downloads or updates executables. capa and DIE read files statically; they never run them.
 - **Resource limits** — streaming I/O, 32 MB static-analysis window, capped IOC/string/import
   counts, subprocess timeouts and output caps.
 - **Windows security controls are never weakened** — BLAZMA CYBER does not disable Defender,

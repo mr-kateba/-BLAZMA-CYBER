@@ -21,8 +21,9 @@
     "check": "npm run typecheck && npm run test && npm run check:locales",
     "check:locales": "node scripts/check-locales.mjs",
     "dist:dir": "npm run build && electron-builder --dir",
-    "dist:win": "npm run build && electron-builder --win",
-    "make:icon": "node scripts/make-icon.mjs"
+    "dist:win": "npm run build && node scripts/fetch-engines.mjs && electron-builder --win",
+    "make:icon": "node scripts/make-icon.mjs",
+    "fetch:engines": "node scripts/fetch-engines.mjs"
   },
   "devDependencies": {
     "@fontsource/ibm-plex-sans-arabic": "5.3.0",

@@ -19,6 +19,7 @@ function EngineTab({ engine, onChange }: { engine: YaraEngineInfo | null; onChan
         {engine.available ? (
           <>
             <Badge tone="green" icon={CircleCheck}>{t('yara.engineInstalled', { version: engine.version ?? '' })}</Badge>
+            {engine.bundled && <Badge tone="cyan">{t('yara.engineBundled')}</Badge>}
             <div className="small"><span className="dim">{t('yara.enginePath')}: </span><Ltr mono breakAll>{engine.path}</Ltr></div>
           </>
         ) : (
@@ -99,7 +100,7 @@ function RulesTab({ engine }: { engine: YaraEngineInfo | null }) {
             columns={[
               { key: 'e', label: '', width: 60, render: (r) => <Toggle checked={r.enabled} label={r.name} disabled={r.valid === false} onChange={async (v) => { const x = await window.blazma.yara.setEnabled(r.id, v); if (x.ok) setRules(x.data); }} /> },
               { key: 'n', label: t('yara.rules.name'), render: (r) => <div><Ltr>{r.name}</Ltr><div className="tiny dim"><Ltr mono>{r.id}</Ltr></div></div> },
-              { key: 'o', label: '', render: (r) => <Badge tone={r.origin === 'builtin' ? 'blue' : 'purple'}>{t(`yara.rules.origin.${r.origin}`)}</Badge> },
+              { key: 'o', label: '', render: (r) => <Badge tone={r.origin === 'builtin' ? 'blue' : r.origin === 'pack' ? 'green' : 'purple'}>{t(`yara.rules.origin.${r.origin}`)}</Badge> },
               {
                 key: 'v', label: '',
                 render: (r) => r.valid === true ? <Badge tone="green">{t('yara.rules.valid')}</Badge>
@@ -115,11 +116,11 @@ function RulesTab({ engine }: { engine: YaraEngineInfo | null }) {
                       const s = await window.blazma.yara.source(r.id);
                       if (s.ok) setOpen({ id: r.id, source: s.data });
                     }}>{t(open?.id === r.id ? 'yara.rules.hide' : 'yara.rules.view')}</button>
-                    <button className="btn danger sm" onClick={async () => {
+                    {r.origin !== 'pack' && <button className="btn danger sm" onClick={async () => {
                       if (!(await confirm({ title: t('yara.rules.deleteTitle'), body: t('yara.rules.deleteBody', { name: r.name }), confirmLabel: t('yara.rules.delete'), danger: true }))) return;
                       const x = await window.blazma.yara.remove(r.id);
                       if (x.ok) setRules(x.data);
-                    }}><Trash2 size={13} /></button>
+                    }}><Trash2 size={13} /></button>}
                   </div>
                 ),
               },

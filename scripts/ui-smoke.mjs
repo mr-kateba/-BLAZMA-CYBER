@@ -101,7 +101,12 @@ try {
     }, resolve(sample));
     await win.getByRole('button', { name: 'Scan File' }).click();
     await win.getByRole('button', { name: 'Browse…' }).click();
-    await win.getByText('Why this result').waitFor({ timeout: 30000 });
+    // Bundled engines (capa can take a while on a real program).
+    await win.getByText('Why this result').waitFor({ timeout: 240000 });
+    if (existsSync(join(root, 'build', 'engines', 'manifest.json')) && process.platform === 'win32') {
+      await win.getByText('What can this program do?').waitFor();
+      await win.getByText('Built with').first().waitFor();
+    }
     await win.screenshot({ path: join(out, '04-file-analyzer-en.png'), fullPage: true });
 
     await win.getByRole('button', { name: 'العربية' }).click();
@@ -143,7 +148,7 @@ try {
     await win.locator('.nav-item', { hasText: 'File Analyzer' }).click();
     await stubOpen(eicar);
     await win.getByRole('button', { name: 'Browse…' }).click();
-    await win.getByText('YARA rule matched: Blazma_EICAR_Test_File').waitFor({ timeout: 30000 });
+    await win.getByText('YARA rule matched: Blazma_EICAR_Test_File').waitFor({ timeout: 240000 });
     assert.ok(await win.getByText('Suspicious', { exact: true }).isVisible(), 'EICAR should be assessed Suspicious by YARA alone');
     await win.screenshot({ path: join(out, '13-file-analyzer-yara-en.png') });
 

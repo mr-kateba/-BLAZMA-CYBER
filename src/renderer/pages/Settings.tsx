@@ -154,6 +154,8 @@ function Engines() {
     return r.ok ? r.data : null;
   }, null);
   const yara = usePoll(() => window.blazma.yara.engine(), null);
+  const bundled = usePoll(() => window.blazma.app.bundledEngines(), null);
+  const has = (id: string) => bundled.data?.find((e) => e.id === id);
   const d = sec.data?.defender;
   return (
     <Card>
@@ -178,7 +180,18 @@ function Engines() {
       <Row title={t('settings.yaraOnAnalyze')} desc={t('settings.yaraOnAnalyzeDesc')}>
         <Toggle checked={settings.yaraOnAnalyze} label={t('settings.yaraOnAnalyze')} onChange={(v) => void updateSettings({ yaraOnAnalyze: v })} />
       </Row>
+      {(['capa', 'die'] as const).map((id) => {
+        const e = has(id);
+        const key = id === 'capa' ? 'capaOnAnalyze' : 'dieOnAnalyze';
+        return (
+          <Row key={id} title={t(`settings.${key}`)} desc={e ? `${e.name} ${e.version} · ${e.license}` : t('errors.engine_not_bundled')}>
+            <Badge tone={e ? 'green' : 'gray'}>{t(e ? 'settings.engineStatus.bundled' : 'settings.engineStatus.unavailable')}</Badge>
+            <Toggle checked={settings[key]} label={t(`settings.${key}`)} disabled={!e} onChange={(v) => void updateSettings({ [key]: v })} />
+          </Row>
+        );
+      })}
       <RecoveryEngines />
+      <p className="tiny dim" style={{ marginBottom: 0 }}>{t('settings.bundledNote')}</p>
     </Card>
   );
 }
