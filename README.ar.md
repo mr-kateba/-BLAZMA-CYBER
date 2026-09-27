@@ -21,14 +21,14 @@
 ### 1) التنزيل
 - افتح صفحة **[الإصدارات (Releases)](https://github.com/mr-kateba/Blazma-Cyber/releases)** — تظهر أيضًا في
   يمين صفحة المستودع الرئيسية تحت **Releases**.
-- نزّل `Blazma-Cyber-0.1.0-x64-setup.exe` من قسم **Assets**. لا يحتاج تسجيل دخول.
-- رابط مباشر لآخر إصدار تجريبي (v0.1.0-beta.2):
-  https://github.com/mr-kateba/Blazma-Cyber/releases/download/v0.1.0-beta.2/Blazma-Cyber-0.1.0-x64-setup.exe
+- نزّل `Blazma-Cyber-1.0.0-x64-setup.exe` من قسم **Assets**. لا يحتاج تسجيل دخول.
+- رابط مباشر لآخر إصدار (v1.0.0):
+  https://github.com/mr-kateba/Blazma-Cyber/releases/download/v1.0.0/Blazma-Cyber-1.0.0-x64-setup.exe
 
 #### (اختياري) تحقّق أن الملف سليم وأصلي
-- **البصمة:** في PowerShell: `Get-FileHash .\Blazma-Cyber-0.1.0-x64-setup.exe -Algorithm SHA256`
+- **البصمة:** في PowerShell: `Get-FileHash .\Blazma-Cyber-1.0.0-x64-setup.exe -Algorithm SHA256`
   ويجب أن تطابق القيمة في ملف `SHA256SUMS.txt` وفي صفحة الإصدار.
-- **شهادة مصدر البناء (من GitHub):** `gh attestation verify .\Blazma-Cyber-0.1.0-x64-setup.exe -R mr-kateba/Blazma-Cyber`
+- **شهادة مصدر البناء (من GitHub):** `gh attestation verify .\Blazma-Cyber-1.0.0-x64-setup.exe -R mr-kateba/Blazma-Cyber`
   تثبت أن الملف بُني من هذا المستودع عبر GitHub Actions ولم يُعدَّل بعدها (تحتاج أداة [GitHub CLI](https://cli.github.com)).
 
 > نسخ أحدث للمطوّرين تُبنى تلقائيًا بعد كل تعديل في **Actions → CI → Artifacts →
@@ -37,7 +37,7 @@
 ### 2) التثبيت
 > **بدون تثبيت؟** نزّل `Blazma-Cyber-*-x64-portable.zip` بدلًا من المثبّت، فكّ الضغط في أي مجلد أو ذاكرة USB، وشغّل `Blazma Cyber.exe`. كل البيانات تبقى في مجلد `Blazma-data` بجانبه.
 
-1. شغّل `Blazma-Cyber-0.1.0-x64-setup.exe`.
+1. شغّل `Blazma-Cyber-1.0.0-x64-setup.exe`.
 2. ستظهر رسالة **"Windows protected your PC"** (حماية Windows). هذا متوقع لأن المثبّت
    **غير موقّع رقميًا بعد** (التوقيع يحتاج شهادة مدفوعة). اضغط **More info** ثم **Run anyway**.
 3. اختر لغة المثبّت (العربية أو English).

@@ -137,7 +137,7 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
   Phase E: system proxy, signs of tampering, browser extensions audit, Downloads watcher,
   Hayabusa event-log hunting, HollowsHunter memory scan.
 - Latest audit: docs/AUDIT-REPORT.md (3 bugs found and fixed; weaknesses and proposed features listed).
-- NOT YET: signed installer.
+- Released: v1.0.0 (first stable release, 2026-09). NOT YET: signed installer.
 - Verified on Linux (Xvfb) locally and on real Windows (Server 2025, build 26100) in CI: PowerShell
   facts, Defender status + EICAR file scan, Authenticode, forensics, network, full UI E2E, NSIS build.
   Not yet verified: Windows 10/11 desktop specifics (title-bar overlay, launcher, installer

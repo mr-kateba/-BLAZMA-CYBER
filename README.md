@@ -104,8 +104,8 @@ The launcher checks prerequisites and prints clear errors (English + Arabic). It
 anything unless you pass `-Install`.
 
 ## Download the installer
-Get it from **[Releases](https://github.com/mr-kateba/Blazma-Cyber/releases)** (latest pre-release:
-[`Blazma-Cyber-0.1.0-x64-setup.exe`](https://github.com/mr-kateba/Blazma-Cyber/releases/download/v0.1.0-beta.2/Blazma-Cyber-0.1.0-x64-setup.exe)).
+Get it from **[Releases](https://github.com/mr-kateba/Blazma-Cyber/releases)** (latest release:
+[`Blazma-Cyber-1.0.0-x64-setup.exe`](https://github.com/mr-kateba/Blazma-Cyber/releases/download/v1.0.0/Blazma-Cyber-1.0.0-x64-setup.exe)).
 It is unsigned, so SmartScreen shows "Windows protected your PC" → **More info → Run anyway**.
 Verify it with `SHA256SUMS.txt` or `gh attestation verify <file> -R mr-kateba/Blazma-Cyber`
 (GitHub build provenance). Development builds: **Actions → CI → Artifacts** (sign-in, 14 days).

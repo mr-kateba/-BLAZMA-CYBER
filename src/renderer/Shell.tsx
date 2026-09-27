@@ -214,6 +214,8 @@ function GlobalDrop() {
 
 export function Shell() {
   const { t, lang } = useI18n();
+  const [version, setVersion] = useState<string | null>(null);
+  useEffect(() => void window.blazma.app.info().then((i) => setVersion(i.version)), []);
   const { page, navigate, settings, updateSettings } = useApp();
 
   return (
@@ -292,7 +294,7 @@ export function Shell() {
               {t(settings.uiMode === 'simple' ? 'mode.switchToExpert' : 'mode.switchToSimple')}
             </button>
             <div>
-              <span className="ltr">Blazma Cyber v0.1.0</span>
+              <span className="ltr">Blazma Cyber{version && ` v${version}`}</span>
             </div>
             <div>{t('app.byline', { author: APP_AUTHOR })}</div>
             <div>{t('app.footer')}</div>
