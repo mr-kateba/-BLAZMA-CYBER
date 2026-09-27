@@ -131,7 +131,8 @@ Writes are atomic (temp file + rename). Corrupt JSON is set aside, never crashes
 | Password recovery | John the Ripper (jumbo) | user-installed executable | GPL-2.0 (core) + mixed | Implemented; never bundled/linked; `*2john` extraction inside BLAZMA still TODO |
 | Archive handling | 7-Zip | Separately installed `7z.exe` | LGPL-2.1 + unRAR restriction | Not integrated (evaluated) |
 | DNS | Node `dns` (`Resolver`) | built-in | — | Through NetworkGate when querying external resolvers |
-| RDAP | IANA bootstrap + registry RDAP (HTTPS) | built-in fetch via NetworkGate | public data | Replaces port-43 WHOIS |
+| HTTP transport | Chromium network stack (`session.fetch` / `net.request`, in-memory `blazma-network` session) | Electron | — | Honours Windows proxy settings (PAC/WPAD) and certificate store; no cookies, no disk cache |
+| RDAP | IANA bootstrap + registry RDAP (HTTPS) | via NetworkGate | public data | Replaces port-43 WHOIS |
 | TLS | Node `tls.connect` + `getPeerCertificate` | built-in | — | Through NetworkGate |
 | Reputation | VirusTotal, AbuseIPDB, Shodan, abuse.ch (MalwareBazaar, URLhaus, ThreatFox) | HTTPS adapters via NetworkGate, user's own keys (one abuse.ch Auth-Key for all three; POST APIs) | service ToS | Hash lookups only; file upload is not implemented. Censys not implemented |
 | Leaked passwords | Have I Been Pwned — Pwned Passwords | k-anonymity range API via NetworkGate (5-char SHA-1 prefix, padding) | service ToS (no key) | Matching is local; the password is never logged |

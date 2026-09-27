@@ -38,6 +38,9 @@ that needs them. Currently:
 | Was my password leaked? | api.pwnedpasswords.com (Have I Been Pwned) | Only the **first 5 characters of the password's SHA-1 hash** (k-anonymity, with response padding). The password and the rest of the hash never leave the computer; nothing is logged or saved | No |
 | OSINT → Pivot links (only when clicked, after confirmation) | The site you picked, in your browser | The target, as shown in the confirmation | No |
 
+Web requests use your Windows proxy settings (like your browser), carry no cookies and are not
+cached on disk. DNS lookups and TLS certificate checks connect directly.
+
 Private, loopback and reserved IP addresses are **never** sent to external services (only your own
 resolver may be asked for reverse DNS). Files are **never uploaded**: reputation uses hashes only.
 File upload is not implemented; if it is ever added it will require explicit confirmation.

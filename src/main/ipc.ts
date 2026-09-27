@@ -15,6 +15,7 @@ import { bundledEngine, bundledRulePack } from './services/bundled';
 import { runCapa, runDie } from './services/static-engines';
 import { analyzeEmailFile, analyzeEmailText, EmailError, extractAttachment } from './services/email';
 import { openTerminal, TerminalError } from './services/terminal';
+import { systemFetch } from './services/net-fetch';
 import { checkPwnedPassword, PwnedError } from './services/pwned';
 import { deviceSecurity, DeviceSecurityError, openSettingsPage } from './services/device-security';
 import { externalLinkHost } from '../core/intel';
@@ -60,6 +61,7 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
       history.network.add(entry);
       logger.info('network_request', { module: entry.module, service: entry.service, host: entry.host, outcome: entry.outcome });
     },
+    systemFetch,
   );
   const tasks = new Map<string, AbortController>();
   const quarantine = new QuarantineService();

@@ -92,6 +92,14 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE D2 "Was my password leaked?": Have I Been Pwned Pwned Passwords via k-anonymity (only a 5-char SHA-1 prefix is sent, with padding, through NetworkGate; matching is local; field cleared on submit; never logged or kept in history) + local observations while typing (length, character kinds, sequences, keyboard patterns, years) — no invented strength score
 - DONE D3 abuse.ch: MalwareBazaar (hash), URLhaus (host/IP + payload hash) and ThreatFox (IOC/hash) in Reputation Center, IP/Domain Intelligence, File Analyzer and the "Is this site trustworthy?" summary; one free Auth-Key (DPAPI-stored); exact-hash listings are evidence (MalwareBazaar = malicious, ThreatFox by confidence, URLhaus payload = strong); "not listed" is never "clean"; SHA-1 skipped with a reason where unsupported. Parsers are tested against the documented response formats; not yet exercised against the live APIs with a real key
 
+## Phase E — Deeper protection — IN PROGRESS
+- DONE E1 System proxy: NetworkGate's HTTP transport is Chromium's network stack (in-memory session, no cookies, no disk cache) — Windows proxy settings incl. PAC/WPAD and the Windows certificate store are honoured; manual redirects are returned to the gate hop by hop (Electron's fetch would cancel them, so they use net.request). Verified through an HTTP proxy on Linux (200/301/404/abort/POST). DNS queries and TLS certificate checks still connect directly
+- TODO E2 Tamper checks: hosts file, proxy, DNS servers, user-added root certificates
+- TODO E3 Browser extensions audit (Edge/Chrome/Brave/Firefox, read-only)
+- TODO E4 Downloads watcher (opt-in, static analysis only)
+- TODO E5 Hayabusa event-log hunting (bundled)
+- TODO E6 pe-sieve / HollowsHunter memory scan (bundled)
+
 ## Phase 7 — Polish
 - DONE Terminal: opens the regular Windows terminal (Windows Terminal, else PowerShell) in its own window — no in-app terminal by decision (the GUI never runs commands from user input)
 - DONE Packaging config (electron-builder.yml): per-user NSIS (asInvoker, no elevation, Arabic + English installer), asar, hardened Electron fuses (RunAsNode off, NODE_OPTIONS/inspect off, asar integrity, only-load-from-asar), no publish/auto-update; app icon generated from the logo SVG (scripts/make-icon.mjs)
@@ -102,14 +110,14 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE Final security review (see docs/AUDIT-REPORT.md §8): external links now gated + allowlisted, window.open fully denied, report paths contained, npm audit 0, no secrets in repo
 - TODO Performance profiling; docs with screenshots from real Windows
 
-## Proposed additions (from docs/AUDIT-REPORT.md §7) — TODO, not yet scheduled
-- TODO Device Security Score (BitLocker, UAC, Secure Boot, TPM, SMBv1, RDP, updates) — read-only, Arabic explanations
-- TODO Tamper checks: hosts file, proxy, DNS servers, untrusted root certificates
-- TODO Phishing email (.eml) analyzer: SPF/DKIM/DMARC results, received chain, real link targets, attachments
-- TODO Pwned Passwords check via k-anonymity (only 5 hash chars leave the machine)
-- TODO "What does this mean?" educational explanations for every indicator
-- TODO Downloads folder watcher, File Integrity Monitoring, browser-extension audit
-- TODO MITRE ATT&CK mapping, Sigma via external engine, IOC export (CSV/JSON/STIX 2.1), portable mode
+## Proposed additions (from docs/AUDIT-REPORT.md §7) — now scheduled in Phases B–F
+- DONE Device Security Score (Phase B)
+- Tamper checks → Phase E2
+- DONE Phishing email (.eml) analyzer (Phase D1)
+- DONE Pwned Passwords check via k-anonymity (Phase D2)
+- DONE "What does this mean?" educational explanations (Phase B)
+- Downloads folder watcher, browser-extension audit → Phase E; File Integrity Monitoring TODO
+- MITRE ATT&CK mapping, IOC export (CSV/JSON/STIX 2.1), portable mode → Phase F; Sigma → Hayabusa (E5)
 - DONE Windows CI (.github/workflows/ci.yml, windows-latest + ubuntu): unit tests incl. tests/windows-integration.test.ts (real PowerShell, Defender EICAR scan, Authenticode, forensics, network), full UI E2E, NSIS installer build + packaged smoke test — all green on Windows (run 3); the first runs found and fixed 2 real bugs (USB history without USBSTOR, PSModulePath breaking Authenticode)
 
 ## BLOCKED
