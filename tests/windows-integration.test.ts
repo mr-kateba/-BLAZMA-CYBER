@@ -37,6 +37,7 @@ describe.runIf(WIN)('Windows integration (real PowerShell / Defender / Authentic
 
   it('Authenticode: a Windows binary is signed, an unsigned script is not', async () => {
     // Windows system binaries are embedded- or catalog-signed; report what each one returns.
+    // CI runs this from PowerShell 7, which reproduces the inherited-PSModulePath bug fixed in powershell.ts.
     const results: Array<[string, Awaited<ReturnType<typeof verifySignature>>]> = [];
     for (const f of ['notepad.exe', 'cmd.exe', 'kernel32.dll', 'WindowsPowerShell\\v1.0\\powershell.exe']) {
       const p = join(SYS, f);
