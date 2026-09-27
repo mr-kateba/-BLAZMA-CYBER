@@ -18,10 +18,11 @@ integrates mature engines (Microsoft Defender, YARA-X, John the Ripper / hashcat
 adapters rather than re-implementing them.
 
 > **Status: v0.1, all planned modules implemented except the integrated PowerShell terminal**
-> (shown in the app as *planned*; it does nothing). Everything was verified end-to-end on Linux
-> (Xvfb). **Windows-specific paths — Defender, firewall, Authenticode, forensics PowerShell
-> scripts and the NSIS installer — are implemented but still need verification on real
-> Windows 10/11.** See [docs/ROADMAP.md](docs/ROADMAP.md).
+> (shown in the app as *planned*; it does nothing). Verified end-to-end on Linux and, through CI,
+> on real Windows (Server 2025, build 26100 — the Windows 11 24H2 code base): PowerShell queries,
+> Defender status and file scan, Authenticode, forensics, network tools, the full UI and the NSIS
+> installer build. **Not yet verified on a Windows 10/11 desktop:** installing/uninstalling, the
+> title bar, the launcher, Defender quick/full scans. See [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Features
 **Security & analysis**
@@ -87,8 +88,8 @@ npm ci
 npm run dist:win   # → release\BLAZMA-CYBER-<version>-x64-setup.exe
 ```
 Per-user NSIS installer (no administrator rights, Arabic + English), hardened Electron fuses, no
-auto-update. Run it **on Windows** (on Linux the NSIS uninstaller step needs Wine). The installer
-has not been built/verified on Windows yet, and builds are unsigned unless you provide a
+auto-update. Run it **on Windows** (on Linux the NSIS uninstaller step needs Wine). CI builds it on
+Windows and uploads it as an artifact; installing/uninstalling hasn't been tested yet, and builds are unsigned unless you provide a
 certificate through `CSC_LINK` / `CSC_KEY_PASSWORD`. Details: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
 ## Development
@@ -114,8 +115,8 @@ Architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 | Engine | Status |
 |---|---|
 | Built-in static analyzer (hashes, PE, entropy, IOCs, encrypted files) | Available |
-| Windows Authenticode verification | Implemented (Windows; needs Windows verification) |
-| Microsoft Defender status & scanning | Implemented (Windows; needs Windows verification) |
+| Windows Authenticode verification | Available — verified on Windows in CI |
+| Microsoft Defender status & scanning | Available — status, file scan (EICAR) and history verified on Windows in CI; quick/full scans not run in CI |
 | YARA-X (`yr` CLI, user-installed) | Available — tested with yr 1.20.0 |
 | John the Ripper / hashcat (user-installed, authorized recovery) | Available — tested with a stand-in engine; real engines need verification |
 

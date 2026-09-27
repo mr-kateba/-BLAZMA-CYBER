@@ -118,7 +118,7 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
   clear-data controls, File Analyzer (static: hashes, type, PE, entropy, IOCs, strings, signature
   on Windows, combined assessment), Hash Lab (text/file/verify/identify/compare), launcher,
   Quarantine (neutralized, verified restore), YARA-X adapter + rule manager (tested with real yr 1.20.0),
-  Security Center (Defender scans/history/quarantine UI; Defender needs Windows verification),
+  Security Center (Defender scans/history/quarantine UI),
   IP / Domain Intelligence + Reputation Center (RDAP, DNS, Team Cymru ASN, TLS, ipinfo, Tor,
   VirusTotal/AbuseIPDB/Shodan), hash-only file reputation, Windows Forensics (read-only collectors,
   Linux /proc fallbacks), Network Toolkit (ping/trace/DNS/ports/routes/ARP/discovery with
@@ -129,8 +129,11 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
   gated pivot links, provenance on every source).
 - Latest audit: docs/AUDIT-REPORT.md (3 bugs found and fixed; weaknesses and proposed features listed).
 - NOT YET: integrated terminal (planned in UI), signed installer.
-- Verified on Linux (Xvfb) only in this environment. Windows-specific PowerShell paths
-  (Defender/firewall/Authenticode) are implemented but **still need verification on real Windows**.
+- Verified on Linux (Xvfb) locally and on real Windows (Server 2025, build 26100) in CI: PowerShell
+  facts, Defender status + EICAR file scan, Authenticode, forensics, network, full UI E2E, NSIS build.
+  Not yet verified: Windows 10/11 desktop specifics (title-bar overlay, launcher, installer
+  install/uninstall), Defender quick/full scans, real John/hashcat runs.
+- PowerShell children never inherit PSModulePath (pwsh's value breaks Windows PowerShell 5.1 modules).
 
 ## Important decisions
 

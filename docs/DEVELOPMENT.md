@@ -55,7 +55,7 @@ Configuration: `electron-builder.yml`.
   uses the Chromium DevTools protocol instead.
 - No `publish` target and no auto-update.
 - `npm run dist:win` must run on Windows; on Linux, `electron-builder --win --dir` works but the
-  NSIS uninstaller step needs Wine. The installer has not been built/verified on Windows yet.
+  NSIS uninstaller step needs Wine. CI builds it on Windows; install/uninstall is not yet tested.
 - Code signing: set `CSC_LINK` / `CSC_KEY_PASSWORD` (or `WIN_CSC_*`) in the environment. Never
   commit certificates or passwords.
 - `npm run make:icon` uses Playwright's Chromium; set `CHROMIUM_PATH` to use an existing Chromium.
