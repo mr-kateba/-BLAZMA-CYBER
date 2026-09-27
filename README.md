@@ -6,6 +6,8 @@
 
 A privacy-first, local-first, bilingual (العربية / English) Windows cybersecurity workbench.
 
+**[الشرح بالعربي — التنزيل والتثبيت والتشغيل](README.ar.md)**
+
 </div>
 
 ![Dashboard (Arabic, RTL)](docs/screenshots/02-dashboard-ar.png)
@@ -81,6 +83,12 @@ cd BLAZMA-CYBER
 ```
 The launcher checks prerequisites and prints clear errors (English + Arabic). It never installs
 anything unless you pass `-Install`.
+
+## Download the installer
+CI builds the Windows installer on every change: **Actions → latest green CI run → Artifacts →
+`installer-windows-unsigned`** (sign-in required; kept 14 days). It is unsigned, so SmartScreen
+shows "Windows protected your PC" → **More info → Run anyway**. Step-by-step (Arabic):
+[README.ar.md](README.ar.md).
 
 ## Building the installer
 ```powershell
