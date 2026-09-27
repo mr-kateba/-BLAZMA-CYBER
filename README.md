@@ -6,6 +6,8 @@
 
 A privacy-first, local-first, bilingual (العربية / English) Windows cybersecurity workbench.
 
+By **[mr-kateba](https://github.com/mr-kateba)**
+
 **[الشرح بالعربي — التنزيل والتثبيت والتشغيل](README.ar.md)**
 
 </div>
@@ -102,10 +104,10 @@ The launcher checks prerequisites and prints clear errors (English + Arabic). It
 anything unless you pass `-Install`.
 
 ## Download the installer
-Get it from **[Releases](https://github.com/mr-kateba/-BLAZMA-CYBER/releases)** (latest pre-release:
-[`BLAZMA-CYBER-0.1.0-x64-setup.exe`](https://github.com/mr-kateba/-BLAZMA-CYBER/releases/download/v0.1.0-beta.1/BLAZMA-CYBER-0.1.0-x64-setup.exe)).
+Get it from **[Releases](https://github.com/mr-kateba/Blazma-Cyber/releases)** (latest pre-release:
+[`BLAZMA-CYBER-0.1.0-x64-setup.exe`](https://github.com/mr-kateba/Blazma-Cyber/releases/download/v0.1.0-beta.1/BLAZMA-CYBER-0.1.0-x64-setup.exe)).
 It is unsigned, so SmartScreen shows "Windows protected your PC" → **More info → Run anyway**.
-Verify it with `SHA256SUMS.txt` or `gh attestation verify <file> -R mr-kateba/-BLAZMA-CYBER`
+Verify it with `SHA256SUMS.txt` or `gh attestation verify <file> -R mr-kateba/Blazma-Cyber`
 (GitHub build provenance). Development builds: **Actions → CI → Artifacts** (sign-in, 14 days).
 Step-by-step in Arabic: [README.ar.md](README.ar.md).
 
@@ -161,7 +163,7 @@ Architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 Intended for defensive use on systems, networks and files you own or are authorized to assess.
 
 ## License
-Copyright © 2026 mr-kateba and Blazma Cyber contributors.
+Copyright © 2026 [mr-kateba](https://github.com/mr-kateba).
 
 Blazma Cyber is free software: you can redistribute it and/or modify it under the terms of the
 **GNU General Public License v3.0 or later** ([LICENSE](LICENSE)). It is distributed WITHOUT ANY

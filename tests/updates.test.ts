@@ -21,8 +21,8 @@ describe('Version comparison', () => {
   });
 
   it('picks the newest real release; drafts and non-version tags are ignored; the URL is built, never taken from the answer', () => {
-    expect(newestRelease(RELEASES, 'mr-kateba/-BLAZMA-CYBER')).toEqual({
-      tag: 'v0.2.0-beta.1', name: 'Beta 2', url: 'https://github.com/mr-kateba/-BLAZMA-CYBER/releases/tag/v0.2.0-beta.1', publishedAt: '2026-10-01T00:00:00Z', prerelease: true,
+    expect(newestRelease(RELEASES, 'mr-kateba/Blazma-Cyber')).toEqual({
+      tag: 'v0.2.0-beta.1', name: 'Beta 2', url: 'https://github.com/mr-kateba/Blazma-Cyber/releases/tag/v0.2.0-beta.1', publishedAt: '2026-10-01T00:00:00Z', prerelease: true,
     });
     expect(newestRelease({ message: 'Not Found' }, 'x/y')).toBeNull();
   });
@@ -38,9 +38,9 @@ describe('Manual update check', () => {
     const f = vi.fn(async (_u: string) => new Response(JSON.stringify(RELEASES), { status: 200 }));
     const { g, log } = gate(f);
     const r = await checkForUpdates(g, '0.1.0');
-    expect(f.mock.calls[0]![0]).toBe('https://api.github.com/repos/mr-kateba/-BLAZMA-CYBER/releases?per_page=20');
+    expect(f.mock.calls[0]![0]).toBe('https://api.github.com/repos/mr-kateba/Blazma-Cyber/releases?per_page=20');
     expect(r).toMatchObject({ current: '0.1.0', newer: true, latest: { tag: 'v0.2.0-beta.1' } });
-    expect(lastReleaseUrl()).toBe('https://github.com/mr-kateba/-BLAZMA-CYBER/releases/tag/v0.2.0-beta.1');
+    expect(lastReleaseUrl()).toBe('https://github.com/mr-kateba/Blazma-Cyber/releases/tag/v0.2.0-beta.1');
     expect(log[0]).toMatchObject({ host: 'api.github.com', dataKind: 'privacy.data.none', outcome: 'allowed' });
     expect((await checkForUpdates(gate(f).g, '0.2.0')).newer).toBe(false); // the final 0.2.0 is newer than its beta
   });

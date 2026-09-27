@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Languages } from 'lucide-react';
 import type { Lang } from '../../core/i18n';
-import type { UiMode } from '../../shared/api';
+import { APP_AUTHOR, type UiMode } from '../../shared/api';
 import { Logo } from '../components/Logo';
 import { translatorFor } from '../i18n/I18nProvider';
 
@@ -20,6 +20,7 @@ export function LanguagePicker({ onPick }: { onPick: (l: Lang, mode: UiMode) => 
           <Logo size={72} className="brand-logo" />
           <div className="brand-name" style={{ fontSize: 26, marginTop: 14 }}>Blazma Cyber</div>
           <div className="brand-tag" style={{ marginTop: 4 }}>{t('app.tagline')}</div>
+          <div className="tiny dim" style={{ marginTop: 6 }}>{t('app.byline', { author: APP_AUTHOR })}</div>
           <h1 style={{ marginTop: 26, fontSize: 22, display: 'flex', gap: 10, justifyContent: 'center', alignItems: 'center' }}>
             <Languages size={22} color="var(--cyan)" />
             <span>{ar('langPicker.title')}</span>

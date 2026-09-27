@@ -47,7 +47,7 @@ On Windows you can also use `.\Start-Blazma.ps1` (`-Install`, `-Dev`, `-SkipBuil
 `.github/workflows/release.yml` is started manually (**Actions → Release → Run workflow**, tag such
 as `v0.1.0-beta.1`). On a clean Windows runner it runs `npm run check`, builds the installer, runs
 the packaged-app smoke test, writes `SHA256SUMS.txt`, creates a GitHub build-provenance attestation
-(verify with `gh attestation verify <file> -R mr-kateba/-BLAZMA-CYBER`) and publishes a GitHub
+(verify with `gh attestation verify <file> -R mr-kateba/Blazma-Cyber`) and publishes a GitHub
 Release (pre-release by default) with notes from `.github/release-notes.md`.
 Code signing is optional: repository secrets `WIN_CSC_LINK` / `WIN_CSC_KEY_PASSWORD`; without them
 the installer is unsigned. Never use a self-signed certificate for public releases — Windows does

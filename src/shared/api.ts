@@ -302,6 +302,10 @@ export interface TaskProgress {
   stage: 'hashing' | 'analyzing' | 'scanning' | 'done';
 }
 
+/** The developer shown in About, the first-launch screen and the installer metadata. */
+export const APP_AUTHOR = 'mr-kateba';
+export const APP_COPYRIGHT_YEAR = 2026;
+
 export interface AppInfo {
   version: string;
   platform: string;

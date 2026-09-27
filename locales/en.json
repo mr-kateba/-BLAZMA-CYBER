@@ -3,7 +3,8 @@
     "name": "Blazma Cyber",
     "tagline": "Security • Forensics • Intelligence",
     "version": "v{{version}}",
-    "footer": "Local-first • No telemetry • Authorized use"
+    "footer": "Local-first • No telemetry • Authorized use",
+    "byline": "By {{author}}"
   },
   "langPicker": {
     "title": "Choose Language",
@@ -560,6 +561,7 @@
     "builtinDesc": "Hashing, file type, PE structure, entropy, indicators.",
     "about": "About",
     "version": "Version",
+    "developer": "Developer",
     "platform": "Platform",
     "electron": "Electron",
     "dataDir": "Data folder",
@@ -589,7 +591,8 @@
       "none": "No published release found",
       "published": "Published {{time}}",
       "note": "Only when you press the button: asks GitHub for this project’s release list (blocked in Offline Mode). Nothing is downloaded or installed automatically — you choose."
-    }
+    },
+    "copyright": "© {{year}} {{author}}. Free software under the GNU GPL v3 or later."
   },
   "activity": {
     "kind": {

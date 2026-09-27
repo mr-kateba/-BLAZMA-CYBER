@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Cpu, Info, KeyRound, Lock, RefreshCw, Settings as Gear, ShieldCheck } from 'lucide-react';
-import type { ApiKeyService, AppInfo, Settings, UpdateCheck } from '../../shared/api';
+import { APP_AUTHOR, APP_COPYRIGHT_YEAR, type ApiKeyService, type AppInfo, type Settings, type UpdateCheck } from '../../shared/api';
 import { Badge, Card, IconTile, Ltr, Notice, Tabs, Toggle, usePoll } from '../components/ui';
 import { useApp } from '../components/AppContext';
 import { useI18n } from '../i18n/I18nProvider';
@@ -271,6 +271,7 @@ function About({ info }: { info: AppInfo | null }) {
       {info && (
         <dl className="kv">
           <dt>{t('settings.version')}</dt><dd><Ltr>{info.version}</Ltr></dd>
+          <dt>{t('settings.developer')}</dt><dd><Ltr>{APP_AUTHOR}</Ltr></dd>
           <dt>{t('settings.platform')}</dt><dd><Ltr>{info.platform}</Ltr></dd>
           <dt>{t('settings.electron')}</dt><dd><Ltr>{info.electron}</Ltr></dd>
           <dt>{t('settings.dataDir')}</dt><dd><Ltr mono breakAll className="small">{info.dataDir}</Ltr>{info.portable && <div className="tiny dim">{t('settings.portableNote')}</div>}</dd>
@@ -278,6 +279,7 @@ function About({ info }: { info: AppInfo | null }) {
         </dl>
       )}
       <UpdateCheckRow />
+      <p className="small" style={{ marginBottom: 4 }}>{t('settings.copyright', { year: APP_COPYRIGHT_YEAR, author: APP_AUTHOR })}</p>
       <p className="small dim" style={{ marginBottom: 0 }}>{t('settings.license')}</p>
     </Card>
   );

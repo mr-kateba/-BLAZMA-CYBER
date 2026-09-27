@@ -7,6 +7,7 @@ import { useI18n } from './i18n/I18nProvider';
 import { findItem, labelKeyFor, visibleNav, type PageId } from './nav';
 import { DownloadsOpenListener } from './components/DownloadsWatch';
 import { Dashboard } from './pages/Dashboard';
+import { APP_AUTHOR } from '../shared/api';
 
 // Every page except the dashboard is loaded on first visit (smaller startup bundle).
 const FileAnalyzer = lazy(() => import('./pages/FileAnalyzer').then((m) => ({ default: m.FileAnalyzer })));
@@ -293,6 +294,7 @@ export function Shell() {
             <div>
               <span className="ltr">Blazma Cyber v0.1.0</span>
             </div>
+            <div>{t('app.byline', { author: APP_AUTHOR })}</div>
             <div>{t('app.footer')}</div>
           </div>
         </aside>

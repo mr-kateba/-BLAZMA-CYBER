@@ -6,7 +6,7 @@ import type { NetworkGate } from '../../core/network-gate';
 import { compareSemver, newestRelease, parseSemver } from '../../core/version';
 import type { UpdateCheck } from '../../shared/api';
 
-export const UPDATE_REPO = 'mr-kateba/-BLAZMA-CYBER';
+export const UPDATE_REPO = 'mr-kateba/Blazma-Cyber';
 
 export class UpdateError extends Error {
   constructor(readonly code: string) {

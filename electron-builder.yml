@@ -5,6 +5,7 @@
 # WIN_CSC_LINK / WIN_CSC_KEY_PASSWORD). Never commit certificates or passwords.
 appId: com.blazmacyber.workbench
 productName: Blazma Cyber
+copyright: Copyright © 2026 mr-kateba
 artifactName: Blazma-Cyber-${version}-${arch}.${ext}
 directories:
   output: release

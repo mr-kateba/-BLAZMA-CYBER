@@ -2,6 +2,8 @@
 
 # Blazma Cyber — الشرح بالعربي
 
+تطوير **[mr-kateba](https://github.com/mr-kateba)**
+
 **الأمن • التحليل الجنائي • الاستخبارات**
 
 برنامج سطح مكتب لـ Windows 10/11 للأمن السيبراني الدفاعي: تحليل الملفات، وفحص Defender وYARA،
@@ -17,16 +19,16 @@
 ## الطريقة 1: تنزيل المثبّت الجاهز (الأسهل)
 
 ### 1) التنزيل
-- افتح صفحة **[الإصدارات (Releases)](https://github.com/mr-kateba/-BLAZMA-CYBER/releases)** — تظهر أيضًا في
+- افتح صفحة **[الإصدارات (Releases)](https://github.com/mr-kateba/Blazma-Cyber/releases)** — تظهر أيضًا في
   يمين صفحة المستودع الرئيسية تحت **Releases**.
 - نزّل `BLAZMA-CYBER-0.1.0-x64-setup.exe` من قسم **Assets**. لا يحتاج تسجيل دخول.
 - رابط مباشر لآخر إصدار تجريبي (v0.1.0-beta.1):
-  https://github.com/mr-kateba/-BLAZMA-CYBER/releases/download/v0.1.0-beta.1/BLAZMA-CYBER-0.1.0-x64-setup.exe
+  https://github.com/mr-kateba/Blazma-Cyber/releases/download/v0.1.0-beta.1/BLAZMA-CYBER-0.1.0-x64-setup.exe
 
 #### (اختياري) تحقّق أن الملف سليم وأصلي
 - **البصمة:** في PowerShell: `Get-FileHash .\BLAZMA-CYBER-0.1.0-x64-setup.exe -Algorithm SHA256`
   ويجب أن تطابق القيمة في ملف `SHA256SUMS.txt` وفي صفحة الإصدار.
-- **شهادة مصدر البناء (من GitHub):** `gh attestation verify .\BLAZMA-CYBER-0.1.0-x64-setup.exe -R mr-kateba/-BLAZMA-CYBER`
+- **شهادة مصدر البناء (من GitHub):** `gh attestation verify .\BLAZMA-CYBER-0.1.0-x64-setup.exe -R mr-kateba/Blazma-Cyber`
   تثبت أن الملف بُني من هذا المستودع عبر GitHub Actions ولم يُعدَّل بعدها (تحتاج أداة [GitHub CLI](https://cli.github.com)).
 
 > نسخ أحدث للمطوّرين تُبنى تلقائيًا بعد كل تعديل في **Actions → CI → Artifacts →
@@ -61,7 +63,7 @@
 **المتطلبات:** Windows 10/11 64-bit، و[Node.js 20 أو أحدث](https://nodejs.org) (يُفضّل 22 LTS)، وGit.
 
 ```powershell
-git clone https://github.com/mr-kateba/-BLAZMA-CYBER.git Blazma-Cyber
+git clone https://github.com/mr-kateba/Blazma-Cyber.git Blazma-Cyber
 cd Blazma-Cyber
 .\Start-Blazma.ps1 -Install     # أول مرة: يثبّت الاعتماديات، يبني البرنامج، ويشغّله
 .\Start-Blazma.ps1              # المرات التالية
@@ -140,7 +142,7 @@ npm run dist:win     # الناتج: release\Blazma-Cyber-<الإصدار>-x64-s
 مخصّص للاستخدام الدفاعي على الأجهزة والشبكات والملفات التي تملكها أو المصرّح لك بفحصها.
 
 ## الترخيص
-حقوق النشر © 2026 mr-kateba ومساهمو Blazma Cyber.
+حقوق النشر © 2026 [mr-kateba](https://github.com/mr-kateba).
 
 البرنامج مفتوح المصدر بترخيص **GNU GPL الإصدار 3 أو أحدث** ([LICENSE](LICENSE)):
 - تقدر تستخدمه وتنسخه وتعدّله وتوزّعه بحرية.
