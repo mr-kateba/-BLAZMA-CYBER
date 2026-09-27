@@ -10,6 +10,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import assert from 'node:assert/strict';
 import { createServer } from 'node:net';
+import { createRequire } from 'node:module';
 
 const root = resolve(import.meta.dirname, '..');
 const out = join(root, 'docs', 'screenshots');
@@ -20,7 +21,8 @@ const yr = process.env.BLAZMA_TEST_YR; // optional: real YARA-X CLI for the Phas
 const stubOpen = (p) => app.evaluate(({ dialog }, x) => { dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [x] }); }, p);
 
 const app = await electron.launch({
-  executablePath: join(root, 'node_modules', 'electron', 'dist', process.platform === 'win32' ? 'electron.exe' : 'electron'),
+  // require('electron') returns the binary path and downloads it first if npm skipped that step.
+  executablePath: createRequire(import.meta.url)('electron'),
   args: [...(process.platform === 'linux' ? ['--no-sandbox'] : []), root],
   env: { ...process.env, BLAZMA_DATA_DIR: dataDir },
 });

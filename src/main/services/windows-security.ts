@@ -132,6 +132,7 @@ async function queryWindowsFacts(): Promise<{ ok: boolean; value: WindowsFacts }
 
 // The file path arrives via $env:BLAZMA_ARG_PATH, never inside the script text.
 const SIGNATURE_SCRIPT = `
+$ErrorActionPreference = 'Stop'
 $s = Get-AuthenticodeSignature -LiteralPath $env:BLAZMA_ARG_PATH -ErrorAction Stop
 $c = $s.SignerCertificate
 @{
@@ -157,6 +158,8 @@ export async function verifySignature(path: string): Promise<SignatureInfo> {
     { args: { PATH: path }, timeoutMs: 30000 },
   );
   if (!res.ok) return { checked: false, reason: res.error };
+  // An empty status means the cmdlet did not really run: report that, never a made-up status.
+  if (!res.data?.status) return { checked: false, reason: 'powershell_failed' };
   const map: Record<string, SignatureInfo['status']> = {
     Valid: 'valid', NotSigned: 'not_signed', HashMismatch: 'hash_mismatch', NotTrusted: 'not_trusted', UnknownError: 'unknown_error',
   };
