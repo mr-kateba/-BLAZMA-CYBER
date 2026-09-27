@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "BLAZMA CYBER",
+    "name": "Blazma Cyber",
     "tagline": "Security • Forensics • Intelligence",
     "version": "v{{version}}",
     "footer": "Local-first • No telemetry • Authorized use"
@@ -13,7 +13,7 @@
     "english": "English",
     "englishHint": "Left-to-right interface",
     "continue": "Continue",
-    "privacyNote": "BLAZMA CYBER runs locally. No account, no activation, no telemetry."
+    "privacyNote": "Blazma Cyber runs locally. No account, no activation, no telemetry."
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -228,7 +228,7 @@
   "planned": {
     "badge": "Planned",
     "title": "This module is not available yet",
-    "body": "It is scheduled for phase {{phase}} of the roadmap. Nothing on this page performs any action until the module is actually implemented — BLAZMA CYBER never shows simulated results.",
+    "body": "It is scheduled for phase {{phase}} of the roadmap. Nothing on this page performs any action until the module is actually implemented — Blazma Cyber never shows simulated results.",
     "willInclude": "What it will include",
     "roadmap": "See docs/ROADMAP.md for status.",
     "modules": {
@@ -458,7 +458,7 @@
     "p3": "Files are never uploaded automatically.",
     "p4": "API keys are encrypted with Windows credential protection.",
     "activityTitle": "Network activity",
-    "activitySub": "Every external request BLAZMA CYBER itself attempted.",
+    "activitySub": "Every external request Blazma Cyber itself attempted.",
     "noActivity": "No external requests have been made.",
     "col": {
       "time": "Time",
@@ -496,7 +496,7 @@
       "passwordCheck": "Password leak check"
     },
     "clearTitle": "Clear local data",
-    "clearSub": "Permanently removes data stored by BLAZMA CYBER on this machine.",
+    "clearSub": "Permanently removes data stored by Blazma Cyber on this machine.",
     "clear": {
       "activity": "Clear activity history",
       "network_activity": "Clear network activity log",
@@ -549,7 +549,7 @@
       "ipinfo": "ipinfo.io (optional token)",
       "abusech": "abuse.ch (MalwareBazaar · URLhaus · ThreatFox)"
     },
-    "enginesDesc": "Detection and analysis engines used by BLAZMA CYBER.",
+    "enginesDesc": "Detection and analysis engines used by Blazma Cyber.",
     "engineStatus": {
       "available": "Available",
       "unavailable": "Unavailable",
@@ -572,15 +572,15 @@
     "censysNote": "Censys lookups are not implemented yet; a stored key is not used.",
     "ipinfoNote": "Works without a token at low volume; a token raises limits.",
     "recoveryEngines": "Password recovery engines",
-    "recoveryEnginesDesc": "Optional external engines you install. BLAZMA CYBER only runs them; it never bundles or downloads them.",
+    "recoveryEnginesDesc": "Optional external engines you install. Blazma Cyber only runs them; it never bundles or downloads them.",
     "capaOnAnalyze": "Explain what programs can do (capa)",
     "dieOnAnalyze": "Identify compiler / packer (Detect It Easy)",
-    "bundledNote": "Engines included with BLAZMA were downloaded from their official releases when this version was built and verified with pinned SHA-256 checksums. BLAZMA never downloads or updates programs by itself.",
+    "bundledNote": "Engines included with Blazma were downloaded from their official releases when this version was built and verified with pinned SHA-256 checksums. Blazma never downloads or updates programs by itself.",
     "abusechNote": "One free Auth-Key from auth.abuse.ch covers all three services.",
     "installType": "Copy",
     "portable": "Portable (runs from its folder, e.g. a USB drive)",
     "installed": "Installed for this user",
-    "portableNote": "All data stays in the BLAZMA-data folder next to the program. API keys are still encrypted for this Windows account, so they must be entered again on another PC.",
+    "portableNote": "All data stays in the Blazma-data folder next to the program. API keys are still encrypted for this Windows account, so they must be entered again on another PC.",
     "update": {
       "check": "Check for updates",
       "available": "New version available: {{version}}",
@@ -701,7 +701,7 @@
     "tool_not_installed": "The required system tool is not installed on this computer.",
     "subnet_not_local": "Discovery is only allowed on a private network attached to this computer.",
     "subnet_too_large": "The network is too large (maximum /24).",
-    "security_log_needs_admin": "The Security log can only be read with administrator rights: Windows restricts it because it contains logon and audit records. Run BLAZMA CYBER as administrator to view it.",
+    "security_log_needs_admin": "The Security log can only be read with administrator rights: Windows restricts it because it contains logon and audit records. Run Blazma Cyber as administrator to view it.",
     "ps_history_missing": "No PowerShell history file exists for this user.",
     "invalid_mode": "Choose a recovery mode.",
     "invalid_mask": "The pattern contains characters that are not allowed.",
@@ -720,7 +720,7 @@
     "not_supported": "Not supported on this device (for example, legacy BIOS).",
     "encryption_unavailable": "Drive encryption is not available or could not be read on this device/edition.",
     "needs_admin": "Can only be read with administrator rights.",
-    "yara_pack_readonly": "Rule packs shipped with BLAZMA can be turned off but not deleted.",
+    "yara_pack_readonly": "Rule packs shipped with Blazma can be turned off but not deleted.",
     "engine_not_bundled": "Not included in this build (it ships with the Windows installer).",
     "engine_unsupported_file": "This engine does not support this file type.",
     "engine_missing": "The engine's program could not be started.",
@@ -821,7 +821,7 @@
     "enginePath": "Executable",
     "chooseEngine": "Choose yr executable…",
     "useDefault": "Use yr from PATH",
-    "installHelp": "Install the official YARA-X command-line tool (yr) from the VirusTotal/yara-x releases page, then select it here. BLAZMA CYBER never downloads engines automatically.",
+    "installHelp": "Install the official YARA-X command-line tool (yr) from the VirusTotal/yara-x releases page, then select it here. Blazma Cyber never downloads engines automatically.",
     "engineSaved": "YARA-X engine configured",
     "target": "Target",
     "chooseFile": "Choose file…",
@@ -866,7 +866,7 @@
       "savedUnchecked": "Rule saved (not validated — engine not installed)",
       "empty": "No rules"
     },
-    "engineBundled": "Included with BLAZMA (verified)"
+    "engineBundled": "Included with Blazma (verified)"
   },
   "intel": {
     "lookup": "Look up",
@@ -1140,7 +1140,7 @@
     "noEvents": "No matching events",
     "securityLogNote": "The Security log (logons, audit) is readable only with administrator rights.",
     "psHistory": "PowerShell command history",
-    "psHistoryWarning": "This history can contain sensitive values typed on the command line (passwords, tokens). It is shown here only; BLAZMA CYBER never stores or logs it.",
+    "psHistoryWarning": "This history can contain sensitive values typed on the command line (passwords, tokens). It is shown here only; Blazma Cyber never stores or logs it.",
     "show": "Show history",
     "historyCount": "last {{shown}} of {{total}} commands"
   },
@@ -1208,7 +1208,7 @@
     "title": "Password Recovery",
     "subtitle": "Recover access to your own protected files using an installed engine.",
     "authorizedOnly": "Use this only on files you own or are explicitly authorized to recover. It is not for accessing other people's files or accounts.",
-    "byoEngine": "BLAZMA CYBER does not include a recovery engine. It runs a mature engine you install and configure — John the Ripper or hashcat — and never uploads your file. Recovered passwords are shown here only and are never written to logs.",
+    "byoEngine": "Blazma Cyber does not include a recovery engine. It runs a mature engine you install and configure — John the Ripper or hashcat — and never uploads your file. Recovered passwords are shown here only and are never written to logs.",
     "dropTitle": "Drop a protected file",
     "dropHint": "ZIP, 7z, RAR, PDF or Office file you own",
     "file": "File",
@@ -1236,7 +1236,7 @@
     "engineMissing": "No engine configured",
     "chooseJohn": "Choose John the Ripper…",
     "chooseHashcat": "Choose hashcat…",
-    "engineHelp": "Install John the Ripper (jumbo) or hashcat yourself, then select its executable here. BLAZMA CYBER never downloads engines.",
+    "engineHelp": "Install John the Ripper (jumbo) or hashcat yourself, then select its executable here. Blazma Cyber never downloads engines.",
     "engineSaved": "Engine configured",
     "mode": "Recovery mode",
     "modeName": {
@@ -1392,7 +1392,7 @@
     "os": "Operating system",
     "arch": "Architecture",
     "hostname": "Host name",
-    "appVersion": "BLAZMA CYBER version",
+    "appVersion": "Blazma Cyber version",
     "item": "Item",
     "verdict": "Assessment",
     "source": "Source",
@@ -1400,7 +1400,7 @@
     "value": "Value",
     "added": "Added",
     "none": "None",
-    "footer": "Generated locally by BLAZMA CYBER. Heuristic findings can be false positives; review the evidence.",
+    "footer": "Generated locally by Blazma Cyber. Heuristic findings can be false positives; review the evidence.",
     "module": {
       "fileAnalyzer": "File Analyzer",
       "ipIntel": "IP Intelligence",
@@ -1469,7 +1469,7 @@
   "osint": {
     "title": "OSINT Workspace",
     "subtitle": "Lawful public sources for a domain, email, username or URL — with the source and time of every result.",
-    "lawful": "Use only for lawful investigations of targets you are authorized to research. BLAZMA queries public sources you select, nothing more, and never collects private data.",
+    "lawful": "Use only for lawful investigations of targets you are authorized to research. Blazma queries public sources you select, nothing more, and never collects private data.",
     "type": {
       "domain": "Domain",
       "email": "Email",
@@ -1530,7 +1530,7 @@
       "accepts": "Accepts mail",
       "mx": "MX records",
       "noMx": "No MX records",
-      "note": "This does not verify that the mailbox exists — BLAZMA never probes mail servers."
+      "note": "This does not verify that the mailbox exists — Blazma never probes mail servers."
     },
     "pivots": {
       "title": "Pivot to public sources",
@@ -1564,7 +1564,7 @@
   "devsec": {
     "title": "Device Security",
     "subtitle": "A read-only check of the most important Windows protections, explained simply.",
-    "readOnly": "BLAZMA only reads these settings — it never changes them. For each weakness you get the reason and the steps to fix it yourself.",
+    "readOnly": "Blazma only reads these settings — it never changes them. For each weakness you get the reason and the steps to fix it yourself.",
     "rescan": "Check again",
     "scanning": "Checking your device… (this can take up to a minute)",
     "score": "Security score",
@@ -1598,7 +1598,7 @@
     "why": "Why it matters:",
     "fix": "How to fix:",
     "openSettings": "Open the Windows setting",
-    "adminNote": "Some facts (like the TPM chip) can only be read by an administrator. BLAZMA runs without administrator rights, so they are shown as unknown instead of guessed.",
+    "adminNote": "Some facts (like the TPM chip) can only be read by an administrator. Blazma runs without administrator rights, so they are shown as unknown instead of guessed.",
     "detail": {
       "days": "{{days}} days ago",
       "profilesOff": "Off for: {{profiles}}",
@@ -1692,7 +1692,7 @@
     "ask": "What does “{{term}}” mean?",
     "verdict": {
       "title": "The assessment",
-      "text": "BLAZMA combines every check it ran (static analysis, signature, Defender, YARA, reputation) into one verdict and lists the reasons. If an engine could not run, the file is marked “Unknown” instead of “Clean”."
+      "text": "Blazma combines every check it ran (static analysis, signature, Defender, YARA, reputation) into one verdict and lists the reasons. If an engine could not run, the file is marked “Unknown” instead of “Clean”."
     },
     "engines": {
       "title": "Scan engines",
@@ -1704,7 +1704,7 @@
     },
     "filetype": {
       "title": "Real file type",
-      "text": "BLAZMA reads the first bytes of the file to know what it really is. A file called “photo.jpg” that is actually a program is a classic trick."
+      "text": "Blazma reads the first bytes of the file to know what it really is. A file called “photo.jpg” that is actually a program is a classic trick."
     },
     "entropy": {
       "title": "Entropy",
@@ -1740,7 +1740,7 @@
     },
     "defender": {
       "title": "Microsoft Defender",
-      "text": "The antivirus built into Windows. BLAZMA asks it to scan files and shows you the result; it never turns it off or changes its settings."
+      "text": "The antivirus built into Windows. Blazma asks it to scan files and shows you the result; it never turns it off or changes its settings."
     },
     "rdap": {
       "title": "Registration (RDAP/WHOIS)",
@@ -1776,7 +1776,7 @@
     },
     "offline_mode": {
       "title": "Offline Mode",
-      "text": "When on, BLAZMA refuses every internet request before it happens. Everything local keeps working. Turn it off only when you want an online lookup."
+      "text": "When on, Blazma refuses every internet request before it happens. Everything local keeps working. Turn it off only when you want an online lookup."
     },
     "timeline": {
       "title": "Timeline",
@@ -1796,7 +1796,7 @@
     },
     "k_anonymity": {
       "title": "How can it check without seeing my password?",
-      "text": "Your password is turned into a fingerprint (SHA-1) on this computer. Only the first 5 characters of that fingerprint are sent. The service replies with hundreds of leaked fingerprints that start the same way, and BLAZMA compares them here. The service never learns your password or which one you checked."
+      "text": "Your password is turned into a fingerprint (SHA-1) on this computer. Only the first 5 characters of that fingerprint are sent. The service replies with hundreds of leaked fingerprints that start the same way, and Blazma compares them here. The service never learns your password or which one you checked."
     },
     "tampering": {
       "title": "What is tampering?",
@@ -1808,7 +1808,7 @@
     },
     "downloads_watch": {
       "title": "What does watching downloads do?",
-      "text": "When a download finishes, BLAZMA checks it the same way as \"Scan a file\": it reads the file without opening or running it. You get a notification only if something looks suspicious. It works only while BLAZMA is open and never moves or deletes files."
+      "text": "When a download finishes, Blazma checks it the same way as \"Scan a file\": it reads the file without opening or running it. You get a notification only if something looks suspicious. It works only while Blazma is open and never moves or deletes files."
     },
     "event_logs": {
       "title": "What are event logs?",
@@ -1824,7 +1824,7 @@
     }
   },
   "mode": {
-    "title": "How will you use BLAZMA?",
+    "title": "How will you use Blazma?",
     "simple": "Simple",
     "simpleHint": "The essentials: device security, scan a file, check a link. Plain explanations.",
     "expert": "Expert",
@@ -1996,7 +1996,7 @@
       "html": "Web page (login forms)"
     },
     "analyzeAttachment": "Analyze",
-    "attachmentNote": "“Analyze” saves the attachment to BLAZMA's private temp folder under a name that can't run, then scans it in File Analyzer. It is never opened.",
+    "attachmentNote": "“Analyze” saves the attachment to Blazma's private temp folder under a name that can't run, then scans it in File Analyzer. It is never opened.",
     "route": "Delivery route ({{count}} servers)",
     "routeSub": "Servers the message passed through, newest first.",
     "hopFrom": "From",
@@ -2092,7 +2092,7 @@
   "ext": {
     "title": "Browser extensions",
     "subtitle": "What the add-ons in your browsers are allowed to do, and where they came from.",
-    "readOnly": "BLAZMA only reads the files your browsers keep about their extensions. It never changes, disables or uploads anything.",
+    "readOnly": "Blazma only reads the files your browsers keep about their extensions. It never changes, disables or uploads anything.",
     "rescan": "Check again",
     "noBrowsers": "No supported browser found for this user",
     "noBrowsersHint": "Supported: Chrome, Edge, Brave, Vivaldi, Opera, Chromium and Firefox.",
@@ -2178,9 +2178,9 @@
     "subtitle": "Every finished download is scanned without being opened.",
     "toggle": "Check new downloads automatically",
     "on": "Watching: ",
-    "off": "Off. Turn it on to scan each new download while BLAZMA is open.",
+    "off": "Off. Turn it on to scan each new download while Blazma is open.",
     "none": "No new downloads yet.",
-    "note": "Only while BLAZMA is open. Files are read, never opened, moved or deleted. A notification appears only for suspicious results.",
+    "note": "Only while Blazma is open. Files are read, never opened, moved or deleted. A notification appears only for suspicious results.",
     "details": "Show details",
     "status": {
       "queued": "Waiting",
@@ -2204,7 +2204,7 @@
     "pickDir": "Choose a folder of logs",
     "liveWindowsOnly": "Scanning this computer’s logs is available on Windows only; you can still analyze .evtx files.",
     "liveTitle": "Allow administrator access?",
-    "liveBody": "Windows lets only administrators read the security event logs. Windows will now ask for permission to run Hayabusa (bundled with BLAZMA) as administrator. It only reads the logs, and only this scan runs with those rights. The scan cannot be stopped once it has started; it usually takes 1–5 minutes.",
+    "liveBody": "Windows lets only administrators read the security event logs. Windows will now ask for permission to run Hayabusa (bundled with Blazma) as administrator. It only reads the logs, and only this scan runs with those rights. The scan cannot be stopped once it has started; it usually takes 1–5 minutes.",
     "liveConfirm": "Continue",
     "minLevel": "Show matches from this level up",
     "period": "Time period",
@@ -2255,7 +2255,8 @@
       "command_and_control": "Command and control",
       "exfiltration": "Exfiltration",
       "impact": "Impact"
-    }
+    },
+    "last24h": "Last 24 hours"
   },
   "memscan": {
     "title": "Memory implant scan",

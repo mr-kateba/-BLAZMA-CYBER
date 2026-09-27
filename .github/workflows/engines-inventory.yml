@@ -1,5 +1,5 @@
 # Manual helper: lists the official release assets (name, size, GitHub-computed SHA-256 digest) of the
-# engines BLAZMA bundles, so engines.lock.json can be pinned to exact files. Read-only; publishes nothing.
+# engines Blazma bundles, so engines.lock.json can be pinned to exact files. Read-only; publishes nothing.
 name: Engines inventory
 
 on:

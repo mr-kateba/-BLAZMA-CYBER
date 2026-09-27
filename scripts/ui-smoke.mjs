@@ -274,7 +274,7 @@ try {
   // 5e) Phase 5: Password Recovery — detect a real encrypted archive; engine required + authorization
   await win.getByRole('button', { name: 'English' }).click();
   await win.locator('.nav-item', { hasText: 'Password Recovery' }).click();
-  await win.getByText('BLAZMA CYBER does not include a recovery engine', { exact: false }).waitFor();
+  await win.getByText('Blazma Cyber does not include a recovery engine', { exact: false }).waitFor();
   const zc = process.env.BLAZMA_TEST_ZIP;
   if (zc && existsSync(zc)) {
     await stubOpen(zc);
@@ -512,7 +512,7 @@ try {
   await win.getByText('محجوب (دون اتصال)').first().waitFor();
   await win.screenshot({ path: join(out, '08-privacy-ar.png') });
 
-  // 8) "Terminal" opens the regular Windows terminal in its own window (not a page inside BLAZMA).
+  // 8) "Terminal" opens the regular Windows terminal in its own window (not a page inside Blazma).
   //    On Windows a separate terminal window really opens; elsewhere the app says it's Windows-only.
   const pageBefore = await win.locator('.page-title').first().textContent();
   await win.locator('.nav-item', { hasText: 'الطرفية' }).click();

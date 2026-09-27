@@ -3,7 +3,7 @@ import { parseCapa } from '../src/core/capa';
 import { parseDie } from '../src/core/die';
 import { buildSignals } from '../src/main/services/file-analysis';
 
-// Shape of capa's JSON result document (`capa -j`), trimmed to the fields BLAZMA reads.
+// Shape of capa's JSON result document (`capa -j`), trimmed to the fields Blazma reads.
 const CAPA = {
   meta: { version: '9.4.0' },
   rules: {

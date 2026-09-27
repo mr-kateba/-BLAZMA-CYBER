@@ -1,6 +1,6 @@
 // Phishing email check: reads a local .eml file (or pasted source) and analyzes it with src/core/email.ts.
 // Entirely local — the message never leaves the machine. Attachments can be handed to File Analyzer:
-// they are written, never opened, into BLAZMA's temp folder with a non-executable extension.
+// they are written, never opened, into Blazma's temp folder with a non-executable extension.
 
 import { randomUUID } from 'node:crypto';
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
@@ -53,7 +53,7 @@ export function analyzeEmailText(text: unknown) {
   return analyze(Buffer.from(text, 'utf8'));
 }
 
-/** Writes one attachment into BLAZMA's temp folder (non-executable name) and returns its path. */
+/** Writes one attachment into Blazma's temp folder (non-executable name) and returns its path. */
 export async function extractAttachment(token: unknown, index: unknown): Promise<string> {
   if (typeof token !== 'string' || !cache.has(token)) throw new EmailError('email_expired');
   if (typeof index !== 'number' || !Number.isInteger(index) || index < 0 || index > 500) throw new EmailError('invalid_input');

@@ -1,4 +1,4 @@
-# Contributing to BLAZMA CYBER
+# Contributing to Blazma Cyber
 
 Thank you for helping build a privacy-first, bilingual security workbench.
 
@@ -35,5 +35,5 @@ target third-party accounts or services, evade security controls, or weaken Wind
 will not be accepted.
 
 ## License of contributions
-BLAZMA CYBER is licensed under GPL-3.0-or-later. By submitting a contribution you agree that it is
+Blazma Cyber is licensed under GPL-3.0-or-later. By submitting a contribution you agree that it is
 licensed under the same terms. Only add dependencies whose licenses are GPL-3.0-compatible.

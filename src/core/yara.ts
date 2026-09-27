@@ -3,7 +3,7 @@
 
 import type { YaraFileResult, YaraMatch } from '../shared/api';
 
-// Starter pack authored for BLAZMA CYBER. Kept deliberately small and well-explained.
+// Starter pack authored for Blazma Cyber. Kept deliberately small and well-explained.
 // NOTE: the EICAR rule matches only the name portion, so this source file itself is never
 // detected as the EICAR test file by antivirus engines.
 export const BUILTIN_RULES: Array<{ id: string; name: string; source: string }> = [
@@ -14,7 +14,7 @@ export const BUILTIN_RULES: Array<{ id: string; name: string; source: string }> 
 {
   meta:
     description = "EICAR antivirus test file (harmless, used to check that scanners work)"
-    author = "BLAZMA CYBER"
+    author = "Blazma Cyber"
     severity = "test"
   strings:
     $name = "EICAR-STANDARD-ANTIVIRUS-TEST-FILE!"
@@ -30,7 +30,7 @@ export const BUILTIN_RULES: Array<{ id: string; name: string; source: string }> 
 {
   meta:
     description = "Script text that downloads content and executes it in memory. Common in malicious droppers, but also used by some admin scripts."
-    author = "BLAZMA CYBER"
+    author = "Blazma Cyber"
     severity = "suspicious"
   strings:
     $d1 = "DownloadString" nocase
@@ -50,7 +50,7 @@ export const BUILTIN_RULES: Array<{ id: string; name: string; source: string }> 
 {
   meta:
     description = "Windows executable packed with UPX. Packing hides code from analysis; it is used by malware and by many legitimate tools."
-    author = "BLAZMA CYBER"
+    author = "Blazma Cyber"
     severity = "info"
   strings:
     $s0 = "UPX0"

@@ -2,14 +2,14 @@ import { app } from 'electron';
 import { existsSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
-/** A file with this name next to BLAZMA CYBER.exe turns on portable mode (the portable .zip ships it). */
+/** A file with this name next to Blazma Cyber.exe turns on portable mode (the portable .zip ships it). */
 export const PORTABLE_MARKER = 'portable.txt';
 
 /** Where a portable copy keeps its data (next to the program), or null when this copy is not portable. */
 export function portableDirFor(execPath: string, packaged: boolean): string | null {
   if (!packaged) return null;
   const base = dirname(execPath);
-  return existsSync(join(base, PORTABLE_MARKER)) ? join(base, 'BLAZMA-data') : null;
+  return existsSync(join(base, PORTABLE_MARKER)) ? join(base, 'Blazma-data') : null;
 }
 
 let portable: string | null | undefined;

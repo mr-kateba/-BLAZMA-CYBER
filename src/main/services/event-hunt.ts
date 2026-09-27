@@ -1,10 +1,10 @@
 // Event-log hunting with the bundled Hayabusa (Yamato Security, AGPL-3.0) and its Sigma/Hayabusa
-// rules (Detection Rule License 1.1). Hayabusa only READS .evtx files; BLAZMA never changes logs.
+// rules (Detection Rule License 1.1). Hayabusa only READS .evtx files; Blazma never changes logs.
 //
 // - Files / folders chosen by the user: run unelevated, cancellable.
 // - "This computer": Windows keeps its event logs readable by administrators only, so Hayabusa is
-//   started with a Windows UAC prompt (Start-Process -Verb RunAs) after the user confirmed in BLAZMA.
-//   Only this one engine run is elevated; BLAZMA itself stays unelevated.
+//   started with a Windows UAC prompt (Start-Process -Verb RunAs) after the user confirmed in Blazma.
+//   Only this one engine run is elevated; Blazma itself stays unelevated.
 
 import { execFile } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
@@ -70,7 +70,7 @@ async function readResults(out: string): Promise<{ summary: EventHuntSummary; ro
 }
 
 // Elevated run for "this computer". Arguments containing paths are quoted with [char]34 (no double
-// quotes in scripts); every value comes from BLAZMA itself via BLAZMA_ARG_* (never from the renderer).
+// quotes in scripts); every value comes from Blazma itself via BLAZMA_ARG_* (never from the renderer).
 export const LIVE_SCRIPT = `
 $ErrorActionPreference = 'Stop'
 $q = [char]34

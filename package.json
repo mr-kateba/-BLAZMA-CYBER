@@ -1,6 +1,6 @@
 {
   "name": "blazma-cyber",
-  "productName": "BLAZMA CYBER",
+  "productName": "Blazma Cyber",
   "version": "0.1.0",
   "description": "Privacy-first, local-first bilingual (Arabic/English) Windows cybersecurity workbench.",
   "private": true,
@@ -43,5 +43,5 @@
     "vite": "8.3.1",
     "vitest": "5.0.2"
   },
-  "author": "mr-kateba and BLAZMA CYBER contributors"
+  "author": "mr-kateba and Blazma Cyber contributors"
 }

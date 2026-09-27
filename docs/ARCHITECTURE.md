@@ -104,7 +104,7 @@ state-changing cmdlets). Locale-independent sources are preferred (CIM objects, 
 
 ## 7. Data & storage
 
-All under `%APPDATA%\BLAZMA CYBER\` (Electron `userData`, overridable by `BLAZMA_DATA_DIR`):
+All under `%APPDATA%\Blazma Cyber\` (Electron `userData`, overridable by `BLAZMA_DATA_DIR`):
 
 | Path | Content |
 |---|---|
@@ -128,7 +128,7 @@ Writes are atomic (temp file + rename). Corrupt JSON is set aside, never crashes
 | AV scanning | Microsoft Defender | `MpCmdRun.exe -Scan` (file/folder with `-DisableRemediation`) + threat history via fixed scripts | OS component | Verified in Windows CI (file scan detects EICAR; history) |
 | YARA | **YARA-X** (VirusTotal) | user-installed `yr` CLI, run from the rules dir with relative `ns:file.yar` args | BSD-3-Clause | Implemented; tested with yr 1.20.0 |
 | Password recovery | hashcat | user-installed executable, execFile args | MIT | Implemented (orchestration only) |
-| Password recovery | John the Ripper (jumbo) | user-installed executable | GPL-2.0 (core) + mixed | Implemented; never bundled/linked; `*2john` extraction inside BLAZMA still TODO |
+| Password recovery | John the Ripper (jumbo) | user-installed executable | GPL-2.0 (core) + mixed | Implemented; never bundled/linked; `*2john` extraction inside Blazma still TODO |
 | Archive handling | 7-Zip | Separately installed `7z.exe` | LGPL-2.1 + unRAR restriction | Not integrated (evaluated) |
 | DNS | Node `dns` (`Resolver`) | built-in | — | Through NetworkGate when querying external resolvers |
 | HTTP transport | Chromium network stack (`session.fetch` / `net.request`, in-memory `blazma-network` session) | Electron | — | Honours Windows proxy settings (PAC/WPAD) and certificate store; no cookies, no disk cache |

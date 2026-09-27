@@ -1,4 +1,4 @@
-MITRE ATT&CK® data (Enterprise ATT&CK 19.2) used by BLAZMA CYBER: technique names and tactics, from https://github.com/mitre-attack/attack-stix-data (commit 6cda5ad8462c79e14fbb872f4e09059b18e0cfc4).
+MITRE ATT&CK® data (Enterprise ATT&CK 19.2) used by Blazma Cyber: technique names and tactics, from https://github.com/mitre-attack/attack-stix-data (commit 6cda5ad8462c79e14fbb872f4e09059b18e0cfc4).
 
 License
 -------

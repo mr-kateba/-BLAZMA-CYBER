@@ -24,7 +24,7 @@ export async function checkPwnedPassword(gate: NetworkGate, password: unknown, n
       url: pwnedRangeUrl(prefix),
       dataKind: 'privacy.data.password_hash_prefix',
       // Padding makes every response a similar size, so even the response length reveals nothing.
-      init: { headers: { 'Add-Padding': 'true', 'user-agent': 'BLAZMA-CYBER' } },
+      init: { headers: { 'Add-Padding': 'true', 'user-agent': 'Blazma-Cyber' } },
       timeoutMs: 15_000,
     });
   } catch (e) {

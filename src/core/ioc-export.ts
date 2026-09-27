@@ -85,10 +85,10 @@ export function stixPattern(r: IocRow): string {
   }
 }
 
-/** A STIX 2.1 bundle: the BLAZMA identity, one indicator per IOC and a grouping for the case. */
+/** A STIX 2.1 bundle: the Blazma identity, one indicator per IOC and a grouping for the case. */
 export function iocsToStix(c: InvestigationCase, rows: IocRow[], now: string, uuid: () => string): string {
   const ts = (s: string) => new Date(s).toISOString();
-  const identity = { type: 'identity', spec_version: '2.1', id: `identity--${uuid()}`, created: now, modified: now, name: 'BLAZMA CYBER', identity_class: 'system' };
+  const identity = { type: 'identity', spec_version: '2.1', id: `identity--${uuid()}`, created: now, modified: now, name: 'Blazma Cyber', identity_class: 'system' };
   const indicators = rows.map((r) => ({
     type: 'indicator',
     spec_version: '2.1',

@@ -1,6 +1,6 @@
 // Memory implant scan with the bundled HollowsHunter (hasherezade, BSD-2-Clause): looks inside the
 // memory of running programs for injected or replaced code (process hollowing, reflective DLLs,
-// shellcode, in-memory patches). Read-only: /ofilter 2 writes no dumps, and BLAZMA never uses the
+// shellcode, in-memory patches). Read-only: /ofilter 2 writes no dumps, and Blazma never uses the
 // engine's /kill or /suspend options. Runs unelevated, so it covers the programs of the current user.
 
 import { execFile } from 'node:child_process';

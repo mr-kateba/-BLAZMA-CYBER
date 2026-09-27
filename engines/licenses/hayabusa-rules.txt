@@ -1,5 +1,5 @@
 The Hayabusa and Sigma detection rules shipped in this folder are licensed under the Detection Rule License (DRL) 1.1.
-Rule set: https://github.com/Yamato-Security/hayabusa-rules (Sigma rules: https://github.com/SigmaHQ/sigma). BLAZMA CYBER shows each rule's author with every match.
+Rule set: https://github.com/Yamato-Security/hayabusa-rules (Sigma rules: https://github.com/SigmaHQ/sigma). Blazma Cyber shows each rule's author with every match.
 
 # Detection Rule License (DRL) 1.1
 

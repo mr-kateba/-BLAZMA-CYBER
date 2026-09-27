@@ -1,6 +1,6 @@
 # Security Policy
 
-BLAZMA CYBER is security-sensitive software. This document describes how the application
+Blazma Cyber is security-sensitive software. This document describes how the application
 protects itself and its users, and how to report vulnerabilities.
 
 ## Reporting a vulnerability
@@ -11,7 +11,7 @@ malware samples or third-party data in reports.
 ## Design principles
 - **Least privilege** — runs as a normal user. Administrator rights will only ever be requested for
   a specific function, with an explanation. Today exactly one feature does: scanning this computer's
-  event logs with Hayabusa (Windows lets only administrators read them). BLAZMA explains why, then
+  event logs with Hayabusa (Windows lets only administrators read them). Blazma explains why, then
   Windows shows its own UAC prompt; only that one engine run is elevated and it only reads the logs.
 - **No execution of analyzed files** — analysis is static: files are read, never run or loaded.
 - **No command injection** — no shell is ever used. Subprocesses use argument arrays. PowerShell
@@ -33,7 +33,7 @@ malware samples or third-party data in reports.
 - **External engines** — YARA-X and Microsoft Defender are invoked as separate processes by path with
   argument arrays. File and folder Defender scans are report-only (`-DisableRemediation`).
 - **Password recovery** — for files the user owns or is authorized to recover. Requires an explicit
-  authorization confirmation. BLAZMA runs a user-installed engine (John the Ripper / hashcat) with
+  authorization confirmation. Blazma runs a user-installed engine (John the Ripper / hashcat) with
   argument arrays; masks are charset-restricted and paths validated. Recovered passwords are shown
   once in the UI and never written to logs, history or disk. Nothing leaves the machine.
 - **Reports** — evidence often contains attacker-controlled text (file names, domains, extracted
@@ -52,7 +52,7 @@ malware samples or third-party data in reports.
   never downloads or updates executables. capa and DIE read files statically; they never run them.
 - **Resource limits** — streaming I/O, 32 MB static-analysis window, capped IOC/string/import
   counts, subprocess timeouts and output caps.
-- **Windows security controls are never weakened** — BLAZMA CYBER does not disable Defender,
+- **Windows security controls are never weakened** — Blazma Cyber does not disable Defender,
   change firewall rules or modify security policy.
 - **No downloaded code execution** — the app never downloads and runs binaries. External engines
   must be installed by the user and are invoked by verified path.

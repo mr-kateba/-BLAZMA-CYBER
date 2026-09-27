@@ -68,7 +68,7 @@ function createWindow() {
     minWidth: 1100,
     minHeight: 700,
     backgroundColor: '#060b18',
-    title: 'BLAZMA CYBER',
+    title: 'Blazma Cyber',
     show: false,
     titleBarStyle: 'hidden',
     titleBarOverlay: { color: '#070d1c', symbolColor: '#8fa6cf', height: 48 },

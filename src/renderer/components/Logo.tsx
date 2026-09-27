@@ -1,31 +1,16 @@
-/** BLAZMA CYBER mark: a hexagonal shield with a circuit core. Pure SVG, no external assets. */
+/** Blazma Cyber mark — the Blazma family hexagon (same as Blazma Get / Blazma Boost) with a shield. */
 export function Logo({ size = 38, className = 'brand-logo' }: { size?: number; className?: string }) {
   return (
-    <svg className={className} width={size} height={size} viewBox="0 0 64 64" aria-hidden="true">
+    <svg className={className} width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
       <defs>
-        <linearGradient id="lg-a" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#5fb2ff" />
-          <stop offset="0.55" stopColor="#2f6bff" />
-          <stop offset="1" stopColor="#7c4dff" />
-        </linearGradient>
-        <linearGradient id="lg-b" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#7df3ff" />
-          <stop offset="1" stopColor="#22a8ee" />
+        <linearGradient id="blazma-hex" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#FFB300" />
+          <stop offset="1" stopColor="#FF3D00" />
         </linearGradient>
       </defs>
-      <path d="M32 3 56 16v24c0 11-10.5 18.5-24 21C18.5 58.5 8 51 8 40V16Z" fill="url(#lg-a)" opacity="0.95" />
-      <path d="M32 9 51 19.5v19.8c0 8.6-8.1 14.6-19 16.9-10.9-2.3-19-8.3-19-16.9V19.5Z" fill="#071333" />
-      <g stroke="url(#lg-b)" strokeWidth="2.4" strokeLinecap="round" fill="none">
-        <path d="M24 20h9.5a6 6 0 0 1 0 12H24Zm0 12h11a6.5 6.5 0 0 1 0 13H24Z" />
-        <path d="M24 20v25" />
-        <path d="M17 26h7M17 39h7M41.5 26h5M43 39h4" opacity="0.7" />
-      </g>
-      <g fill="#7df3ff">
-        <circle cx="16" cy="26" r="1.8" />
-        <circle cx="16" cy="39" r="1.8" />
-        <circle cx="47.5" cy="26" r="1.8" />
-        <circle cx="48" cy="39" r="1.8" />
-      </g>
+      <path d="M 50,3 L 91,26.5 L 91,73.5 L 50,97 L 9,73.5 L 9,26.5 Z" fill="url(#blazma-hex)" />
+      <path d="M 50,20 L 71,28 L 71,47 C 71,61.5 62.5,71.5 50,78 C 37.5,71.5 29,61.5 29,47 L 29,28 Z" fill="#FFFFFF" />
+      <path d="M 39.5,48.5 L 47,56 L 61,41.5" fill="none" stroke="#FF6D00" strokeWidth="6.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

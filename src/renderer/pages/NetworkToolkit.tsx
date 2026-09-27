@@ -294,7 +294,7 @@ export function NetworkToolkit() {
           <div className="page-sub">{t('net.subtitle')}</div>
         </div>
       </div>
-      <div style={{ overflowX: 'auto' }}>
+      <div>
         <Tabs<Tab> value={tab} onChange={setTab} items={(['adapters', 'ping', 'trace', 'dns', 'ports', 'routes', 'neighbors', 'discovery'] as const).map((id) => ({ id, label: t(`net.tab.${id}`) }))} />
       </div>
       <div className="col" style={{ gap: 12 }}>

@@ -103,11 +103,11 @@ jobs:
         run: node scripts/fetch-engines.mjs
       - run: npm run dist:win
       - name: Packaged app smoke test
-        run: node scripts/package-smoke.mjs "release\win-unpacked\BLAZMA CYBER.exe"
+        run: node scripts/package-smoke.mjs "release\win-unpacked\Blazma Cyber.exe"
       - name: Portable zip + smoke test in portable mode (data must stay next to the program)
         run: |
-          node scripts/make-portable.mjs release/win-unpacked release/BLAZMA-CYBER-x64-portable.zip
-          node scripts/package-smoke.mjs "release\win-unpacked\BLAZMA CYBER.exe" --portable
+          node scripts/make-portable.mjs release/win-unpacked release/Blazma-Cyber-x64-portable.zip
+          node scripts/package-smoke.mjs "release\win-unpacked\Blazma Cyber.exe" --portable
       - name: Upload installer (unsigned)
         uses: actions/upload-artifact@v4
         with:

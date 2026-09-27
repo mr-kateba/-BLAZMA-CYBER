@@ -67,6 +67,7 @@ export function EventLogs() {
               <div>
                 <div className="small dim" style={{ marginBottom: 6 }}>{t('evlog.minLevel')}</div>
                 <OptionPills
+                  single
                   items={(['low', 'medium', 'high', 'critical'] as const).map((l) => ({ id: l, label: t(`evlog.level.${l}`), checked: opts.minLevel === l }))}
                   onToggle={(id) => setOpts((o) => ({ ...o, minLevel: id as EventHuntOptions['minLevel'] }))}
                 />
@@ -74,7 +75,8 @@ export function EventLogs() {
               <div>
                 <div className="small dim" style={{ marginBottom: 6 }}>{t('evlog.period')}</div>
                 <OptionPills
-                  items={([1, 7, 30, 90, null] as const).map((d) => ({ id: String(d), label: d === null ? t('evlog.allTime') : t('evlog.lastDays', { n: d }), checked: opts.days === d }))}
+                  single
+                  items={([1, 7, 30, 90, null] as const).map((d) => ({ id: String(d), label: d === null ? t('evlog.allTime') : d === 1 ? t('evlog.last24h') : t('evlog.lastDays', { n: d }), checked: opts.days === d }))}
                   onToggle={(id) => setOpts((o) => ({ ...o, days: id === 'null' ? null : (Number(id) as EventHuntOptions['days']) }))}
                 />
               </div>

@@ -1,4 +1,4 @@
-// Downloads watcher (opt-in): while BLAZMA is open, every finished download in the user's Downloads
+// Downloads watcher (opt-in): while Blazma is open, every finished download in the user's Downloads
 // folder is analyzed statically — exactly like File Analyzer (the file is only read, never opened
 // or executed). Results appear on the dashboard; a notification is shown only for suspicious or
 // malicious verdicts. One file at a time, a bounded queue, nothing is moved or deleted.

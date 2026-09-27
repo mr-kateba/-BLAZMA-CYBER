@@ -18,7 +18,7 @@ export function LanguagePicker({ onPick }: { onPick: (l: Lang, mode: UiMode) => 
       <div className="picker" dir={sel === 'ar' ? 'rtl' : 'ltr'}>
         <div className="card picker-card">
           <Logo size={72} className="brand-logo" />
-          <div className="brand-name" style={{ fontSize: 26, marginTop: 14 }}>BLAZMA CYBER</div>
+          <div className="brand-name" style={{ fontSize: 26, marginTop: 14 }}>Blazma Cyber</div>
           <div className="brand-tag" style={{ marginTop: 4 }}>{t('app.tagline')}</div>
           <h1 style={{ marginTop: 26, fontSize: 22, display: 'flex', gap: 10, justifyContent: 'center', alignItems: 'center' }}>
             <Languages size={22} color="var(--cyan)" />

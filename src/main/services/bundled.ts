@@ -1,4 +1,4 @@
-// Locates engines and rule packs that ship inside BLAZMA (see engines.lock.json).
+// Locates engines and rule packs that ship inside Blazma (see engines.lock.json).
 // Packaged: <resources>/engines/<id>/… and <resources>/rules/…; development: build/engines and engines/rules.
 // Bundled engines were SHA-256-verified at build time; nothing here downloads anything.
 
@@ -49,7 +49,7 @@ export function bundledEngine(id: BundledEngineId): BundledEngine | null {
   return existsSync(path) ? { id, name: m.name, version: m.version, license: m.license, path } : null;
 }
 
-/** A rule pack shipped with BLAZMA (e.g. reversinglabs.yar), if present. */
+/** A rule pack shipped with Blazma (e.g. reversinglabs.yar), if present. */
 export function bundledRulePack(file: string): string | null {
   const p = join(rulesDir(), file);
   return existsSync(p) ? p : null;

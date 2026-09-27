@@ -1,4 +1,4 @@
-// Opens the user's regular Windows terminal in its own window. BLAZMA does not host a terminal:
+// Opens the user's regular Windows terminal in its own window. Blazma does not host a terminal:
 // the GUI never builds or runs commands from user input, and a separate window keeps it that way.
 //
 // Order: Windows Terminal (wt.exe, when installed) → Windows PowerShell. Absolute paths, fixed
@@ -47,7 +47,7 @@ type SpawnFn = (exe: string, args: string[], opts: SpawnOptions) => ChildProcess
 
 function launch(c: TerminalCandidate, cwd: string, env: NodeJS.ProcessEnv, spawnFn: SpawnFn): Promise<void> {
   return new Promise((resolve, reject) => {
-    // detached on Windows = the console program gets its own new window and outlives BLAZMA.
+    // detached on Windows = the console program gets its own new window and outlives Blazma.
     const child = spawnFn(c.exe, c.args, { cwd, env, detached: true, stdio: 'ignore', windowsHide: false });
     child.once('error', reject);
     child.once('spawn', () => {

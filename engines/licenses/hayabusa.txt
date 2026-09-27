@@ -1,4 +1,4 @@
-Hayabusa is distributed with BLAZMA CYBER as a separate, unmodified program.
+Hayabusa is distributed with Blazma Cyber as a separate, unmodified program.
 Source code (the exact version shipped): https://github.com/Yamato-Security/hayabusa/tree/v4.1.0
 Copyright (c) Yamato Security. Licensed under the GNU Affero General Public License v3.0:
 

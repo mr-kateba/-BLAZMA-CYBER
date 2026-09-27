@@ -3,7 +3,7 @@
 // Scope and safety (see SECURITY.md):
 //  - This is for files the user OWNS or is explicitly authorized to recover (e.g. their own
 //    forgotten archive/PDF password). The UI requires an explicit authorization confirmation.
-//  - BLAZMA CYBER does NOT implement a recovery engine and does NOT bundle one. It runs a mature
+//  - Blazma Cyber does NOT implement a recovery engine and does NOT bundle one. It runs a mature
 //    engine the user installed and configured (John the Ripper or hashcat), located by the path
 //    set in Settings, invoked with an argument array (never a shell).
 //  - Recovered results are returned to the UI only. They are NEVER written to logs or history.

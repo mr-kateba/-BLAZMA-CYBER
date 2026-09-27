@@ -291,7 +291,7 @@ export function Shell() {
               {t(settings.uiMode === 'simple' ? 'mode.switchToExpert' : 'mode.switchToSimple')}
             </button>
             <div>
-              <span className="ltr">BLAZMA CYBER v0.1.0</span>
+              <span className="ltr">Blazma Cyber v0.1.0</span>
             </div>
             <div>{t('app.footer')}</div>
           </div>

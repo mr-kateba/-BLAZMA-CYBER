@@ -1,4 +1,4 @@
-// Threat hunting: correlate an indicator across BLAZMA's own local data — cases, quarantine,
+// Threat hunting: correlate an indicator across Blazma's own local data — cases, quarantine,
 // activity, network-activity log, and (on demand) live processes/connections/services/startup/tasks.
 // Read-only. Everything is local; nothing is sent anywhere.
 

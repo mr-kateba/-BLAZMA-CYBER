@@ -35,7 +35,7 @@ export function runPowerShellJson<T>(script: string, opts: PsOptions = {}): Prom
   assertSafeScript(script);
 
   const env: NodeJS.ProcessEnv = { ...process.env };
-  // When BLAZMA is started from PowerShell 7 (pwsh), PSModulePath points at PowerShell 7 modules.
+  // When Blazma is started from PowerShell 7 (pwsh), PSModulePath points at PowerShell 7 modules.
   // Windows PowerShell 5.1 would then try to load those (e.g. Microsoft.PowerShell.Security) and
   // fail, so Get-AuthenticodeSignature silently returned nothing. Without the variable, 5.1 rebuilds
   // its own default module path. (Found on a real Windows CI runner.)

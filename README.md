@@ -1,6 +1,6 @@
 <div align="center">
 
-# BLAZMA CYBER
+# Blazma Cyber
 ### Security • Forensics • Intelligence
 **الأمن • التحليل الجنائي • الاستخبارات**
 
@@ -13,7 +13,7 @@ A privacy-first, local-first, bilingual (العربية / English) Windows cyber
 ![Dashboard (Arabic, RTL)](docs/screenshots/02-dashboard-ar.png)
 
 ## Overview
-BLAZMA CYBER brings defensive security, static file analysis, YARA, hashing, intelligence, OSINT,
+Blazma Cyber brings defensive security, static file analysis, YARA, hashing, intelligence, OSINT,
 Windows forensics, network diagnostics, authorized password recovery, cases, reports and threat
 hunting into one modern desktop application — without accounts, activation or telemetry. It
 integrates mature engines (Microsoft Defender, YARA-X, John the Ripper / hashcat) through clean
@@ -74,7 +74,7 @@ adapters rather than re-implementing them.
 
 **For everyday users**
 - **Device Security** — a score out of 100 from 16 read-only Windows checks, each explained in plain
-  Arabic/English with how to fix it (BLAZMA never changes settings).
+  Arabic/English with how to fix it (Blazma never changes settings).
 - **Simple mode** — only the essentials (device security, scan a file, check a link), plain-language
   verdicts ("What should I do?"), a "What does this mean?" button on technical terms, and drop a
   file anywhere to scan it.
@@ -93,8 +93,8 @@ adapters rather than re-implementing them.
 Requirements: Windows 10/11 x64, [Node.js 20+](https://nodejs.org).
 
 ```powershell
-git clone <repo-url> BLAZMA-CYBER
-cd BLAZMA-CYBER
+git clone <repo-url> Blazma-Cyber
+cd Blazma-Cyber
 .\Start-Blazma.ps1 -Install     # first time: installs locked dependencies, builds, launches
 .\Start-Blazma.ps1              # afterwards
 ```
@@ -112,7 +112,7 @@ Step-by-step in Arabic: [README.ar.md](README.ar.md).
 ## Building the installer
 ```powershell
 npm ci
-npm run dist:win   # → release\BLAZMA-CYBER-<version>-x64-setup.exe
+npm run dist:win   # → release\Blazma-Cyber-<version>-x64-setup.exe
 ```
 Per-user NSIS installer (no administrator rights, Arabic + English), hardened Electron fuses, no
 auto-update. Run it **on Windows** (on Linux the NSIS uninstaller step needs Wine). CI builds it on
@@ -161,9 +161,9 @@ Architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 Intended for defensive use on systems, networks and files you own or are authorized to assess.
 
 ## License
-Copyright © 2026 mr-kateba and BLAZMA CYBER contributors.
+Copyright © 2026 mr-kateba and Blazma Cyber contributors.
 
-BLAZMA CYBER is free software: you can redistribute it and/or modify it under the terms of the
+Blazma Cyber is free software: you can redistribute it and/or modify it under the terms of the
 **GNU General Public License v3.0 or later** ([LICENSE](LICENSE)). It is distributed WITHOUT ANY
 WARRANTY. Anyone who distributes a modified version must publish its source under the same license.
 Third-party components keep their own licenses: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).

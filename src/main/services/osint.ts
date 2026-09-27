@@ -66,7 +66,7 @@ export class OsintService {
         intel.step(sources, 'osint:github', true, null, async () => {
           const json = await intel.getJson(url, {
             module: 'osint', service: 'github', dataKind: 'privacy.data.username',
-            headers: { accept: 'application/vnd.github+json', 'user-agent': 'BLAZMA-CYBER' },
+            headers: { accept: 'application/vnd.github+json', 'user-agent': 'Blazma-Cyber' },
           });
           // 404 → no public profile with that name: a result, not an error.
           result.github = json ? parseGithubUser(json) : null;

@@ -1,5 +1,5 @@
 // Manual update check: only when the user presses "Check for updates", through NetworkGate (blocked in
-// Offline Mode, logged). Reads the public release list of BLAZMA's own repository; nothing is sent
+// Offline Mode, logged). Reads the public release list of Blazma's own repository; nothing is sent
 // except the request itself, and nothing is downloaded or installed — the user gets a link.
 
 import type { NetworkGate } from '../../core/network-gate';
@@ -25,7 +25,7 @@ export async function checkForUpdates(gate: NetworkGate, current: string): Promi
       service: 'github-releases',
       url: `https://api.github.com/repos/${UPDATE_REPO}/releases?per_page=20`,
       dataKind: 'privacy.data.none',
-      init: { headers: { accept: 'application/vnd.github+json', 'user-agent': 'BLAZMA-CYBER' } },
+      init: { headers: { accept: 'application/vnd.github+json', 'user-agent': 'Blazma-Cyber' } },
       timeoutMs: 15_000,
     });
   } catch (e) {

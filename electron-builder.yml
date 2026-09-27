@@ -1,11 +1,11 @@
 # Packaging configuration (electron-builder, MIT). Build the Windows installer on Windows:
-#   npm run dist:win     → release/BLAZMA-CYBER-<version>-x64-setup.exe (NSIS, per-user, no elevation)
+#   npm run dist:win     → release/Blazma-Cyber-<version>-x64-setup.exe (NSIS, per-user, no elevation)
 #   npm run dist:dir     → unpacked app for the current OS (quick verification)
 # Code signing is configured only through environment variables (CSC_LINK / CSC_KEY_PASSWORD or
 # WIN_CSC_LINK / WIN_CSC_KEY_PASSWORD). Never commit certificates or passwords.
 appId: com.blazmacyber.workbench
-productName: BLAZMA CYBER
-artifactName: BLAZMA-CYBER-${version}-${arch}.${ext}
+productName: Blazma Cyber
+artifactName: Blazma-Cyber-${version}-${arch}.${ext}
 directories:
   output: release
   buildResources: build
@@ -52,7 +52,7 @@ win:
         - "!**/.verified"
 
 nsis:
-  artifactName: BLAZMA-CYBER-${version}-${arch}-setup.${ext}
+  artifactName: Blazma-Cyber-${version}-${arch}-setup.${ext}
   oneClick: false
   # The installer shows the GPL-3.0 license before installing.
   license: LICENSE
@@ -61,7 +61,7 @@ nsis:
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
   createStartMenuShortcut: true
-  shortcutName: BLAZMA CYBER
+  shortcutName: Blazma Cyber
   # User data (settings, cases, quarantine) is kept on uninstall; the Privacy Center clears it.
   deleteAppDataOnUninstall: false
   unicode: true
@@ -75,5 +75,5 @@ linux:
   icon: build/icon.png
   category: Utility
 
-# No auto-update and no publishing: BLAZMA never phones home.
+# No auto-update and no publishing: Blazma never phones home.
 publish: null

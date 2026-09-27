@@ -1,7 +1,7 @@
 // Device Security Score (pure): turns read-only Windows facts into explained checks and a score.
 //
 // Honesty rules: a check whose fact could not be read is `unknown` (with a reason) and is left out of
-// the score — it never counts as passed or failed. BLAZMA never changes these settings; each check
+// the score — it never counts as passed or failed. Blazma never changes these settings; each check
 // explains why it matters and how the user can fix it, optionally opening the right Windows page.
 
 export type CheckStatus = 'pass' | 'warn' | 'fail' | 'unknown';

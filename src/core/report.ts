@@ -174,7 +174,7 @@ export function buildHtmlReport(c: InvestigationCase, opts: ReportOptions, t: T,
 </head>
 <body><div class="page">
 <header>
-  <div class="brand">BLAZMA CYBER</div>
+  <div class="brand">Blazma Cyber</div>
   <h1>${escapeHtml(t('report.title'))}</h1>
   <div class="muted">${escapeHtml(t('report.generated', { time: fmt(lang, generatedAt) }))}</div>
 </header>

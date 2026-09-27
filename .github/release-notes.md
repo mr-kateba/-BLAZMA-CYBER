@@ -1,15 +1,15 @@
 <div dir="rtl">
 
-## إصدار تجريبي — BLAZMA CYBER
+## إصدار تجريبي — Blazma Cyber
 
 منصة أمن سيبراني دفاعي لـ Windows 10/11، محلية أولًا، بالعربي والإنجليزي. الشرح الكامل: [README.ar.md](https://github.com/mr-kateba/-BLAZMA-CYBER/blob/claude/vibrant-sagan-xxz92l/README.ar.md)
 
 ### التثبيت
-1. نزّل `BLAZMA-CYBER-*-x64-setup.exe` من الملفات بالأسفل.
+1. نزّل `Blazma-Cyber-*-x64-setup.exe` من الملفات بالأسفل.
 2. المثبّت **غير موقّع بشهادة توقيع كود** بعد، لذلك ستظهر رسالة **Windows protected your PC** ← اضغط **More info** ثم **Run anyway**.
 3. التثبيت للمستخدم الحالي، ولا يحتاج صلاحيات المسؤول.
 
-**بدون تثبيت (نسخة محمولة):** نزّل `BLAZMA-CYBER-*-x64-portable.zip`، فكّ الضغط في أي مجلد (أو ذاكرة USB)، وشغّل `BLAZMA CYBER.exe`. كل البيانات تبقى في مجلد `BLAZMA-data` بجانبه.
+**بدون تثبيت (نسخة محمولة):** نزّل `Blazma-Cyber-*-x64-portable.zip`، فكّ الضغط في أي مجلد (أو ذاكرة USB)، وشغّل `Blazma Cyber.exe`. كل البيانات تبقى في مجلد `Blazma-data` بجانبه.
 
 ### التحقق من سلامة الملف
 - **شهادة مصدر البناء (Build provenance):** تثبت أن الملف بُني من هذا المستودع عبر GitHub Actions ولم يُعدَّل بعدها:
@@ -26,11 +26,11 @@
 
 ---
 
-## Pre-release — BLAZMA CYBER
+## Pre-release — Blazma Cyber
 
 Privacy-first, local-first, bilingual (Arabic/English) defensive cybersecurity workbench for Windows 10/11.
 
-- **Portable:** `BLAZMA-CYBER-*-x64-portable.zip` runs without installing (unzip anywhere, e.g. a USB drive); all data stays in `BLAZMA-data` next to the program.
+- **Portable:** `Blazma-Cyber-*-x64-portable.zip` runs without installing (unzip anywhere, e.g. a USB drive); all data stays in `Blazma-data` next to the program.
 - **Unsigned** (no code-signing certificate yet): SmartScreen shows *Windows protected your PC* → **More info → Run anyway**. Per-user install, no administrator rights.
 - **Verify provenance:** `gh attestation verify BLAZMA-CYBER-0.1.0-x64-setup.exe -R mr-kateba/-BLAZMA-CYBER` (GitHub build-provenance attestation, Sigstore).
 - **Verify integrity:** compare `Get-FileHash <file> -Algorithm SHA256` with `SHA256SUMS.txt` / the value below.

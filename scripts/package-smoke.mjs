@@ -1,7 +1,7 @@
 // Smoke-tests a PACKAGED build (release/*-unpacked). The packaged app has the Node inspector fuse
 // disabled, so Playwright's electron.launch() can't attach; we use Chromium's DevTools protocol instead.
 // Usage: xvfb-run -a node scripts/package-smoke.mjs [path-to-executable] [--portable]
-// --portable: the copy has portable.txt next to it; its data must land in <exe dir>/BLAZMA-data.
+// --portable: the copy has portable.txt next to it; its data must land in <exe dir>/Blazma-data.
 import { spawn } from 'node:child_process';
 import { existsSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -50,7 +50,7 @@ try {
   await page.locator('.nav-item', { hasText: 'محلل الملفات' }).click();
   await page.locator('.page-title', { hasText: 'محلل الملفات' }).waitFor({ timeout: 15000 });
   if (portable) {
-    const own = join(dirname(exe), 'BLAZMA-data');
+    const own = join(dirname(exe), 'Blazma-data');
     assert.ok(existsSync(join(own, 'state', 'settings.json')), 'portable copy must keep its settings next to the program');
     assert.ok(existsSync(join(own, 'electron')), "portable copy must keep Chromium's data next to the program");
     const info = await page.evaluate(() => window.blazma.app.info());

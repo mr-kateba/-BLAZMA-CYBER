@@ -49,7 +49,7 @@ export interface Settings {
   capaOnAnalyze: boolean;
   /** Run the bundled Detect It Easy (compiler / packer identification) in File Analyzer. */
   dieOnAnalyze: boolean;
-  /** While BLAZMA is open, analyze new downloads statically (opt-in). */
+  /** While Blazma is open, analyze new downloads statically (opt-in). */
   watchDownloads: boolean;
 }
 
@@ -205,7 +205,7 @@ export interface YaraRuleFile {
   id: string;
   name: string;
   enabled: boolean;
-  /** pack = a rule set shipped with BLAZMA (read-only; can be disabled, not deleted). */
+  /** pack = a rule set shipped with Blazma (read-only; can be disabled, not deleted). */
   origin: 'builtin' | 'custom' | 'imported' | 'pack';
   createdAt: string;
   sizeBytes: number;
@@ -216,7 +216,7 @@ export interface YaraRuleFile {
 
 export interface YaraEngineInfo {
   available: boolean;
-  /** true when this is the YARA-X shipped with BLAZMA (verified at build time). */
+  /** true when this is the YARA-X shipped with Blazma (verified at build time). */
   bundled?: boolean;
   path?: string;
   version?: string;
@@ -966,7 +966,7 @@ export interface BlazmaApi {
     pick(): Promise<string | null>;
     analyzeFile(path: string): Promise<Result<EmailAnalysis & { token: string }>>;
     analyzeText(source: string): Promise<Result<EmailAnalysis & { token: string }>>;
-    /** Writes attachment #index to BLAZMA's temp folder (non-executable name) for File Analyzer. */
+    /** Writes attachment #index to Blazma's temp folder (non-executable name) for File Analyzer. */
     extractAttachment(token: string, index: number): Promise<Result<string>>;
   };
   password: {

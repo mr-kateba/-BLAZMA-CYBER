@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Starts BLAZMA CYBER (Security • Forensics • Intelligence).
+    Starts Blazma Cyber (Security • Forensics • Intelligence).
 
 .DESCRIPTION
     Verifies prerequisites, then launches the desktop GUI. PowerShell is only the launcher;
@@ -49,7 +49,7 @@ function Stop-WithError([string]$English, [string]$Arabic, [string]$Fix) {
 }
 
 Write-Host ''
-Write-Host '  BLAZMA CYBER' -ForegroundColor Cyan
+Write-Host '  Blazma Cyber' -ForegroundColor Cyan
 Write-Host '  Security • Forensics • Intelligence' -ForegroundColor DarkCyan
 Write-Host ''
 
@@ -85,7 +85,7 @@ if (-not $npm) {
 
 # 3. Project files
 if (-not (Test-Path -LiteralPath (Join-Path $Root 'package.json'))) {
-    Stop-WithError 'package.json not found next to this script.' 'لم يُعثر على package.json بجانب هذا السكربت.' 'Run the script from the BLAZMA CYBER folder.'
+    Stop-WithError 'package.json not found next to this script.' 'لم يُعثر على package.json بجانب هذا السكربت.' 'Run the script from the Blazma Cyber folder.'
 }
 
 Push-Location -LiteralPath $Root
@@ -124,7 +124,7 @@ try {
     if (-not (Test-Path -LiteralPath (Join-Path $Root 'dist\main\index.cjs'))) {
         Stop-WithError 'No build found.' 'لا توجد نسخة مبنية.' 'Run without -SkipBuild.'
     }
-    Write-Ok 'Launching BLAZMA CYBER...'
+    Write-Ok 'Launching Blazma Cyber...'
     Start-Process -FilePath $electronExe -ArgumentList @("`"$Root`"") -WorkingDirectory $Root
 }
 finally {

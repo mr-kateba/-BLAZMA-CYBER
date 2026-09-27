@@ -1,11 +1,11 @@
-# CLAUDE.md — BLAZMA CYBER engineering guide
+# CLAUDE.md — Blazma Cyber engineering guide
 
 Persistent guide for anyone (human or AI) working in this repository. Read it before changing code.
 Update it whenever an architectural decision changes.
 
 ## Product vision
 
-BLAZMA CYBER (Security • Forensics • Intelligence) is a **privacy-first, local-first, bilingual
+Blazma Cyber (Security • Forensics • Intelligence) is a **privacy-first, local-first, bilingual
 (Arabic/English) Windows cybersecurity workbench**. It combines defensive security, static file
 analysis, forensics, network diagnostics, intelligence and authorized password recovery in one
 desktop GUI. It integrates mature engines (Microsoft Defender, YARA-X, …) through adapters instead
@@ -165,7 +165,7 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
 | 2026-09 | Forensics scripts are query-only (tested against a deny-list of state-changing cmdlets) | Forensics must never alter the evidence |
 | 2026-09 | Locale-independent sources: CIM/Get-* objects, SIDs (S-1-5-32-544), Test-Connection | ping.exe/tracert/group names are localized on Arabic Windows |
 | 2026-09 | Port check / discovery need an explicit authorization checkbox; discovery limited to attached private /24 | Authorized-use only; prevents accidental scanning of others |
-| 2026-09 | Password recovery = orchestration only; engine is user-installed John/hashcat | Spec: don't reimplement cracking engines; keeps BLAZMA auditable and license-clean |
+| 2026-09 | Password recovery = orchestration only; engine is user-installed John/hashcat | Spec: don't reimplement cracking engines; keeps Blazma auditable and license-clean |
 | 2026-09 | Recovered secrets reach the UI once, never logs/history | Secrets must not persist on disk |
 | 2026-09 | Reports: every value HTML-escaped, no scripts, `default-src 'none'` CSP; PDF rendered in a hidden sandboxed window with JavaScript disabled | Evidence strings come from malware/untrusted sources; a report must never become an attack vector |
 | 2026-09 | OSINT pivot links are re-derived in main from (type, value, id); the renderer never passes a URL to open | A compromised renderer must not be able to open arbitrary URLs/protocols via shell.openExternal |
@@ -179,6 +179,7 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
 | 2026-09 | Hayabusa 4.1.0 bundled (AGPL-3.0 separate program + DRL-1.1 rules, source link in its LICENSE.txt); runs `dfir-timeline -t jsonl -p super-verbose` so each match keeps its rule author (DRL) | Sigma-based event-log hunting without extra tools; aggregation with a separate AGPL program is compatible with GPL-3.0 |
 | 2026-09 | ATT&CK data is a generated compact table (scripts/make-attack-data.mjs) incl. MITRE's revoked-by map | Detection rules still use ids ATT&CK 19 replaced (e.g. T1070.001 → T1685.005); 41 KB instead of the 54 MB bundle |
 | 2026-09 | IOC CSV cells starting with = + - @ are prefixed with ' | Evidence comes from attackers; exported CSV must not execute formulas in a spreadsheet |
-| 2026-09 | Portable mode = `portable.txt` marker next to the exe (added by scripts/make-portable.mjs to the zip), data in `BLAZMA-data`; userData redirected before the single-instance lock | One build for installer and zip; a portable copy never touches %APPDATA%; DPAPI-encrypted keys stay bound to the Windows account (stated in UI) |
+| 2026-09 | Portable mode = `portable.txt` marker next to the exe (added by scripts/make-portable.mjs to the zip), data in `Blazma-data`; userData redirected before the single-instance lock | One build for installer and zip; a portable copy never touches %APPDATA%; DPAPI-encrypted keys stay bound to the Windows account (stated in UI) |
 | 2026-09 | Updates: manual check only, link to the release page built in main (never the API's URL); no auto-download/installer | The app never downloads or runs binaries by itself; a signed-installer auto-update can come later |
 | 2026-09 | File/folder Defender scans use -DisableRemediation | Blazma reports; the user decides (quick/full follow Defender policy, stated in UI) |
+| 2026-09 | Branding: product name "Blazma Cyber" (not all-caps); logo = Blazma family hexagon (#FFB300→#FF3D00 gradient) with a white shield + check (`branding/`, `build/icon.*` via scripts/make-icon.mjs); env vars stay `BLAZMA_*` | Consistent with the sibling apps (Blazma Get, Blazma Boost); env names are an internal contract |

@@ -55,7 +55,7 @@ export class YaraService {
 
   constructor(
     private readonly configuredPath: () => string | null,
-    /** Engine and rule packs shipped with BLAZMA (see services/bundled.ts). */
+    /** Engine and rule packs shipped with Blazma (see services/bundled.ts). */
     private readonly bundled: { exe: () => string | null; packs: () => Array<{ id: string; name: string; path: string }> } = { exe: () => null, packs: () => [] },
   ) {}
 
@@ -82,7 +82,7 @@ export class YaraService {
       list.push({ id: b.id, name: b.name, enabled: true, origin: 'builtin', createdAt: new Date().toISOString(), sizeBytes: Buffer.byteLength(b.source), valid: null });
       changed = true;
     }
-    // Rule packs shipped with BLAZMA: installed on first run and refreshed when a new app version
+    // Rule packs shipped with Blazma: installed on first run and refreshed when a new app version
     // ships a different pack. The user's enabled/disabled choice is kept.
     for (const p of this.bundled.packs()) {
       const src = await readFile(p.path);
@@ -108,7 +108,7 @@ export class YaraService {
   }
 
   async engine(): Promise<YaraEngineInfo> {
-    // Order: the executable the user chose → the one shipped with BLAZMA → `yr` on PATH.
+    // Order: the executable the user chose → the one shipped with Blazma → `yr` on PATH.
     const configured = this.configuredPath();
     if (configured && !existsSync(configured)) return { available: false, reason: 'yara_path_missing' };
     const shipped = this.bundled.exe();

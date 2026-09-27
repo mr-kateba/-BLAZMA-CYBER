@@ -14,12 +14,13 @@ export interface OptionItem {
   hint?: string;
 }
 
-export function OptionPills({ items, onToggle }: { items: OptionItem[]; onToggle: (id: string) => void }) {
+/** Multi-select pills (checkboxes) or, with `single`, a one-of choice (radio buttons). */
+export function OptionPills({ items, onToggle, single = false }: { items: OptionItem[]; onToggle: (id: string) => void; single?: boolean }) {
   return (
-    <div className="row-wrap">
+    <div className="row-wrap" role={single ? 'radiogroup' : undefined}>
       {items.map((o) => (
-        <button key={o.id} type="button" className="opt" aria-pressed={o.checked} disabled={o.disabled} onClick={() => onToggle(o.id)} title={o.hint}>
-          <span className="opt-box">{o.checked && <Check size={10} color="#fff" strokeWidth={3} />}</span>
+        <button key={o.id} type="button" className={`opt${single ? ' single' : ''}`} role={single ? 'radio' : undefined} aria-checked={single ? o.checked : undefined} aria-pressed={single ? undefined : o.checked} disabled={o.disabled} onClick={() => onToggle(o.id)} title={o.hint}>
+          <span className="opt-box">{o.checked && (single ? <span className="opt-dot" /> : <Check size={10} color="#fff" strokeWidth={3} />)}</span>
           <span>{o.label}</span>
           {o.hint && <span className="opt-hint">· {o.hint}</span>}
         </button>

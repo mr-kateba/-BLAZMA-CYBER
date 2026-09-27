@@ -1,6 +1,6 @@
 <div dir="rtl">
 
-# BLAZMA CYBER — الشرح بالعربي
+# Blazma Cyber — الشرح بالعربي
 
 **الأمن • التحليل الجنائي • الاستخبارات**
 
@@ -33,7 +33,7 @@
 > installer-windows-unsigned** (تحتاج تسجيل دخول، وتبقى 14 يومًا).
 
 ### 2) التثبيت
-> **بدون تثبيت؟** نزّل `BLAZMA-CYBER-*-x64-portable.zip` بدلًا من المثبّت، فكّ الضغط في أي مجلد أو ذاكرة USB، وشغّل `BLAZMA CYBER.exe`. كل البيانات تبقى في مجلد `BLAZMA-data` بجانبه.
+> **بدون تثبيت؟** نزّل `Blazma-Cyber-*-x64-portable.zip` بدلًا من المثبّت، فكّ الضغط في أي مجلد أو ذاكرة USB، وشغّل `Blazma Cyber.exe`. كل البيانات تبقى في مجلد `Blazma-data` بجانبه.
 
 1. شغّل `BLAZMA-CYBER-0.1.0-x64-setup.exe`.
 2. ستظهر رسالة **"Windows protected your PC"** (حماية Windows). هذا متوقع لأن المثبّت
@@ -44,14 +44,14 @@
    - يُنشئ اختصارًا على سطح المكتب وفي قائمة ابدأ.
 
 ### 3) التشغيل
-- افتح **BLAZMA CYBER** من سطح المكتب أو قائمة ابدأ.
+- افتح **Blazma Cyber** من سطح المكتب أو قائمة ابدأ.
 - أول مرة: اختر اللغة (العربية / English)، ويمكن تغييرها لاحقًا من الإعدادات.
 - **وضع عدم الاتصال مفعّل** افتراضيًا: كل الوحدات المحلية تعمل، وأي استعلام خارجي (مثل معلومات IP
   أو VirusTotal) محجوب حتى تسمح به بنفسك من **مركز الخصوصية**.
 
 ### 4) الإزالة
-- **الإعدادات ← التطبيقات ← BLAZMA CYBER ← إزالة التثبيت**.
-- بياناتك (الإعدادات، القضايا، التقارير، الحجر) **تبقى** في `%APPDATA%\BLAZMA CYBER` حتى لا تضيع
+- **الإعدادات ← التطبيقات ← Blazma Cyber ← إزالة التثبيت**.
+- بياناتك (الإعدادات، القضايا، التقارير، الحجر) **تبقى** في `%APPDATA%\Blazma Cyber` حتى لا تضيع
   بالخطأ. لحذفها: من **مركز الخصوصية ← مسح البيانات المحلية** قبل الإزالة، أو احذف المجلد يدويًا.
 
 ---
@@ -61,8 +61,8 @@
 **المتطلبات:** Windows 10/11 64-bit، و[Node.js 20 أو أحدث](https://nodejs.org) (يُفضّل 22 LTS)، وGit.
 
 ```powershell
-git clone https://github.com/mr-kateba/-BLAZMA-CYBER.git BLAZMA-CYBER
-cd BLAZMA-CYBER
+git clone https://github.com/mr-kateba/-BLAZMA-CYBER.git Blazma-Cyber
+cd Blazma-Cyber
 .\Start-Blazma.ps1 -Install     # أول مرة: يثبّت الاعتماديات، يبني البرنامج، ويشغّله
 .\Start-Blazma.ps1              # المرات التالية
 ```
@@ -79,7 +79,7 @@ cd BLAZMA-CYBER
 
 ```powershell
 npm ci
-npm run dist:win     # الناتج: release\BLAZMA-CYBER-<الإصدار>-x64-setup.exe
+npm run dist:win     # الناتج: release\Blazma-Cyber-<الإصدار>-x64-setup.exe
 ```
 
 ---
@@ -140,7 +140,7 @@ npm run dist:win     # الناتج: release\BLAZMA-CYBER-<الإصدار>-x64-s
 مخصّص للاستخدام الدفاعي على الأجهزة والشبكات والملفات التي تملكها أو المصرّح لك بفحصها.
 
 ## الترخيص
-حقوق النشر © 2026 mr-kateba ومساهمو BLAZMA CYBER.
+حقوق النشر © 2026 mr-kateba ومساهمو Blazma Cyber.
 
 البرنامج مفتوح المصدر بترخيص **GNU GPL الإصدار 3 أو أحدث** ([LICENSE](LICENSE)):
 - تقدر تستخدمه وتنسخه وتعدّله وتوزّعه بحرية.

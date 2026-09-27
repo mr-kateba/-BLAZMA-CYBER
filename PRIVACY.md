@@ -1,12 +1,12 @@
 # Privacy
 
-BLAZMA CYBER is **local-first**. Your files, scans and investigations stay on your computer.
+Blazma Cyber is **local-first**. Your files, scans and investigations stay on your computer.
 
 ## What we never do
 - No telemetry, analytics, crash reporting or "phone home".
 - No account, login, license key or activation server.
 - No automatic file uploads — ever.
-- Scan results are never sent to any server operated by the BLAZMA CYBER project (there is none).
+- Scan results are never sent to any server operated by the Blazma Cyber project (there is none).
 
 ## Offline Mode (on by default)
 When Offline Mode is on (**Local only**), every optional external request is refused *before*
@@ -14,7 +14,7 @@ a connection is opened. Local modules keep working. Turn it off in the Privacy C
 lookups you start yourself.
 
 ## External requests
-When Offline Mode is off, BLAZMA CYBER contacts external services **only when you start an action**
+When Offline Mode is off, Blazma Cyber contacts external services **only when you start an action**
 that needs them. Currently:
 
 | Feature | Service | Data sent | Key needed |
@@ -47,7 +47,7 @@ resolver may be asked for reverse DNS). Files are **never uploaded**: reputation
 File upload is not implemented; if it is ever added it will require explicit confirmation.
 
 The optional **Downloads watcher** (off by default) is local only: it reads new files in your
-Downloads folder while BLAZMA is open, never opens, moves, deletes or uploads them.
+Downloads folder while Blazma is open, never opens, moves, deletes or uploads them.
 
 Cases, reports and threat-hunting searches are **local only**: they are stored under the app's
 data folder, are never uploaded, and can be removed from the Privacy Center (clear data → cases / reports).
@@ -57,7 +57,7 @@ Network Activity** with the time, module, service, host and the *category* of da
 Queried values and API keys are not stored in that log.
 
 ## Local data
-Stored in `%APPDATA%\BLAZMA CYBER\`: settings, recent activity, network activity log, redacted
+Stored in `%APPDATA%\Blazma Cyber\`: settings, recent activity, network activity log, redacted
 logs, encrypted API keys. You can clear activity, network activity, logs and temporary files from
 the Privacy Center (with confirmation), or open the folder directly. Activity history can be
 disabled in Settings → Privacy.

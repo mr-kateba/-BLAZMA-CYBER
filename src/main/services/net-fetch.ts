@@ -1,5 +1,5 @@
 // The HTTP transport behind NetworkGate: Chromium's network stack instead of Node's fetch, so
-// BLAZMA behaves like the browser on corporate and home networks — system proxy settings
+// Blazma behaves like the browser on corporate and home networks — system proxy settings
 // (including PAC/WPAD) and the Windows certificate store are honoured. The session is in-memory
 // and separate from the UI, requests carry no cookies and nothing is cached on disk.
 

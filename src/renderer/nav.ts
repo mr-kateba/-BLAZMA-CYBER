@@ -19,7 +19,7 @@ export interface NavItem {
   icon: LucideIcon;
   /** Present only for modules that do not exist yet; the UI labels them honestly as planned. */
   planned?: { phase: number; itemsKey: string };
-  /** Opens something outside BLAZMA (e.g. the Windows terminal) instead of a page. */
+  /** Opens something outside Blazma (e.g. the Windows terminal) instead of a page. */
   external?: boolean;
   /** Shown in simple mode (everyday users). */
   simple?: boolean;

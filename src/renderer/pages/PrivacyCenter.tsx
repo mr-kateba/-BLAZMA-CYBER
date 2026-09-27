@@ -36,8 +36,8 @@ export function PrivacyCenter() {
         </div>
       </div>
 
-      <div className="grid g-3">
-        <div className="card span-2" style={{ borderColor: offline ? 'rgba(34,211,238,0.35)' : 'rgba(34,197,94,0.35)' }}>
+      <div className="grid g-2-1">
+        <div className="card" style={{ borderColor: offline ? 'rgba(34,211,238,0.35)' : 'rgba(34,197,94,0.35)' }}>
           <div className="row" style={{ gap: 16, alignItems: 'flex-start' }}>
             <IconTile icon={offline ? CloudOff : Cloud} tone={offline ? 'cyan' : 'green'} />
             <div style={{ flex: 1 }}>

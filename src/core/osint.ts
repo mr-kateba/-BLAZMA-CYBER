@@ -1,7 +1,7 @@
 // OSINT workspace (pure): target normalization, parsers for public sources, and pivot links.
 //
 // Only lawful, public, unauthenticated sources are queried, and only when the user starts a lookup.
-// Pivot links are never fetched by BLAZMA: they open in the user's browser after an explicit click.
+// Pivot links are never fetched by Blazma: they open in the user's browser after an explicit click.
 
 import { isDomain } from './validation';
 

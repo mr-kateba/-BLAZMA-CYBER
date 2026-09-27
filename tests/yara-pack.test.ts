@@ -19,7 +19,7 @@ describe('Bundled rule pack & engines lock', () => {
     expect(text).toContain('Commit e0a0be54aa1e11ccfd6854e4f19e9476f328fd84');
     expect((text.match(/^(private )?rule /gm) ?? []).length).toBe(LOCK.rules[0].rules);
     expect(existsSync(join(__dirname, '..', 'engines', 'rules', 'LICENSE-reversinglabs.txt'))).toBe(true);
-    // Never ship the contiguous EICAR string (antivirus would flag BLAZMA itself).
+    // Never ship the contiguous EICAR string (antivirus would flag Blazma itself).
     expect(text).not.toContain('X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR');
   });
 

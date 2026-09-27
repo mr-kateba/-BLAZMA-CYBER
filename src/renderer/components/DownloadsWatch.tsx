@@ -8,7 +8,7 @@ import { formatDateTime } from '../format';
 
 const VERDICT_TONE: Record<NonNullable<DownloadEvent['verdict']>, Tone> = { no_detections: 'green', unknown: 'gray', suspicious: 'amber', malicious: 'red' };
 
-/** Dashboard card: opt-in watcher of the Downloads folder (static analysis only, while BLAZMA is open). */
+/** Dashboard card: opt-in watcher of the Downloads folder (static analysis only, while Blazma is open). */
 export function DownloadsWatchCard() {
   const { t, locale } = useI18n();
   const { settings, updateSettings, analyzeFile } = useApp();
@@ -38,7 +38,7 @@ export function DownloadsWatchCard() {
             ))}
           </div>
         )}
-        <div className="tiny dim">{t('downloads.note')}</div>
+        {on && <div className="tiny dim">{t('downloads.note')}</div>}
       </div>
     </Card>
   );

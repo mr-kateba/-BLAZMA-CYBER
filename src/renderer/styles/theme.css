@@ -1,5 +1,5 @@
 /*
- * BLAZMA CYBER design system.
+ * Blazma Cyber design system.
  * RULE: use logical properties (inline-start/end, padding-inline, inset-inline...) instead of
  * left/right so the whole UI mirrors correctly in Arabic (RTL). Physical left/right is only
  * allowed for things that are physically fixed (e.g. native window controls).
@@ -126,6 +126,21 @@ h4 {
   font-size: 0.92em;
   letter-spacing: -0.01em;
 }
+/* Hints inside technical (monospace, left-to-right) fields are regular sentences, often Arabic:
+   the monospace font has no Arabic glyphs and tight tracking breaks letter joining. */
+.mono::placeholder {
+  font-family: var(--font);
+  letter-spacing: 0;
+}
+[dir='rtl'] input.mono:placeholder-shown,
+[dir='rtl'] textarea.mono:placeholder-shown {
+  direction: rtl;
+}
+/* Dates and times never wrap or get clipped inside tables. */
+table.data .nowrap,
+table.data time {
+  white-space: nowrap;
+}
 .break {
   word-break: break-all;
 }
@@ -213,15 +228,15 @@ h4 {
 .brand-logo {
   width: 38px;
   height: 38px;
-  filter: drop-shadow(0 0 10px rgba(47, 134, 255, 0.55));
+  filter: drop-shadow(0 0 10px rgba(255, 109, 0, 0.45));
 }
 .brand-name {
   font-weight: 700;
-  font-size: 17px;
-  letter-spacing: 0.06em;
+  font-size: 18px;
+  letter-spacing: 0.01em;
   direction: ltr;
   line-height: 1.1;
-  background: linear-gradient(90deg, #fff, #9cc7ff);
+  background: linear-gradient(90deg, #fff, #ffc58a);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -507,7 +522,13 @@ h4 {
 .span-3 {
   grid-column: span 3;
 }
+.g-2-1 {
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+}
 @media (max-width: 1250px) {
+  .g-2-1 {
+    grid-template-columns: minmax(0, 1fr);
+  }
   .g-4 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -929,6 +950,11 @@ table.data tbody tr:hover td {
   background: #cfd9ef;
   transition: inset-inline-start 0.2s var(--ease), background 0.2s;
 }
+.toggle:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
 .toggle[aria-checked='true'] {
   background: var(--primary);
   border-color: transparent;
@@ -958,6 +984,8 @@ table.data tbody tr:hover td {
 
 .tabs {
   display: inline-flex;
+  flex-wrap: wrap;
+  max-width: 100%;
   padding: 4px;
   gap: 2px;
   border-radius: 12px;
@@ -1317,7 +1345,8 @@ table.data tbody tr:hover td {
   border-color: var(--border-strong);
   color: var(--text);
 }
-.opt[aria-pressed='true'] {
+.opt[aria-pressed='true'],
+.opt.single[aria-checked='true'] {
   background: rgba(47, 134, 255, 0.16);
   border-color: rgba(47, 134, 255, 0.55);
   color: #fff;
@@ -1338,6 +1367,18 @@ table.data tbody tr:hover td {
 .opt[aria-pressed='true'] .opt-box {
   background: var(--primary);
   border-color: var(--primary);
+}
+.opt.single .opt-box {
+  border-radius: 50%;
+}
+.opt.single[aria-checked='true'] .opt-box {
+  border-color: var(--primary);
+}
+.opt .opt-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
 }
 .opt .opt-hint {
   font-size: 11px;
@@ -1364,7 +1405,7 @@ table.data tbody tr:hover td {
   letter-spacing: -0.01em;
 }
 
-/* Sidebar items that open something outside BLAZMA (e.g. the Windows terminal) */
+/* Sidebar items that open something outside Blazma (e.g. the Windows terminal) */
 .nav-external {
   margin-inline-start: 2px;
   opacity: 0.55;

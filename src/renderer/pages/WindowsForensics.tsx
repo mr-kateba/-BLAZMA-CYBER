@@ -424,7 +424,7 @@ export function WindowsForensics() {
           <div className="page-sub">{t('forensics.subtitle')}</div>
         </div>
       </div>
-      <div style={{ overflowX: 'auto' }}>
+      <div>
         <Tabs<Tab> value={tab} onChange={setTab} items={TABS.map((id) => ({ id, label: t(`forensics.tab.${id}`) }))} />
       </div>
       <div className="col" style={{ gap: 12 }}>
