@@ -373,6 +373,20 @@ try {
   await win.getByText('سبب هذه النتيجة').waitFor({ timeout: 240000 });
   await win.getByText('.blazma-attachment', { exact: false }).first().waitFor();
 
+  // Phase D2: "Was my password leaked?" — local observations while typing; the check itself is an
+  // external request, so Offline Mode (default) blocks it; the field is cleared either way.
+  await win.locator('.nav-item', { hasText: 'هل تسرّبت كلمة مروري؟' }).click();
+  const pwBox = win.getByRole('textbox', { name: 'كلمة المرور' });
+  await pwBox.fill('qwerty1990');
+  assert.equal(await pwBox.getAttribute('type'), 'password');
+  await win.getByText('نمط لوحة مفاتيح', { exact: false }).waitFor();
+  await win.getByText('ما يشبه سنة', { exact: false }).waitFor();
+  await win.waitForTimeout(300);
+  await win.screenshot({ path: join(out, '32-password-check-ar.png'), fullPage: true });
+  await win.getByRole('button', { name: 'افحص', exact: true }).click();
+  await win.getByText(offlineAr, { exact: false }).first().waitFor();
+  assert.equal(await pwBox.inputValue(), '', 'the password field is cleared after checking');
+
   // 6) Hash Lab identify (Arabic)
   await win.locator('.nav-item', { hasText: 'مختبر الهاشات' }).click();
   await win.getByRole('tab', { name: 'تعرّف' }).click();
@@ -400,7 +414,7 @@ try {
   await win.getByRole('button', { name: 'الوضع البسيط' }).click();
   await win.locator('.nav-item', { hasText: 'افحص رابطًا أو موقعًا' }).waitFor();
   const simpleItems = await win.locator('.nav-item').count();
-  assert.ok(simpleItems <= 9 && simpleItems < expertItems, `simple mode should show only the essentials (${simpleItems} vs ${expertItems})`);
+  assert.ok(simpleItems <= 10 && simpleItems < expertItems, `simple mode should show only the essentials (${simpleItems} vs ${expertItems})`);
   await win.locator('.nav-item', { hasText: 'لوحة التحكم' }).click();
   await win.locator('.hero').getByRole('button', { name: 'افحص ملفًا' }).waitFor();
   // Drag a file anywhere: the drop overlay appears; a file without a real path is refused honestly.

@@ -54,7 +54,8 @@
       "scanFile": "Scan a file",
       "checkLink": "Check a link or website"
     },
-    "emailCheck": "Check an email"
+    "emailCheck": "Check an email",
+    "passwordCheck": "Was my password leaked?"
   },
   "topbar": {
     "search": "Search tools…",
@@ -474,7 +475,8 @@
       "email": "Email address",
       "username": "Username",
       "url": "URL",
-      "indicator": "The indicator in the link (IP, domain or hash)"
+      "indicator": "The indicator in the link (IP, domain or hash)",
+      "password_hash_prefix": "First 5 characters of the password’s SHA-1 fingerprint (never the password)"
     },
     "module": {
       "dashboard": "Dashboard",
@@ -483,7 +485,8 @@
       "reputation": "Reputation Center",
       "fileAnalyzer": "File Analyzer",
       "networkToolkit": "Network Toolkit",
-      "osint": "OSINT Workspace"
+      "osint": "OSINT Workspace",
+      "passwordCheck": "Password leak check"
     },
     "clearTitle": "Clear local data",
     "clearSub": "Permanently removes data stored by BLAZMA CYBER on this machine.",
@@ -1739,6 +1742,10 @@
     "die": {
       "title": "Detect It Easy — how the file was built",
       "text": "Detect It Easy identifies the compiler, installer or packer used to create a file. Packers and protectors compress or hide a program's code; many legitimate apps use them, but malware uses them a lot to avoid detection."
+    },
+    "k_anonymity": {
+      "title": "How can it check without seeing my password?",
+      "text": "Your password is turned into a fingerprint (SHA-1) on this computer. Only the first 5 characters of that fingerprint are sent. The service replies with hundreds of leaked fingerprints that start the same way, and BLAZMA compares them here. The service never learns your password or which one you checked."
     }
   },
   "mode": {
@@ -1919,5 +1926,38 @@
     "hopBy": "Received by",
     "preview": "Message text",
     "previewSub": "Plain text only — images, scripts and formatting are not loaded."
+  },
+  "pwned": {
+    "title": "Was my password leaked?",
+    "subtitle": "Checks a password against more than a billion passwords exposed in real data breaches (Have I Been Pwned).",
+    "privacy": "Your password never leaves this computer. Only the first 5 characters of its SHA-1 fingerprint are sent to api.pwnedpasswords.com, and the comparison happens here. Nothing is saved or logged.",
+    "inputTitle": "Password to check",
+    "inputLabel": "Password",
+    "placeholder": "Type the password…",
+    "show": "Show password",
+    "hide": "Hide password",
+    "check": "Check",
+    "clearedNote": "The field is cleared as soon as you press Check.",
+    "tipsTitle": "Quick observations (on this computer)",
+    "tipsSub": "{{length}} characters · {{kinds}} kinds of characters",
+    "noTips": "No obvious weakness found. A long, unique password for every site is still the best protection.",
+    "tip": {
+      "too_short": "Shorter than 12 characters — longer passwords are much harder to guess.",
+      "few_kinds": "Uses few kinds of characters — mix upper and lower case, digits and symbols, or use a long phrase.",
+      "only_digits": "Only digits — these are guessed very quickly.",
+      "repeated": "Contains the same character three times in a row.",
+      "sequence": "Contains a sequence such as 1234 or abcd.",
+      "keyboard": "Contains a keyboard pattern such as qwerty or asdf.",
+      "year": "Contains what looks like a year — birth years and dates are common guesses."
+    },
+    "checking": "Checking…",
+    "resultTitle": "Result",
+    "found": "Found in data breaches",
+    "notFound": "Not found in known breaches",
+    "count": "Seen {{count}} times in leaked password lists",
+    "foundAdvice": "Do not use this password anymore. Change it everywhere you use it, starting with email and banking, and turn on two-step verification.",
+    "notFoundAdvice": "This password is not in the known breach lists. That does not prove it is strong — use a different password for every site.",
+    "source": "Source: Have I Been Pwned — Pwned Passwords · checked {{time}}",
+    "another": "Check another"
   }
 }

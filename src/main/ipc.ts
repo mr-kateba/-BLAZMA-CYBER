@@ -15,6 +15,7 @@ import { bundledEngine, bundledRulePack } from './services/bundled';
 import { runCapa, runDie } from './services/static-engines';
 import { analyzeEmailFile, analyzeEmailText, EmailError, extractAttachment } from './services/email';
 import { openTerminal, TerminalError } from './services/terminal';
+import { checkPwnedPassword, PwnedError } from './services/pwned';
 import { deviceSecurity, DeviceSecurityError, openSettingsPage } from './services/device-security';
 import { externalLinkHost } from '../core/intel';
 import * as forensics from './services/forensics';
@@ -43,7 +44,7 @@ function fail(error: string, detail?: string): Result<never> {
 }
 
 function errorCode(e: unknown): string {
-  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError || e instanceof RecoveryError || e instanceof CaseError || e instanceof ReportError || e instanceof TerminalError || e instanceof DeviceSecurityError || e instanceof EmailError) return e.code;
+  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError || e instanceof RecoveryError || e instanceof CaseError || e instanceof ReportError || e instanceof TerminalError || e instanceof DeviceSecurityError || e instanceof EmailError || e instanceof PwnedError) return e.code;
   if (e instanceof OfflineModeError) return 'offline_mode';
   return 'internal_error';
 }
@@ -438,6 +439,9 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
     return { ok: true, data: r };
   });
   handle('email:extractAttachment', async (token: unknown, index: unknown) => ({ ok: true, data: await extractAttachment(token, index) }));
+
+  // ---- Password leak check (k-anonymity; the password is never logged or recorded in history) ----
+  handle('password:checkPwned', async (password: unknown) => ({ ok: true, data: await checkPwnedPassword(gate, password) }));
 
   // ---- OSINT ----
   handle('osint:lookup', async (type: unknown, value: unknown, options: unknown) => {

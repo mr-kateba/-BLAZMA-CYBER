@@ -89,7 +89,7 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 
 ## Phase D — Phishing & reputation — IN PROGRESS
 - DONE D1 "Check an email": local .eml / pasted-source analysis — sender consistency (display-name spoofing, Reply-To/Return-Path), SPF/DKIM/DMARC as recorded by the provider, real link destinations (mismatch, IP, @-trick, look-alike, shortener, http), risky attachments (executable, double extension, RTLO, macros, archives, HTML) with hand-off to File Analyzer under a non-executable name; Arabic encodings (RFC 2047/2231, windows-1256)
-- TODO D2 Pwned Passwords (k-anonymity)
+- DONE D2 "Was my password leaked?": Have I Been Pwned Pwned Passwords via k-anonymity (only a 5-char SHA-1 prefix is sent, with padding, through NetworkGate; matching is local; field cleared on submit; never logged or kept in history) + local observations while typing (length, character kinds, sequences, keyboard patterns, years) — no invented strength score
 - TODO D3 abuse.ch MalwareBazaar / URLhaus / ThreatFox
 
 ## Phase 7 — Polish

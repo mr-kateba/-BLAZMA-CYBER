@@ -131,6 +131,9 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
   Reports (escaped HTML with strict CSP, JSON, PDF via offline printToPDF), Threat Hunting
   (cross-module correlation + persistence review), OSINT workspace (CT, Wayback, GitHub, mail-domain DNS,
   gated pivot links, provenance on every source).
+  Phases A–D (docs/ROADMAP.md): simple mode + explanations, Device Security Score, bundled engines
+  (YARA-X, capa, DIE, ReversingLabs rules), "Check an email" (local phishing analysis),
+  "Was my password leaked?" (HIBP k-anonymity).
 - Latest audit: docs/AUDIT-REPORT.md (3 bugs found and fixed; weaknesses and proposed features listed).
 - NOT YET: signed installer.
 - Verified on Linux (Xvfb) locally and on real Windows (Server 2025, build 26100) in CI: PowerShell
@@ -166,4 +169,5 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
 | 2026-09 | OSINT pivot links are re-derived in main from (type, value, id); the renderer never passes a URL to open | A compromised renderer must not be able to open arbitrary URLs/protocols via shell.openExternal |
 | 2026-09 | Email OSINT queries only the domain's DNS; no mailbox probing (SMTP VRFY/RCPT) | Probing mail servers is intrusive and unreliable; privacy-first |
 | 2026-09 | No in-app terminal: "Terminal" opens Windows Terminal / PowerShell in its own window (absolute path, clean env, unelevated) | A hosted terminal would need a native pty addon and would break the rule that the GUI never runs commands from user input |
+| 2026-09 | Password leak check = HIBP k-anonymity range API only (5-char SHA-1 prefix, Add-Padding); no local strength "score", only concrete observations | The password must never leave the machine; a made-up score would be a fabricated result |
 | 2026-09 | File/folder Defender scans use -DisableRemediation | Blazma reports; the user decides (quick/full follow Defender policy, stated in UI) |

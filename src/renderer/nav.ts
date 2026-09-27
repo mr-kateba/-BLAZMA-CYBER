@@ -1,11 +1,11 @@
 import {
-  BadgeCheck, Crosshair, Earth, MailWarning, FileSearch, FolderOpen, Hash, KeyRound, Languages, Link2, MonitorCog, Network, Palette, Plug,
+  BadgeCheck, Crosshair, Earth, MailWarning, FileSearch, FolderOpen, Hash, KeyRound, KeySquare, Languages, Link2, MonitorCog, Network, Palette, Plug,
   ScanSearch, ScrollText, ShieldCheck, ShieldHalf, SquareTerminal, UserSearch, LayoutDashboard, Cpu, Scale, type LucideIcon,
 } from 'lucide-react';
 
 export type PageId =
   | 'dashboard' | 'device-security'
-  | 'ip-intel' | 'domain-intel' | 'email-check' | 'osint' | 'reputation'
+  | 'ip-intel' | 'domain-intel' | 'email-check' | 'password-check' | 'osint' | 'reputation'
   | 'security-center' | 'file-analyzer' | 'yara' | 'hash-lab'
   | 'password-recovery'
   | 'windows-forensics' | 'network-toolkit' | 'threat-hunting' | 'terminal'
@@ -47,6 +47,7 @@ export const NAV: NavSection[] = [
       { id: 'ip-intel', labelKey: 'nav.ipIntel', icon: Earth },
       { id: 'domain-intel', simple: true, simpleLabelKey: 'nav.simple.checkLink', labelKey: 'nav.domainIntel', icon: Link2 },
       { id: 'email-check', simple: true, labelKey: 'nav.emailCheck', icon: MailWarning },
+      { id: 'password-check', simple: true, labelKey: 'nav.passwordCheck', icon: KeySquare },
       { id: 'osint', labelKey: 'nav.osint', icon: UserSearch },
       { id: 'reputation', labelKey: 'nav.reputation', icon: Scale },
     ],

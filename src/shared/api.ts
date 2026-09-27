@@ -464,6 +464,14 @@ export interface DomainLookupResult {
 
 export type { OsintTargetType } from '../core/osint';
 export type { EmailAnalysis, EmailAttachment, EmailLink, EmailSignal, AuthResult } from '../core/email';
+
+/** Pwned Passwords answer. Never contains the password or its hash. */
+export interface PwnedResult {
+  found: boolean;
+  /** How many times the password appears in the breach corpus (0 = not found). */
+  count: number;
+  checkedAt: string;
+}
 export type { AttackRef, Capability, CapaSummary } from '../core/capa';
 export type { DieDetection, DieSummary } from '../core/die';
 export type { DeviceCheck, DeviceSecurityReport, SettingsLink } from '../core/device-security';
@@ -909,6 +917,10 @@ export interface BlazmaApi {
     analyzeText(source: string): Promise<Result<EmailAnalysis & { token: string }>>;
     /** Writes attachment #index to BLAZMA's temp folder (non-executable name) for File Analyzer. */
     extractAttachment(token: string, index: number): Promise<Result<string>>;
+  };
+  password: {
+    /** "Was my password leaked?" — sends only a 5-char SHA-1 prefix (k-anonymity) through NetworkGate. */
+    checkPwned(password: string): Promise<Result<PwnedResult>>;
   };
   device: {
     /** Read-only Device Security Score (Windows). */

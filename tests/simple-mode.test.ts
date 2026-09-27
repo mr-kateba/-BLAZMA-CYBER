@@ -14,7 +14,7 @@ const tls = (authorized: boolean, daysRemaining: number | null) => ({
 describe('Simple mode', () => {
   it('keeps only the essentials, with friendlier labels', () => {
     const ids = visibleNav('simple').flatMap((s) => s.items.map((i) => i.id));
-    expect(ids).toEqual(['dashboard', 'device-security', 'domain-intel', 'email-check', 'security-center', 'file-analyzer', 'privacy', 'settings-appearance', 'settings-language']);
+    expect(ids).toEqual(['dashboard', 'device-security', 'domain-intel', 'email-check', 'password-check', 'security-center', 'file-analyzer', 'privacy', 'settings-appearance', 'settings-language']);
     expect(visibleNav('expert')).toBe(NAV);
     const fa = NAV.flatMap((s) => s.items).find((i) => i.id === 'file-analyzer')!;
     expect(labelKeyFor(fa, 'simple')).toBe('nav.simple.scanFile');

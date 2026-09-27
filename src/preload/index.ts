@@ -77,6 +77,9 @@ const api: BlazmaApi = {
     analyzeText: (source) => invoke('email:analyzeText', source),
     extractAttachment: (token, index) => invoke('email:extractAttachment', token, index),
   },
+  password: {
+    checkPwned: (password) => invoke('password:checkPwned', password),
+  },
   device: {
     security: (force) => invoke('device:security', force === true),
     openSettings: (link) => invoke('device:openSettings', link),
