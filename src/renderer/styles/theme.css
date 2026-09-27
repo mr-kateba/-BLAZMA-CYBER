@@ -1713,3 +1713,63 @@ table.data tbody tr:hover td {
 .proto-val {
   text-align: end;
 }
+
+/* Wi-Fi Center */
+.wifi-now {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+}
+@media (max-width: 900px) {
+  .wifi-now {
+    grid-template-columns: 1fr;
+  }
+}
+.signal {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+}
+.signal > span:not(.ltr) {
+  width: 4px;
+  border-radius: 2px;
+  background: rgba(100, 130, 190, 0.25);
+}
+.signal > span.on {
+  background: var(--green);
+}
+.signal .ltr {
+  margin-inline-start: 6px;
+}
+.chan-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 120px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+  direction: ltr;
+}
+.chan {
+  position: relative;
+  flex: 1 1 0;
+  max-width: 44px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+.chan .bar {
+  width: 100%;
+  border-radius: 6px 6px 0 0;
+  background: rgba(34, 211, 238, 0.45);
+}
+.chan.mine .bar {
+  background: var(--amber);
+}
+.chan .ltr {
+  position: absolute;
+  bottom: -18px;
+}

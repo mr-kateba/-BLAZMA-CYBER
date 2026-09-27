@@ -107,6 +107,10 @@ const api: BlazmaApi = {
     tamper: () => invoke('device:tamper'),
     openSettings: (link) => invoke('device:openSettings', link),
   },
+  wifi: {
+    report: () => invoke('wifi:report'),
+    openLocationSettings: () => invoke('wifi:openLocationSettings'),
+  },
   traffic: {
     environment: () => invoke('traffic:environment'),
     interfaces: () => invoke('traffic:interfaces'),

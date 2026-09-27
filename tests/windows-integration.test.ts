@@ -238,3 +238,15 @@ describe.runIf(WIN)('Network traffic capture on real Windows (pktmon)', () => {
     expect(rep.unreadable).toBeLessThan(rep.packets);
   }, 300_000);
 });
+
+describe.runIf(WIN)('Wi-Fi Center on real Windows', () => {
+  it('compiles the WLAN reader and returns an honest report (servers usually have no Wi-Fi)', async () => {
+    process.env.BLAZMA_DATA_DIR ??= mkdtempSync(join(tmpdir(), 'blazma-wifi-'));
+    const { wifiReport } = await import('../src/main/services/wifi');
+    const r = await wifiReport();
+    console.log('Wi-Fi report:', JSON.stringify({ available: r.available, reason: r.reason, interfaces: r.interfaces, connections: r.connections.length, networks: r.networks.length, profiles: r.profiles.length, locationBlocked: r.locationBlocked, findings: r.findings.map((f) => f.id) }));
+    // wlan_unavailable would mean the C# reader failed to compile.
+    expect(r.reason).not.toBe('wlan_unavailable');
+    if (!r.available) expect(r.reason).toBe('no_wifi_adapter');
+  }, 180_000);
+});

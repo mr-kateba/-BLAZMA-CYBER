@@ -24,6 +24,7 @@ import type { CtSummary, GithubProfile, OsintPivot, OsintTargetType, WaybackSnap
 import type { AccountStatus, AccountUnknownReason, UsernameGroup } from '../core/username-check';
 import type { MacKind } from '../core/oui';
 import type { TrafficReport } from '../core/traffic/analyzer';
+import type { SavedProfile, WifiConnection, WifiFinding, WifiNetwork } from '../core/wifi';
 
 export type Theme = 'dark' | 'midnight';
 export type StartPage = 'dashboard' | 'file-analyzer' | 'hash-lab' | 'privacy';
@@ -508,6 +509,7 @@ export interface DomainLookupResult {
 export type { OsintTargetType } from '../core/osint';
 export type { AccountStatus, AccountUnknownReason, UsernameGroup } from '../core/username-check';
 export type { MacKind } from '../core/oui';
+export type { SavedProfile, WifiConnection, WifiFinding, WifiNetwork, WifiSecurity, WifiRating } from '../core/wifi';
 export type { TrafficReport, TrafficFinding, TrafficDevice, TrafficConversation, FindingSeverity } from '../core/traffic/analyzer';
 export type { EmailAnalysis, EmailAttachment, EmailLink, EmailSignal, AuthResult } from '../core/email';
 
@@ -578,6 +580,23 @@ export interface AccountsResult {
   durationMs: number;
   /** Where the site list and detection rules come from (WhatsMyName commit). */
   source: string;
+}
+
+export interface WifiReport {
+  /** false when Windows has no Wi-Fi adapter / WLAN service, or the WLAN API could not be used. */
+  available: boolean;
+  reason: 'no_wifi_adapter' | 'wlan_unavailable' | null;
+  interfaces: string[];
+  connections: WifiConnection[];
+  networks: WifiNetwork[];
+  channels: Array<{ band: '2.4' | '5' | '6'; channel: number; networks: number }>;
+  /** Windows withheld Wi-Fi names/scan results because desktop apps may not use location. */
+  locationBlocked: boolean;
+  locationSetting: 'on' | 'off' | null;
+  profiles: SavedProfile[];
+  profilesReadable: boolean;
+  findings: WifiFinding[];
+  collectedAt: string;
 }
 
 export interface CaptureEnvironment {
@@ -1083,6 +1102,12 @@ export interface BlazmaApi {
     tamper(): Promise<Result<TamperReport>>;
     /** Opens a fixed Windows settings page (never changes a setting). */
     openSettings(link: SettingsLink): Promise<Result<true>>;
+  };
+  wifi: {
+    /** Read-only: current connection, nearby networks and saved networks (never passwords). */
+    report(): Promise<Result<WifiReport>>;
+    /** Opens Windows' location privacy page (fixed URI). */
+    openLocationSettings(): Promise<Result<true>>;
   };
   traffic: {
     environment(): Promise<Result<CaptureEnvironment>>;

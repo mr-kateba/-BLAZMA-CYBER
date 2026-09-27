@@ -11,7 +11,8 @@ import { DefenderError, findMpCmdRun, getThreatHistory, runDefenderScan } from '
 import { YaraError, YaraService } from './services/yara';
 import { IntelError, IntelService } from './services/intel';
 import { OsintService } from './services/osint';
-import { analyzeFile as analyzeCapture, captureEnvironment, captureInterfaces, liveCapture, openInWireshark, parseLiveOptions } from './services/traffic';
+import { WifiError, wifiReport } from './services/wifi';
+import { TrafficError, analyzeFile as analyzeCapture, captureEnvironment, captureInterfaces, liveCapture, openInWireshark, parseLiveOptions } from './services/traffic';
 import { accountProfileUrl, accountSiteCounts, checkUsernameAccounts } from './services/username-accounts';
 import { bundledEngine, bundledRulePack } from './services/bundled';
 import { runCapa, runDie } from './services/static-engines';
@@ -56,7 +57,7 @@ function fail(error: string, detail?: string): Result<never> {
 }
 
 function errorCode(e: unknown): string {
-  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError || e instanceof RecoveryError || e instanceof CaseError || e instanceof ReportError || e instanceof TerminalError || e instanceof DeviceSecurityError || e instanceof EmailError || e instanceof PwnedError || e instanceof EventHuntError || e instanceof MemoryScanError || e instanceof UpdateError) return e.code;
+  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError || e instanceof RecoveryError || e instanceof CaseError || e instanceof ReportError || e instanceof TerminalError || e instanceof DeviceSecurityError || e instanceof EmailError || e instanceof PwnedError || e instanceof EventHuntError || e instanceof MemoryScanError || e instanceof UpdateError || e instanceof WifiError || e instanceof TrafficError) return e.code;
   if (e instanceof OfflineModeError) return 'offline_mode';
   return 'internal_error';
 }
@@ -522,6 +523,13 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
     const { url, site } = accountProfileUrl(username, siteId);
     await gate.run({ module: 'osint', service: `browser:accounts:${site.id}`, host: new URL(url).host, dataKind: 'privacy.data.username' }, () => shell.openExternal(url));
     return { ok: true, data: undefined };
+  });
+
+  // ---- Wi-Fi (read-only) ----
+  handle('wifi:report', async () => ({ ok: true, data: await wifiReport() }));
+  handle('wifi:openLocationSettings', async () => {
+    await shell.openExternal('ms-settings:privacy-location');
+    return { ok: true, data: true };
   });
 
   // ---- Network traffic (observe only) ----

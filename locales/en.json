@@ -61,7 +61,8 @@
     "extensions": "Browser extensions",
     "eventLogs": "Event log hunting",
     "memoryScan": "Memory implant scan",
-    "networkTraffic": "Network traffic"
+    "networkTraffic": "Network traffic",
+    "wifi": "Wi-Fi"
   },
   "topbar": {
     "search": "Search tools…",
@@ -742,7 +743,8 @@
     "capture_elevation_cancelled": "Administrator permission was not given, so nothing was captured.",
     "capture_failed": "The capture could not be completed.",
     "not_a_capture": "This file is not a packet capture (pcap / pcapng).",
-    "file_too_large": "The file is too large for this analysis."
+    "file_too_large": "The file is too large for this analysis.",
+    "no_wifi_adapter": "No Wi-Fi adapter on this computer"
   },
   "defender": {
     "status": {
@@ -2522,6 +2524,105 @@
         "title": "{{client}} looked up {{names}} names that don't exist",
         "body": "Many failed lookups (e.g. {{examples}}) can come from a misconfigured app — or from malware generating random domain names to find its control server.",
         "next": "Check which programs run on {{client}} and scan it (Security Center, Memory scan)."
+      }
+    }
+  },
+  "wifi": {
+    "title": "Wi-Fi",
+    "subtitle": "How safe is your Wi-Fi? Your connection, the networks around you, and the networks this computer remembers.",
+    "readOnly": "Read-only: Blazma never connects, disconnects or changes any Wi-Fi setting, and never reads a Wi-Fi password.",
+    "refresh": "Refresh",
+    "updated": "Read {{time}}",
+    "reason": {
+      "no_wifi_adapter": "No Wi-Fi adapter on this computer",
+      "wlan_unavailable": "Windows Wi-Fi information could not be read"
+    },
+    "reasonHint": "The Wi-Fi page needs a wireless adapter and the WLAN AutoConfig service. Wired-only computers have nothing to show here.",
+    "locationBlocked": "Windows treats Wi-Fi names and nearby networks as location data. Allow desktop apps to use your location to see them here — Blazma does not use your location itself.",
+    "openLocation": "Open location settings",
+    "current": "Your connection",
+    "notConnected": "This computer is not connected to a Wi-Fi network right now.",
+    "nameHidden": "Name withheld by Windows",
+    "signal": "Signal",
+    "band": "{{band}} GHz",
+    "security": "Security",
+    "cipher": "Encryption",
+    "channel": "Channel",
+    "speed": "Link speed",
+    "rssi": "Signal strength",
+    "bssid": "Access point (BSSID)",
+    "adapter": "Adapter",
+    "securityExplain": {
+      "wpa3": "WPA3 — the current standard. Very good.",
+      "wpa2": "WPA2 — still safe with a strong password.",
+      "owe": "Enhanced Open — encrypted, but anyone can join.",
+      "wpa": "WPA (first generation) — outdated and weak.",
+      "wep": "WEP — broken; it can be cracked in minutes.",
+      "open": "Open — no encryption at all. Others nearby can read unencrypted traffic.",
+      "unknown": "Not reported by Windows."
+    },
+    "rating": {
+      "good": "Very good",
+      "ok": "Good",
+      "weak": "Weak",
+      "bad": "Unsafe",
+      "unknown": "Unknown"
+    },
+    "suggestChannel": "channel {{channel}} is less crowded",
+    "suggestLong": "Your router is on a crowded 2.4 GHz channel. Switching it to channel {{channel}} (in the router settings) may give a faster, more stable connection.",
+    "findingsTitle": "Findings",
+    "noFindings": "Nothing unsafe found in your Wi-Fi setup.",
+    "tab": {
+      "nearby": "Nearby networks",
+      "saved": "Saved networks",
+      "channels": "Channels"
+    },
+    "col": {
+      "name": "Network",
+      "aps": "Access points",
+      "auto": "Joins automatically"
+    },
+    "hiddenNetwork": "Hidden network",
+    "connected": "Connected",
+    "saved": "Saved",
+    "auto": "Automatically",
+    "manual": "Manually",
+    "nearbyNone": "No networks in range right now.",
+    "nearbyBlocked": "Windows withheld the list of nearby networks (location permission).",
+    "savedNone": "This computer has no saved Wi-Fi networks.",
+    "savedNote": "Networks this computer remembers. Removing old or unsafe ones (Settings → Network & internet → Wi-Fi → Manage known networks) stops the computer from joining them automatically.",
+    "hiddenProfile": "hidden network — this computer calls out its name everywhere",
+    "profilesUnreadable": "The saved networks could not be read.",
+    "channelsNote": "How many networks use each channel around you. On 2.4 GHz, networks within 4 channels of each other slow each other down; only 1, 6 and 11 don't overlap. Your channel is highlighted.",
+    "channelTip": "Channel {{channel}}: {{n}} network(s)",
+    "finding": {
+      "current_insecure": {
+        "title": "Your connection \"{{ssid}}\" uses weak security ({{security}})",
+        "body": "Traffic on this network is poorly protected or not protected at all. Avoid logging in to accounts here, or use a VPN; if it is your own network, switch the router to WPA2 or WPA3."
+      },
+      "current_weak_signal": {
+        "title": "Weak signal on \"{{ssid}}\" ({{signal}}%)",
+        "body": "A weak signal means slow and unstable Wi-Fi. Moving closer to the router, or using the 5 GHz band, usually helps."
+      },
+      "evil_twin": {
+        "title": "Another network nearby uses the name \"{{ssid}}\" with weaker security ({{security}})",
+        "body": "A copy of a trusted network name with weaker security is how \"evil twin\" attacks lure devices. It can also be a guest network or an old router. Make sure you only join the real one."
+      },
+      "saved_open_auto": {
+        "title": "\"{{name}}\" is saved and joins automatically without protection ({{security}})",
+        "body": "Anyone can create a network with this name; your computer would join it by itself. Set it to connect manually or forget it."
+      },
+      "saved_weak": {
+        "title": "Saved network \"{{name}}\" uses weak security ({{security}})",
+        "body": "If you still use this network, ask its owner to switch to WPA2 or WPA3. Otherwise forget it."
+      },
+      "saved_hidden": {
+        "title": "\"{{name}}\" is a hidden network",
+        "body": "To find a hidden network, the computer calls out its name wherever it is — which reveals the name to anyone listening. Hiding a network name does not add security."
+      },
+      "crowded_channel": {
+        "title": "Channel {{channel}} is crowded ({{networks}} other networks)",
+        "body": "Overlapping networks on 2.4 GHz slow each other down. See the Channels tab for a less crowded channel."
       }
     }
   }

@@ -412,6 +412,17 @@ try {
   await win.getByText('plain.example').first().waitFor();
   assert.equal(await win.getByText(/SECRET/).count(), 0, 'no secret from the capture may reach the UI');
 
+  // Wi-Fi Center: real data on Windows; elsewhere an honest "Windows only" state.
+  await win.locator('.nav-item', { hasText: 'الواي فاي' }).click();
+  await win.locator('h1', { hasText: 'الواي فاي' }).waitFor();
+  if (process.platform === 'win32') {
+    await win.locator('.card').filter({ hasText: /اتصالك الحالي|لا يوجد محوّل واي فاي|تعذّرت قراءة/ }).first().waitFor({ timeout: 90000 });
+  } else {
+    await win.getByText('متاح على Windows فقط.').first().waitFor({ timeout: 30000 });
+  }
+  await win.waitForTimeout(300);
+  await win.screenshot({ path: join(out, '39-wifi-ar.png') });
+
   // Phase D: phishing email check (local only). A classic phishing sample: spoofed display name,
   // DMARC fail, a link that shows paypal.com but goes to an IP, and a double-extension attachment.
   const phish = [
@@ -570,7 +581,7 @@ try {
   await win.getByRole('button', { name: 'الوضع البسيط' }).click();
   await win.locator('.nav-item', { hasText: 'افحص رابطًا أو موقعًا' }).waitFor();
   const simpleItems = await win.locator('.nav-item').count();
-  assert.ok(simpleItems <= 11 && simpleItems < expertItems, `simple mode should show only the essentials (${simpleItems} vs ${expertItems})`);
+  assert.ok(simpleItems <= 12 && simpleItems < expertItems, `simple mode should show only the essentials (${simpleItems} vs ${expertItems})`);
   await win.locator('.nav-item', { hasText: 'لوحة التحكم' }).click();
   await win.locator('.hero').getByRole('button', { name: 'افحص ملفًا' }).waitFor();
   // Drag a file anywhere: the drop overlay appears; a file without a real path is refused honestly.
