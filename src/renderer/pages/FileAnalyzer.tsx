@@ -196,6 +196,12 @@ export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAn
         </Card>
       </div>
 
+      {r.encryption && (
+        <Notice tone="amber" icon={ShieldAlert}>
+          {t('file.encryptedNotice', { scheme: r.encryption.scheme ?? r.encryption.format })}
+        </Notice>
+      )}
+
       <div className="grid g-2">
         <Card title={t('file.hashes')} icon={Fingerprint} tone="cyan">
           <HashRows hashes={r.hashes as unknown as Record<string, string>} />

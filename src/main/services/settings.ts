@@ -15,6 +15,8 @@ const VALIDATORS: { [K in keyof Settings]: (v: unknown) => boolean } = {
   logLevel: (v) => v === 'INFO' || v === 'DEBUG',
   reportLanguage: (v) => isLang(v),
   yaraPath: (v) => v === null || (typeof v === 'string' && validateAbsolutePath(v).ok),
+  johnPath: (v) => v === null || (typeof v === 'string' && validateAbsolutePath(v).ok),
+  hashcatPath: (v) => v === null || (typeof v === 'string' && validateAbsolutePath(v).ok),
   defenderOnAnalyze: (v) => typeof v === 'boolean',
   yaraOnAnalyze: (v) => typeof v === 'boolean',
 };

@@ -120,7 +120,8 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
   IP / Domain Intelligence + Reputation Center (RDAP, DNS, Team Cymru ASN, TLS, ipinfo, Tor,
   VirusTotal/AbuseIPDB/Shodan), hash-only file reputation, Windows Forensics (read-only collectors,
   Linux /proc fallbacks), Network Toolkit (ping/trace/DNS/ports/routes/ARP/discovery with
-  authorization confirmation).
+  authorization confirmation), Password Recovery (encrypted-file detection + bring-your-own
+  John/hashcat engine, authorization required, results never logged).
 - Latest audit: docs/AUDIT-REPORT.md (3 bugs found and fixed; weaknesses and proposed features listed).
 - NOT YET: forensics, network toolkit,
   password recovery, cases, reports, threat hunting, OSINT, terminal, packaging/installer.
@@ -145,4 +146,6 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
 | 2026-09 | Forensics scripts are query-only (tested against a deny-list of state-changing cmdlets) | Forensics must never alter the evidence |
 | 2026-09 | Locale-independent sources: CIM/Get-* objects, SIDs (S-1-5-32-544), Test-Connection | ping.exe/tracert/group names are localized on Arabic Windows |
 | 2026-09 | Port check / discovery need an explicit authorization checkbox; discovery limited to attached private /24 | Authorized-use only; prevents accidental scanning of others |
+| 2026-09 | Password recovery = orchestration only; engine is user-installed John/hashcat | Spec: don't reimplement cracking engines; keeps BLAZMA auditable and license-clean |
+| 2026-09 | Recovered secrets reach the UI once, never logs/history | Secrets must not persist on disk |
 | 2026-09 | File/folder Defender scans use -DisableRemediation | Blazma reports; the user decides (quick/full follow Defender policy, stated in UI) |

@@ -333,7 +333,8 @@
     "hashRepNote": "External lookup: only the SHA-256 hash is sent. The file is never uploaded.",
     "hashRepNeedsKey": "Add a VirusTotal API key in Settings to enable this.",
     "hashRepOffline": "Blocked by Offline Mode",
-    "reassessed": "Assessment updated with hash reputation"
+    "reassessed": "Assessment updated with hash reputation",
+    "encryptedNotice": "This file is encrypted ({{scheme}}). Use Password Recovery to recover access to files you own."
   },
   "verdict": {
     "no_detections": "No detections",
@@ -514,7 +515,9 @@
     "yaraOnAnalyzeDesc": "Uses the enabled rules in the YARA Scanner.",
     "configure": "Configure",
     "censysNote": "Censys lookups are not implemented yet; a stored key is not used.",
-    "ipinfoNote": "Works without a token at low volume; a token raises limits."
+    "ipinfoNote": "Works without a token at low volume; a token raises limits.",
+    "recoveryEngines": "Password recovery engines",
+    "recoveryEnginesDesc": "Optional external engines you install. BLAZMA CYBER only runs them; it never bundles or downloads them."
   },
   "activity": {
     "kind": {
@@ -620,7 +623,15 @@
     "subnet_not_local": "Discovery is only allowed on a private network attached to this computer.",
     "subnet_too_large": "The network is too large (maximum /24).",
     "security_log_needs_admin": "The Security log can only be read with administrator rights: Windows restricts it because it contains logon and audit records. Run BLAZMA CYBER as administrator to view it.",
-    "ps_history_missing": "No PowerShell history file exists for this user."
+    "ps_history_missing": "No PowerShell history file exists for this user.",
+    "invalid_mode": "Choose a recovery mode.",
+    "invalid_mask": "The pattern contains characters that are not allowed.",
+    "engine_not_configured": "No recovery engine is configured. Set the path to John the Ripper or hashcat in Settings.",
+    "engine_path_missing": "The configured engine executable no longer exists.",
+    "engine_check_failed": "That file is not a working recovery engine.",
+    "engine_run_failed": "The recovery engine failed to run.",
+    "authorization_required": "You must confirm you are authorized before starting.",
+    "wordlist_not_found": "The selected wordlist file was not found."
   },
   "defender": {
     "status": {
@@ -1073,5 +1084,74 @@
     "noSubnets": "No private network adapter found",
     "discoverSummary": "{{alive}} device(s) found of {{probed}} addresses",
     "noHosts": "No devices answered"
+  },
+  "recovery": {
+    "title": "Password Recovery",
+    "subtitle": "Recover access to your own protected files using an installed engine.",
+    "authorizedOnly": "Use this only on files you own or are explicitly authorized to recover. It is not for accessing other people's files or accounts.",
+    "byoEngine": "BLAZMA CYBER does not include a recovery engine. It runs a mature engine you install and configure — John the Ripper or hashcat — and never uploads your file. Recovered passwords are shown here only and are never written to logs.",
+    "dropTitle": "Drop a protected file",
+    "dropHint": "ZIP, 7z, RAR, PDF or Office file you own",
+    "file": "File",
+    "format": "Format",
+    "encryption": "Encryption",
+    "notEncrypted": "This file does not appear to be encrypted.",
+    "notSupported": "This format is not supported for recovery.",
+    "strength": {
+      "strong": "Strong (modern AES)",
+      "weak": "Weak (legacy scheme)",
+      "unknown": "Unknown"
+    },
+    "note": {
+      "zipAes": "WinZip AES — strong; recovery depends entirely on password strength.",
+      "zipCrypto": "Legacy ZipCrypto — weaker than AES.",
+      "sevenZip": "7-Zip uses AES-256; header encryption may hide file names.",
+      "rar5": "RAR5 uses AES-256.",
+      "rar4": "RAR4 uses an older scheme.",
+      "pdfAes": "PDF with AES encryption.",
+      "pdfRc4": "PDF with legacy RC4 encryption.",
+      "officeAgile": "Office document with AES (agile) encryption."
+    },
+    "engine": "Engine",
+    "engineReady": "{{engine}} {{version}} is ready",
+    "engineMissing": "No engine configured",
+    "chooseJohn": "Choose John the Ripper…",
+    "chooseHashcat": "Choose hashcat…",
+    "engineHelp": "Install John the Ripper (jumbo) or hashcat yourself, then select its executable here. BLAZMA CYBER never downloads engines.",
+    "engineSaved": "Engine configured",
+    "mode": "Recovery mode",
+    "modeName": {
+      "wordlist": "Wordlist",
+      "mask": "Pattern (mask)",
+      "candidates": "Candidate list"
+    },
+    "modeDesc": {
+      "wordlist": "Try each entry from a wordlist file you provide.",
+      "mask": "Try all combinations matching a pattern, e.g. ?u?l?l?l?d?d.",
+      "candidates": "Try a small list of specific passwords you already suspect."
+    },
+    "wordlistFile": "Wordlist file",
+    "chooseWordlist": "Choose wordlist…",
+    "maskLabel": "Pattern",
+    "maskHelp": "?l lowercase · ?u uppercase · ?d digit · ?s symbol · ?a any · literals allowed",
+    "authCheck": "I own this file or am explicitly authorized to recover its password.",
+    "start": "Start recovery",
+    "running": "Recovery in progress",
+    "rate": "{{rate}} /s",
+    "tried": "{{tried}} tried",
+    "progressOf": "{{tried}} of {{total}}",
+    "elapsed": "Elapsed",
+    "pause": "Pause",
+    "resume": "Resume",
+    "stop": "Stop",
+    "paused": "Paused",
+    "pauseUnsupported": "Pause is not available on this platform.",
+    "found": "Password recovered",
+    "foundNote": "Shown once here. It is not saved or logged. Copy it now if you need it.",
+    "notFound": "Not found with this mode",
+    "notFoundHint": "Try a larger wordlist or a different pattern.",
+    "stopped": "Stopped",
+    "newSession": "New recovery",
+    "reveal": "Recovered password"
   }
 }
