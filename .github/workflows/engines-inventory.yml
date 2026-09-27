@@ -23,3 +23,10 @@ jobs:
             echo "=== $1 $2"
             gh api "repos/$1/releases/tags/$2" --jq '.assets[] | "\(.name)\t\(.size)\t\(.digest)\t\(.browser_download_url)"'
           done
+          # Candidates for new engines: latest release, license and assets.
+          for repo in Yamato-Security/hayabusa Yamato-Security/hayabusa-rules hasherezade/hollows_hunter hasherezade/pe-sieve; do
+            echo "=== $repo (latest)"
+            gh api "repos/$repo" --jq '"license: \(.license.spdx_id // "none")  default branch: \(.default_branch)"'
+            gh api "repos/$repo/releases/latest" --jq '"tag: \(.tag_name)  published: \(.published_at)"' || true
+            gh api "repos/$repo/releases/latest" --jq '.assets[] | "\(.name)\t\(.size)\t\(.digest)\t\(.browser_download_url)"' || true
+          done
