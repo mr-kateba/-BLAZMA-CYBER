@@ -21,7 +21,7 @@ hunting into one modern desktop application — without accounts, activation or 
 integrates mature engines (Microsoft Defender, YARA-X, John the Ripper / hashcat) through clean
 adapters rather than re-implementing them.
 
-> **Status: v0.1, all modules implemented.** "Terminal" opens the regular Windows terminal
+> **Status: v1.1.0 (stable).** "Terminal" opens the regular Windows terminal
 > (Windows Terminal, else PowerShell) in its own window. Verified end-to-end on Linux and, through CI,
 > on real Windows (Server 2025, build 26100 — the Windows 11 24H2 code base): PowerShell queries,
 > Defender status and file scan, Authenticode, forensics, network tools, the full UI and the NSIS
@@ -42,6 +42,9 @@ adapters rather than re-implementing them.
 - **Quarantine** — neutralized storage, SHA-256-verified restore; nothing is deleted automatically.
 - **YARA scanner** — adapter to the user-installed YARA-X `yr` CLI, rule manager with validation.
 - **Hash Lab** — hash text/files, verify, identify formats (ranked possibilities), compare.
+- **File integrity monitor** — fingerprint a folder (SHA-256 of every file), then see exactly what
+  was added, removed or changed; flags content edits that kept the old timestamp and changed files
+  that can run code. Suggested places: Startup folders, the hosts folder, PowerShell profiles.
 
 **Intelligence**
 - **IP / Domain Intelligence** — reverse DNS, RDAP, Team Cymru ASN, approximate location (ipinfo),
@@ -62,7 +65,19 @@ adapters rather than re-implementing them.
   couldn't check, never guessed; provenance (endpoint + time) on every source; pivot links open in
   your browser only after confirmation.
 
-**Forensics & network**
+**Network**
+- **Wi-Fi** — current connection (security in plain words, signal, band/channel, link speed), nearby
+  networks with an evil-twin check and a channel chart, and an audit of saved networks (open networks
+  that join automatically, weak or hidden ones) — read-only, passwords are never read.
+- **Network traffic** — analyse .pcap/.pcapng files or record 15 s – 5 min with Windows pktmon (one
+  UAC prompt) or Wireshark's dumpcap: devices with their manufacturer, conversations, DNS, HTTPS
+  sites, unencrypted logins, and measured patterns (port scan, ARP conflict, rogue DHCP, outdated
+  TLS…). Cookies, passwords and page contents never enter the report.
+- **Service scan (Nmap)** — with your own Nmap install: who is online, and which services each
+  device exposes (100 / 1,000 ports), with plain-language risks (telnet, open databases, VNC, RDP…).
+  Only your own networks, after an authorization confirmation.
+
+**Forensics & network tools**
 - **Windows Forensics** — read-only collectors: processes, connections, services, drivers,
   startup, scheduled tasks, users, software, USB history, events (Linux `/proc` fallbacks).
 - **Network Toolkit** — ping, traceroute, DNS, reverse DNS, routes, ARP, adapters; port check and
@@ -83,6 +98,11 @@ adapters rather than re-implementing them.
   verdicts ("What should I do?"), a "What does this mean?" button on technical terms, and drop a
   file anywhere to scan it.
 
+**Everywhere**
+- **Smart search (Ctrl+K)** — paste an IP, hash, domain, link, e-mail, @username or file path
+  (defanged `hxxp`/`[.]` too) and jump straight to the tool that examines it, pre-filled.
+- **Themes** — deep navy, midnight black, light, or match Windows.
+
 **Privacy & language**
 - **Privacy Center** — Offline Mode (on by default), log of every external request, clear local data.
 - **Arabic & English** — full translation, RTL/LTR switching, technical values kept LTR.
@@ -92,6 +112,9 @@ adapters rather than re-implementing them.
 | ![File analyzer](docs/screenshots/05-file-analyzer-ar.png) | ![Threat hunting](docs/screenshots/25-threat-hunting-ar.png) |
 | ![OSINT](docs/screenshots/26-osint-offline-ar.png) | ![Case report](docs/screenshots/23-case-report-ar.png) |
 | ![Dashboard English](docs/screenshots/03-dashboard-en.png) | ![Privacy Center](docs/screenshots/08-privacy-ar.png) |
+| ![Network traffic](docs/screenshots/38-network-traffic-ar.png) | ![Service scan (Nmap)](docs/screenshots/40-service-scan-ar.png) |
+| ![File integrity](docs/screenshots/43-file-integrity-ar.png) | ![Smart search](docs/screenshots/42-smart-search-ar.png) |
+| ![Light theme](docs/screenshots/41-light-theme-en.png) | |
 
 ## Installation (development build)
 Requirements: Windows 10/11 x64, [Node.js 20+](https://nodejs.org).
@@ -150,6 +173,8 @@ Architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 | Microsoft Defender status & scanning | Available — status, file scan (EICAR) and history verified on Windows in CI; quick/full scans not run in CI |
 | YARA-X (`yr` CLI, user-installed) | Available — tested with yr 1.20.0 |
 | John the Ripper / hashcat (user-installed, authorized recovery) | Available — tested with a stand-in engine; real engines need verification |
+| Nmap (user-installed, local networks only) | Available — tested with Nmap 7.94 (Linux); Windows install not verified in CI |
+| Windows pktmon / Wireshark dumpcap (capture) | pktmon verified on Windows in CI; dumpcap used when Wireshark + Npcap are installed |
 
 ## Troubleshooting
 | Problem | Solution |

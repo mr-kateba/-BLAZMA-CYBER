@@ -136,8 +136,11 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
   "Was my password leaked?" (HIBP k-anonymity), abuse.ch reputation (MalwareBazaar/URLhaus/ThreatFox).
   Phase E: system proxy, signs of tampering, browser extensions audit, Downloads watcher,
   Hayabusa event-log hunting, HollowsHunter memory scan.
+  Phase G (v1.1.0): device manufacturers (offline OUI), network traffic (pcap/pcapng + pktmon/dumpcap
+  capture), Wi-Fi Center, Nmap service scan (user-installed), light theme, smart search (Ctrl+K),
+  file integrity monitor.
 - Latest audit: docs/AUDIT-REPORT.md (3 bugs found and fixed; weaknesses and proposed features listed).
-- Released: v1.0.0 (first stable release), v1.0.1 (OSINT accounts check, UI fixes) — 2026-09. NOT YET: signed installer.
+- Released: v1.0.0 (first stable release), v1.0.1 (OSINT accounts check, UI fixes), v1.1.0 (Phase G) — 2026-09. NOT YET: signed installer.
 - Verified on Linux (Xvfb) locally and on real Windows (Server 2025, build 26100) in CI: PowerShell
   facts, Defender status + EICAR file scan, Authenticode, forensics, network, full UI E2E, NSIS build.
   Not yet verified: Windows 10/11 desktop specifics (title-bar overlay, launcher, installer
@@ -186,3 +189,8 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
 | 2026-09 | Developer credit = `APP_AUTHOR` ('mr-kateba', src/shared/api.ts): About, language picker, sidebar footer, installer copyright, package author, README. Commits are authored as `mr-kateba <132195893+mr-kateba@users.noreply.github.com>` without AI co-author trailers | Owner's decision: the project is published under the owner's name |
 | 2026-09 | OSINT accounts check = WhatsMyName rules (`src/core/username-sites.json` from scripts/make-username-sites.mjs, pinned commit, CC BY-SA 4.0); found only on the exact exists-signature, missing only on the missing-signature, else "couldn't check" + reason; adult/dating/political/archive categories left out | Honest results (no guessing from status codes alone); a maintained open list instead of hand-written site rules |
 | 2026-09 | No drive-encryption (BitLocker) check in the Device Security Score | Owner decision: prompting people to turn on BitLocker risks data loss when the recovery key isn't saved |
+| 2026-09 | Nmap and Wireshark are user-installed, never bundled; Nmap runs fixed profiles (-sT, -n, no NSE scripts, no user flags) only against private/link-local/loopback/CGNAT IPs or attached /24s, after an authorization confirmation | Same rule as John/hashcat: Blazma orchestrates, never ships or downloads scanners; limits keep scans on the user's own network |
+| 2026-09 | Live capture = Windows pktmon (built in, one UAC prompt after confirmation) or dumpcap when Wireshark+Npcap exist; reports never contain cookies, auth headers, query strings or bodies | Works on every Windows 10/11 without installing a driver; captures contain other people's data, so only metadata is shown |
+| 2026-09 | Wi-Fi reads numbers from the WLAN API (C# via Add-Type, source in BLAZMA_ARG_SRC) and saved profiles via `netsh wlan export profile` without `key=clear`; `<sharedKey>` is removed before parsing | Locale-independent; Wi-Fi passwords must never be read |
+| 2026-09 | File integrity: "modified" = SHA-256 differs; same content + new time = "touched" (not a change); new content + old time = hiding pattern (red) | Timestamps are forgeable, hashes are not |
+| 2026-09 | Smart search only pre-fills a tool; the user still starts every lookup | Pasting an indicator must never send it anywhere by itself |

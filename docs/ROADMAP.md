@@ -108,6 +108,16 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE F4 Manual update check (Settings → About): only on click, through NetworkGate (blocked in Offline Mode), reads this repository's GitHub release list, SemVer comparison incl. pre-releases; opens the release page built by the main process — nothing is downloaded or installed
 - DECIDED F5: John the Ripper / hashcat stay user-installed and are not bundled (unchanged decision: password recovery is orchestration only, for files the user owns)
 
+## Phase G — Network & everyday tools (v1.1.0) — DONE
+- DONE G1 Device manufacturers: offline IEEE MA-L registry (npm oui-data, BSD-2) for neighbors, discovery, captures and Nmap; randomized (private) MAC addresses recognised as such
+- DONE G2 Network traffic: pcap/pcapng reader and never-throwing packet parser (protocol readers adapted from the owner's MIT-licensed blazma.nt project), analyzer with devices/conversations/DNS/HTTPS names/cleartext and measured findings; short live capture via Windows pktmon (one UAC prompt, verified in Windows CI: 187 packets) or Wireshark dumpcap when installed; secrets never enter the report
+- DONE G3 Wi-Fi Center: WLAN API reader (C# via Add-Type, numbers only → locale-independent), current connection, nearby networks, evil-twin/weak-signal/crowded-channel findings, saved networks exported WITHOUT keys; Windows 11 location privacy detected and explained (C# reader compile verified in Windows CI; real Wi-Fi hardware not available in CI)
+- DONE G4 Service scan: user-installed Nmap with fixed unprivileged profiles (-sT, no NSE scripts), own networks only, authorization confirmation, XML parsing, risky-service findings (tested with real Nmap 7.94 on Linux; not bundled — same rule as John/hashcat)
+- DONE G5 Light theme and "match Windows" (caption buttons follow the theme)
+- DONE G6 Smart search (Ctrl+K): paste an indicator or path → the right tool, pre-filled; refangs hxxp/[.]
+- DONE G7 File integrity monitor: folder fingerprints (SHA-256), added/removed/modified, hidden-timestamp edits, runnable files highlighted, suggested Windows persistence folders
+- TODO Verify on a real Wi-Fi PC and with Nmap installed on Windows (not available in CI)
+
 ## Phase 7 — Polish
 - DONE Terminal: opens the regular Windows terminal (Windows Terminal, else PowerShell) in its own window — no in-app terminal by decision (the GUI never runs commands from user input)
 - DONE Packaging config (electron-builder.yml): per-user NSIS (asInvoker, no elevation, Arabic + English installer), asar, hardened Electron fuses (RunAsNode off, NODE_OPTIONS/inspect off, asar integrity, only-load-from-asar), no publish/auto-update; app icon generated from the logo SVG (scripts/make-icon.mjs)
@@ -124,7 +134,7 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE Phishing email (.eml) analyzer (Phase D1)
 - DONE Pwned Passwords check via k-anonymity (Phase D2)
 - DONE "What does this mean?" educational explanations (Phase B)
-- Downloads folder watcher, browser-extension audit → Phase E; File Integrity Monitoring TODO
+- Downloads folder watcher, browser-extension audit → Phase E; DONE File Integrity Monitoring (Phase G7)
 - MITRE ATT&CK mapping, IOC export (CSV/JSON/STIX 2.1), portable mode → Phase F; Sigma → Hayabusa (E5)
 - DONE Windows CI (.github/workflows/ci.yml, windows-latest + ubuntu): unit tests incl. tests/windows-integration.test.ts (real PowerShell, Defender EICAR scan, Authenticode, forensics, network), full UI E2E, NSIS installer build + packaged smoke test — all green on Windows (run 3); the first runs found and fixed 2 real bugs (USB history without USBSTOR, PSModulePath breaking Authenticode)
 

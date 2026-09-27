@@ -59,6 +59,8 @@ license text next to it (`resources/engines/<id>/LICENSE.txt`, `resources/rules/
 | Microsoft Defender cmdlets (`Get-MpComputerStatus`) | Defender status |
 | NetSecurity cmdlets (`Get-NetFirewallProfile`) | Firewall status |
 | `Get-AuthenticodeSignature` | Digital signature verification |
+| `pktmon.exe` (Packet Monitor) | Short live network captures (elevated once, after confirmation); `etl2pcap` conversion |
+| `wlanapi.dll` (Native Wi-Fi API) and `netsh wlan export profile` (without keys) | Read-only Wi-Fi facts and saved-network audit |
 
 ## External engines (user-installed, never bundled) and evaluated options
 
@@ -70,6 +72,11 @@ license text next to it (`resources/engines/<id>/LICENSE.txt`, `resources/rules/
 | John the Ripper (jumbo) | GPL-2.0 core, mixed for contributions | **Integrated**: user-installed executable only (never linked or bundled) | Best format coverage via `*2john` extractors; separate-process use avoids license coupling. |
 | 7-Zip | LGPL-2.1 (+ unRAR restriction, BSD parts) | User-installed `7z.exe` | Safe archive listing for analysis/quarantine. |
 | Microsoft Defender (`MpCmdRun.exe`) | OS component | **Integrated**: execFile with argument arrays | Detect availability; report-only file/folder scans. |
+| Nmap | Nmap Public Source License (NPSL) | **Integrated**: user-installed `nmap.exe`, fixed profiles, argument arrays, XML output parsed | Not bundled (separate program the user installs from nmap.org); used only against the user's own networks. |
+| Wireshark `dumpcap` + Npcap | GPL-2.0 / Npcap license | **Integrated**: user-installed `dumpcap.exe` for unelevated captures; "Open in Wireshark" for kept captures | Not bundled; pktmon (built into Windows) is used when absent. |
+
+Adapted with permission of the same author: packet/protocol parsing ideas and code from
+**blazma.nt** (MIT, © mr-kateba) in `src/core/traffic/`.
 
 Rejected: unmaintained npm "hash identifier" and "PE parser" packages (small, easily implemented
 and fully tested in-house: `src/core/hash-id.ts`, `src/core/pe.ts`); i18next (unnecessary for

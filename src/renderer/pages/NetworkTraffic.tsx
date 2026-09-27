@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Activity, AlertTriangle, CircleCheck, FolderOpen, Lock, LockOpen, Radio, ShieldAlert, Unlock, X } from 'lucide-react';
+import { Activity, AlertTriangle, CircleCheck, ExternalLink, FolderOpen, Lock, LockOpen, Radio, ShieldAlert, Unlock, X } from 'lucide-react';
 import type { CaptureEnvironment, CaptureInterface, FindingSeverity, TaskProgress, TrafficCaptureOptions, TrafficFinding, TrafficResult } from '../../shared/api';
 import { Badge, Card, DataTable, EmptyState, ErrorState, FileDrop, FilterInput, IconTile, Ltr, Notice, Progress, Tabs, Toggle, useFilter, type Tone } from '../components/ui';
 import { OptionPills } from '../components/intel';
@@ -129,7 +129,12 @@ export function NetworkTraffic() {
                       <Toggle checked={opts.keep} onChange={(keep) => setOpts((o) => ({ ...o, keep }))} label={t('traffic.keep')} />
                       <span className="small">{t('traffic.keep')}</span>
                     </div>
-                    {!env.dumpcap && <div className="tiny dim">{t('traffic.wiresharkTip')}</div>}
+                    {!env.dumpcap && (
+                      <div className="row-wrap tiny dim" style={{ gap: 8 }}>
+                        <span>{t('traffic.wiresharkTip')}</span>
+                        <button className="btn sm" onClick={() => void window.blazma.app.openLink('https://www.wireshark.org/download.html')}><ExternalLink size={12} /> {t('traffic.getWireshark')}</button>
+                      </div>
+                    )}
                     <div>
                       <button className="btn primary" disabled={!canCapture} onClick={() => void capture()}><Radio size={15} /> {t('traffic.start')}</button>
                     </div>

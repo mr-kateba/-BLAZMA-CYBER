@@ -63,6 +63,16 @@ logs, encrypted API keys. You can clear activity, network activity, logs and tem
 the Privacy Center (with confirmation), or open the folder directly. Activity history can be
 disabled in Settings → Privacy.
 
+## Network captures, Wi-Fi and file fingerprints
+- **Captures** (Network traffic) are analysed locally. Reports keep only metadata (addresses,
+  names, protocols); cookies, authorization headers, URL query strings and page contents are never
+  extracted. The recording file is deleted after analysis unless you choose to keep it.
+- **Wi-Fi**: saved networks are exported *without* passwords; the `<sharedKey>` element is removed
+  before anything is read, and the export files are deleted immediately.
+- **File integrity** fingerprints (file paths, sizes, times, SHA-256) are stored in the local data
+  folder under `state/fim` and can be removed per folder.
+- **Nmap** scans only addresses on your own networks and sends nothing to the internet.
+
 ## Third-party services
 Optional services (VirusTotal, AbuseIPDB, Shodan, Censys) are governed by their own privacy
 policies and terms. They are used only with your own API keys.

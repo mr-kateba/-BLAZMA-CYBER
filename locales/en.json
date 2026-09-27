@@ -2550,7 +2550,8 @@
         "body": "Many failed lookups (e.g. {{examples}}) can come from a misconfigured app — or from malware generating random domain names to find its control server.",
         "next": "Check which programs run on {{client}} and scan it (Security Center, Memory scan)."
       }
-    }
+    },
+    "getWireshark": "Wireshark download page"
   },
   "wifi": {
     "title": "Wi-Fi",
