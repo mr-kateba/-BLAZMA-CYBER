@@ -30,6 +30,11 @@ that needs them. Currently:
 | Domain Intelligence → TLS certificate | The queried domain itself (port 443, handshake only) | A TLS handshake (SNI = the domain) | No |
 | Reputation (IP/domain/hash) | VirusTotal, AbuseIPDB, Shodan | The queried IP, domain or **file hash** | Yes (yours) |
 | File Analyzer → "Check SHA-256 on VirusTotal" | VirusTotal | The file's SHA-256 hash only | Yes (yours) |
+| OSINT → Certificate Transparency | crt.sh | The queried domain | No |
+| OSINT → Wayback Machine | archive.org | The queried domain or URL | No |
+| OSINT → GitHub profile | api.github.com | The queried username | No |
+| OSINT → Mail domain DNS | Your configured DNS resolver | Only the domain part of the email address | No |
+| OSINT → Pivot links (only when clicked, after confirmation) | The site you picked, in your browser | The target, as shown in the confirmation | No |
 
 Private, loopback and reserved IP addresses are **never** sent to external services (only your own
 resolver may be asked for reverse DNS). Files are **never uploaded**: reputation uses hashes only.

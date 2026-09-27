@@ -66,10 +66,10 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE Cases (CASE-YYYY-NNN), evidence vs. notes, auto timeline; "Add to case" from File Analyzer / IP / Domain intel
 - DONE Threat Hunting: cross-module correlation (cases, quarantine, activity, network log, live processes/connections/services/startup, YARA rules) + persistence review flags
 - DONE Reports: escaped, script-free HTML (strict CSP), JSON export, PDF via offline printToPDF; Arabic RTL / English LTR
-- TODO OSINT workspace (lawful public sources, provenance on every result)
-- TODO Integrated PowerShell terminal (separate from GUI operations)
+- DONE OSINT workspace: domain/email/username/URL; Certificate Transparency (crt.sh), Wayback first/last snapshot, GitHub public profile, mail-domain DNS; provenance (endpoint + time) on every source; pivot links re-derived in main, opened only on click, gated. Verified with mocks + offline E2E — live sources were unreachable from the build sandbox
 
 ## Phase 7 — Polish
+- TODO Integrated PowerShell terminal (separate from GUI operations; needs a pty — listed in the UI as planned)
 - TODO Packaging (electron-builder NSIS/MSIX), code signing
 - TODO Accessibility audit, keyboard navigation review
 - TODO Performance profiling, security review, docs with screenshots from Windows

@@ -40,6 +40,10 @@ malware samples or third-party data in reports.
   rendered from that HTML in a hidden, sandboxed window with JavaScript disabled.
 - **Threat hunting** — searches only local data and read-only live views (processes, connections,
   services, startup entries). Persistence flags are review prompts, never verdicts or automatic actions.
+- **OSINT** — public, unauthenticated sources only, started by the user. Pivot links are rebuilt in
+  the main process from the validated target and a known link id (the renderer cannot supply a URL),
+  are https-only, open only after confirmation, and are blocked in Offline Mode. Email lookups never
+  contact mail servers.
 - **Resource limits** — streaming I/O, 32 MB static-analysis window, capped IOC/string/import
   counts, subprocess timeouts and output caps.
 - **Windows security controls are never weakened** — BLAZMA CYBER does not disable Defender,

@@ -123,9 +123,10 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
   authorization confirmation), Password Recovery (encrypted-file detection + bring-your-own
   John/hashcat engine, authorization required, results never logged), Cases (evidence/notes/timeline),
   Reports (escaped HTML with strict CSP, JSON, PDF via offline printToPDF), Threat Hunting
-  (cross-module correlation + persistence review).
+  (cross-module correlation + persistence review), OSINT workspace (CT, Wayback, GitHub, mail-domain DNS,
+  gated pivot links, provenance on every source).
 - Latest audit: docs/AUDIT-REPORT.md (3 bugs found and fixed; weaknesses and proposed features listed).
-- NOT YET: OSINT workspace, integrated terminal, packaging/installer.
+- NOT YET: integrated terminal (planned in UI), signed installer.
 - Verified on Linux (Xvfb) only in this environment. Windows-specific PowerShell paths
   (Defender/firewall/Authenticode) are implemented but **still need verification on real Windows**.
 
@@ -150,4 +151,6 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
 | 2026-09 | Password recovery = orchestration only; engine is user-installed John/hashcat | Spec: don't reimplement cracking engines; keeps BLAZMA auditable and license-clean |
 | 2026-09 | Recovered secrets reach the UI once, never logs/history | Secrets must not persist on disk |
 | 2026-09 | Reports: every value HTML-escaped, no scripts, `default-src 'none'` CSP; PDF rendered in a hidden sandboxed window with JavaScript disabled | Evidence strings come from malware/untrusted sources; a report must never become an attack vector |
+| 2026-09 | OSINT pivot links are re-derived in main from (type, value, id); the renderer never passes a URL to open | A compromised renderer must not be able to open arbitrary URLs/protocols via shell.openExternal |
+| 2026-09 | Email OSINT queries only the domain's DNS; no mailbox probing (SMTP VRFY/RCPT) | Probing mail servers is intrusive and unreliable; privacy-first |
 | 2026-09 | File/folder Defender scans use -DisableRemediation | Blazma reports; the user decides (quick/full follow Defender policy, stated in UI) |

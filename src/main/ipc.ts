@@ -10,6 +10,7 @@ import { QuarantineError, QuarantineService } from './services/quarantine';
 import { DefenderError, findMpCmdRun, getThreatHistory, runDefenderScan } from './services/defender';
 import { YaraError, YaraService } from './services/yara';
 import { IntelError, IntelService } from './services/intel';
+import { OsintService } from './services/osint';
 import * as forensics from './services/forensics';
 import { NetToolsError, NetToolsService } from './services/nettools';
 import { RecoveryError, RecoveryService, detectFileEncryption } from './services/recovery';
@@ -56,6 +57,7 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
   const tasks = new Map<string, AbortController>();
   const quarantine = new QuarantineService();
   const intel = new IntelService({ gate, secret: (svc) => secrets.get(svc) });
+  const osint = new OsintService({ intel, gate, openExternal: (url) => shell.openExternal(url) });
   const net = new NetToolsService(gate);
   const cases = new CaseService();
   const reports = new ReportService();
@@ -371,6 +373,18 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
     const r = await intel.reputation(kind, value, services);
     history.record({ kind: 'reputation_lookup', subject: String(value).trim().slice(0, 80), summaryKey: 'activity.summary.looked_up' });
     return { ok: true, data: r };
+  });
+
+  // ---- OSINT ----
+  handle('osint:lookup', async (type: unknown, value: unknown, options: unknown) => {
+    const o = (options ?? {}) as Record<string, unknown>;
+    const r = await osint.lookup(type, value, { ct: o.ct === true, wayback: o.wayback === true, github: o.github === true, emailDns: o.emailDns === true });
+    history.record({ kind: 'osint_lookup', subject: r.value.slice(0, 80), summaryKey: 'activity.summary.looked_up' });
+    return { ok: true, data: r };
+  });
+  handle('osint:openPivot', async (type: unknown, value: unknown, pivotId: unknown) => {
+    await osint.openPivot(type, value, pivotId);
+    return { ok: true, data: undefined };
   });
 
   // ---- Forensics (read-only) ----

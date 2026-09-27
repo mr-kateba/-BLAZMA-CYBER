@@ -272,6 +272,25 @@ try {
   await win.waitForTimeout(300);
   await win.screenshot({ path: join(out, '25-threat-hunting-ar.png') });
 
+  // 5g) Phase 7: OSINT workspace. Offline Mode blocks every source and every pivot link;
+  //     each source row carries its provenance (the public endpoint that would have been queried).
+  const offlineAr = 'محجوب: وضع عدم الاتصال مفعّل';
+  await win.locator('.nav-item', { hasText: 'مساحة OSINT' }).click();
+  await win.locator('input.input.mono').first().fill('not a domain');
+  await win.getByText('هذه القيمة غير صالحة لنوع الهدف المحدد.').waitFor();
+  await win.locator('input.input.mono').first().fill('example.com');
+  await win.getByRole('button', { name: 'استعلام', exact: true }).click();
+  await win.getByText('التتبع في مصادر عامة').waitFor({ timeout: 30000 });
+  const osintBlocked = await win.getByText(offlineAr, { exact: false }).count();
+  assert.ok(osintBlocked >= 4, `OSINT sources must be blocked offline (got ${osintBlocked})`);
+  await win.getByText('https://crt.sh/?q=%25.example.com&output=json').waitFor();
+  await win.getByRole('button', { name: 'موقع crt.sh' }).click();
+  await win.getByText('سيفتح متصفحك crt.sh', { exact: false }).waitFor();
+  await win.getByRole('button', { name: 'فتح في المتصفح' }).click();
+  await win.locator('.toast', { hasText: offlineAr }).first().waitFor();
+  await win.waitForTimeout(300);
+  await win.screenshot({ path: join(out, '26-osint-offline-ar.png'), fullPage: true });
+
   // 6) Hash Lab identify (Arabic)
   await win.locator('.nav-item', { hasText: 'مختبر الهاشات' }).click();
   await win.getByRole('tab', { name: 'تعرّف' }).click();
@@ -287,7 +306,7 @@ try {
   await win.screenshot({ path: join(out, '08-privacy-ar.png') });
 
   // 8) A planned module is labeled honestly
-  await win.locator('.nav-item', { hasText: 'مساحة OSINT' }).click();
+  await win.locator('.nav-item', { hasText: 'طرفية PowerShell' }).click();
   await win.getByText('هذه الوحدة غير متاحة بعد').waitFor();
   await win.screenshot({ path: join(out, '09-planned-module-ar.png') });
 
