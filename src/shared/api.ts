@@ -15,9 +15,12 @@ import type { CtSummary, GithubProfile, OsintPivot, OsintTargetType, WaybackSnap
 
 export type Theme = 'dark' | 'midnight';
 export type StartPage = 'dashboard' | 'file-analyzer' | 'hash-lab' | 'privacy';
+/** simple = the essentials for everyday users; expert = every module. */
+export type UiMode = 'simple' | 'expert';
 
 export interface Settings {
   language: Lang | null; // null until the first-launch picker is completed
+  uiMode: UiMode;
   theme: Theme;
   startPage: StartPage;
   offlineMode: boolean;
@@ -37,6 +40,7 @@ export interface Settings {
 
 export const DEFAULT_SETTINGS: Settings = {
   language: null,
+  uiMode: 'simple',
   theme: 'dark',
   startPage: 'dashboard',
   // Privacy-first default: nothing leaves the machine until the user opts in.

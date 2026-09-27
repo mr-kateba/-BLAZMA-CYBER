@@ -7,6 +7,7 @@ import { subDir } from './paths';
 
 const VALIDATORS: { [K in keyof Settings]: (v: unknown) => boolean } = {
   language: (v) => v === null || isLang(v),
+  uiMode: (v) => v === 'simple' || v === 'expert',
   theme: (v) => v === 'dark' || v === 'midnight',
   startPage: (v) => v === 'dashboard' || v === 'file-analyzer' || v === 'hash-lab' || v === 'privacy',
   offlineMode: (v) => typeof v === 'boolean',

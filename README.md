@@ -62,6 +62,13 @@ adapters rather than re-implementing them.
 - **Cases** — `CASE-YYYY-NNN`, evidence vs. notes, automatic timeline, "Add to case" from modules.
 - **Reports** — HTML (escaped, script-free, strict CSP), JSON and PDF, in Arabic (RTL) or English.
 
+**For everyday users**
+- **Device Security** — a score out of 100 from 16 read-only Windows checks, each explained in plain
+  Arabic/English with how to fix it (BLAZMA never changes settings).
+- **Simple mode** — only the essentials (device security, scan a file, check a link), plain-language
+  verdicts ("What should I do?"), a "What does this mean?" button on technical terms, and drop a
+  file anywhere to scan it.
+
 **Privacy & language**
 - **Privacy Center** — Offline Mode (on by default), log of every external request, clear local data.
 - **Arabic & English** — full translation, RTL/LTR switching, technical values kept LTR.

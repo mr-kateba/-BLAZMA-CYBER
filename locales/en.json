@@ -49,7 +49,11 @@
     "plannedTooltip": "Planned for phase {{phase}} — not available yet",
     "terminal": "Terminal",
     "externalTooltip": "Opens Windows Terminal (or PowerShell) in a separate window",
-    "deviceSecurity": "Device Security"
+    "deviceSecurity": "Device Security",
+    "simple": {
+      "scanFile": "Scan a file",
+      "checkLink": "Check a link or website"
+    }
   },
   "topbar": {
     "search": "Search tools…",
@@ -342,7 +346,8 @@
     "hashRepNeedsKey": "Add a VirusTotal API key in Settings to enable this.",
     "hashRepOffline": "Blocked by Offline Mode",
     "reassessed": "Assessment updated with hash reputation",
-    "encryptedNotice": "This file is encrypted ({{scheme}}). Use Password Recovery to recover access to files you own."
+    "encryptedNotice": "This file is encrypted ({{scheme}}). Use Password Recovery to recover access to files you own.",
+    "dropAnywhere": "Drop the file to scan it — it is only read, never opened."
   },
   "verdict": {
     "no_detections": "No detections",
@@ -354,6 +359,13 @@
       "unknown": "Not enough evidence either way — important engines did not run.",
       "suspicious": "Several indicators combined deserve a closer look.",
       "malicious": "A detection engine flagged this file."
+    },
+    "adviceTitle": "What should I do?",
+    "advice": {
+      "no_detections": "Looks OK. Still, only open files you were expecting, from a source you trust, and keep Windows and Defender updated.",
+      "unknown": "Not enough evidence to judge. If you don't know where this file came from, don't open it. On Windows, turn on Defender scanning (Settings → Engines) for a more reliable result.",
+      "suspicious": "Don't open it. If you don't need it, delete it or move it to quarantine. If it came by email or chat, confirm with the sender another way first.",
+      "malicious": "Don't open it. Move it to quarantine now, then run a full Microsoft Defender scan of your PC."
     }
   },
   "assessment": {
@@ -1688,6 +1700,45 @@
     "ps_history": {
       "title": "PowerShell history",
       "text": "Commands previously typed in PowerShell on this account. Attackers who get in often run commands here, so unfamiliar lines deserve a look."
+    }
+  },
+  "mode": {
+    "title": "How will you use BLAZMA?",
+    "simple": "Simple",
+    "simpleHint": "The essentials: device security, scan a file, check a link. Plain explanations.",
+    "expert": "Expert",
+    "expertHint": "Every module: forensics, network, YARA, OSINT, cases and reports.",
+    "switchToExpert": "Show all tools (expert mode)",
+    "switchToSimple": "Simple mode",
+    "current": "Mode: {{mode}}",
+    "changeLater": "You can switch at any time from the sidebar or Settings."
+  },
+  "linksum": {
+    "title": "Is this site trustworthy?",
+    "disclaimer": "This summary only uses what was actually checked. “No warning signs” does not guarantee a site is safe — never enter passwords or card details on a site you reached from an unexpected message.",
+    "level": {
+      "risky": "Warning signs",
+      "caution": "Be careful",
+      "no_red_flags": "No warning signs found",
+      "unknown": "Not enough information"
+    },
+    "levelHint": {
+      "risky": "Strong reasons not to trust this site.",
+      "caution": "Some things deserve attention before you trust it.",
+      "no_red_flags": "Nothing alarming in the checks that ran.",
+      "unknown": "Turn off Offline Mode (Privacy Center) to run the online checks."
+    },
+    "signal": {
+      "reputationBad": "{{service}}: {{count}} security vendors flag this site as malicious.",
+      "reputationSuspicious": "{{service}}: {{count}} security vendors flag it as suspicious.",
+      "reputationClean": "{{service}}: no security vendor flags it.",
+      "veryYoung": "The domain was registered only {{days}} days ago — typical of scam sites.",
+      "young": "The domain is only {{days}} days old.",
+      "old": "The domain has existed for about {{years}} years.",
+      "tlsUntrusted": "Its security certificate is not trusted.",
+      "tlsExpired": "Its security certificate has expired.",
+      "tlsOk": "It has a valid security certificate (padlock). Note: scam sites can have one too.",
+      "noAddress": "The name doesn't point to any server right now."
     }
   }
 }

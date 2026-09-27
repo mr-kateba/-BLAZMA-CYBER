@@ -8,6 +8,7 @@ import { AddToCase } from '../components/AddToCase';
 import { useI18n } from '../i18n/I18nProvider';
 import { formatDateTime } from '../format';
 import { sourceNote } from './IpIntel';
+import { summarizeDomain } from '../../core/link-summary';
 
 /** Loose client-side check; the main process does the authoritative normalization (IDN, URLs). */
 function looksLikeDomain(v: string): boolean {
@@ -98,6 +99,7 @@ export function DomainIntel() {
               <AddToCase items={[{ kind: 'domain', value: r.domain, source: 'domainIntel', details: { registrar: r.rdap?.registrar ?? null, created: r.rdap?.created ?? null, expires: r.rdap?.expires ?? null, tlsIssuer: r.tls?.issuer ?? null, spf: !!r.dns?.spf, dmarc: !!r.dns?.dmarc } }]} />
             </div>
 
+            <LinkSummaryCard r={r} />
             {ageDays !== null && ageDays < 30 && <Notice tone="amber" icon={ShieldAlert}>{t('domainintel.youngDomain')}</Notice>}
 
             <div className="grid g-2">
@@ -197,5 +199,33 @@ export function DomainIntel() {
         )}
       </div>
     </div>
+  );
+}
+
+const LEVEL_TONE = { risky: 'red', caution: 'amber', no_red_flags: 'green', unknown: 'gray' } as const;
+
+/** "Is this site trustworthy?" in plain words, built only from facts that were retrieved. */
+function LinkSummaryCard({ r }: { r: DomainLookupResult }) {
+  const { t } = useI18n();
+  const sum = summarizeDomain(r, new Date());
+  return (
+    <Card title={t('linksum.title')} icon={sum.level === 'risky' ? ShieldAlert : ShieldCheck} tone={LEVEL_TONE[sum.level]}>
+      <div className="col" style={{ gap: 10 }}>
+        <div className="row" style={{ gap: 10 }}>
+          <Badge tone={LEVEL_TONE[sum.level]}>{t(`linksum.level.${sum.level}`)}</Badge>
+          <span className="small muted">{t(`linksum.levelHint.${sum.level}`)}</span>
+        </div>
+        {sum.signals.length > 0 && (
+          <ul className="linksum-list">
+            {sum.signals.map((s) => (
+              <li key={s.key} className={`tone-${s.tone}`}>
+                {t(`linksum.signal.${s.key}`, s.vars?.service ? { ...s.vars, service: t(`intel.src.reputation:${s.vars.service}`) } : s.vars)}
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="tiny dim">{t('linksum.disclaimer')}</div>
+      </div>
+    </Card>
   );
 }

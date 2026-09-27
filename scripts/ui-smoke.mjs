@@ -39,8 +39,9 @@ try {
   await win.waitForTimeout(700); // entrance animation
   await win.screenshot({ path: join(out, '01-language-picker.png') });
 
-  // 2) Choose Arabic -> RTL dashboard
+  // 2) Choose Arabic + Expert mode (this test walks every module) -> RTL dashboard
   await win.getByRole('button', { name: /العربية/ }).first().click();
+  await win.getByRole('radio', { name: /احترافي/ }).click();
   await win.getByRole('button', { name: 'متابعة' }).click();
   await win.locator('h1', { hasText: 'لوحة التحكم' }).waitFor();
   assert.equal(await win.evaluate(() => document.documentElement.dir), 'rtl');
@@ -189,6 +190,13 @@ try {
   await win.getByRole('button', { name: 'العربية' }).click();
   await win.waitForTimeout(300);
   await win.screenshot({ path: join(out, '16-ip-intel-offline-ar.png'), fullPage: true });
+
+  // "Is this site trustworthy?" never guesses: offline, it says there isn't enough information.
+  await win.locator('.nav-item', { hasText: 'معلومات النطاقات' }).click();
+  await win.locator('input.input').first().fill('example.com');
+  await win.getByRole('button', { name: 'استعلام', exact: true }).click();
+  await win.getByText('هل هذا الموقع موثوق؟').waitFor({ timeout: 30000 });
+  await win.getByText('لا توجد معلومات كافية').first().waitFor();
 
   if (process.env.BLAZMA_E2E_ONLINE === '1') {
     // Opt-in live check against the IANA-reserved example.com only.
@@ -343,6 +351,32 @@ try {
   const terminalToast = process.platform === 'win32' ? /فُتحت (Windows Terminal|PowerShell) في نافذة منفصلة/ : 'متاح على Windows فقط.';
   await win.locator('.toast', { hasText: terminalToast }).first().waitFor();
   assert.equal(await win.locator('.page-title').first().textContent(), pageBefore, 'terminal must not navigate away');
+
+  // 8b) Simple mode: only the essentials in the sidebar, friendlier labels; switch back to expert.
+  const expertItems = await win.locator('.nav-item').count();
+  await win.getByRole('button', { name: 'الوضع البسيط' }).click();
+  await win.locator('.nav-item', { hasText: 'افحص رابطًا أو موقعًا' }).waitFor();
+  const simpleItems = await win.locator('.nav-item').count();
+  assert.ok(simpleItems <= 8 && simpleItems < expertItems, `simple mode should show only the essentials (${simpleItems} vs ${expertItems})`);
+  await win.locator('.nav-item', { hasText: 'لوحة التحكم' }).click();
+  await win.locator('.hero').getByRole('button', { name: 'افحص ملفًا' }).waitFor();
+  // Drag a file anywhere: the drop overlay appears; a file without a real path is refused honestly.
+  await win.evaluate(() => {
+    const dt = new DataTransfer();
+    dt.items.add(new File(['x'], 'x.txt'));
+    window.dispatchEvent(new DragEvent('dragenter', { dataTransfer: dt, bubbles: true }));
+  });
+  await win.getByText('أفلت الملف لفحصه', { exact: false }).waitFor();
+  await win.screenshot({ path: join(out, '30-simple-mode-ar.png') });
+  await win.evaluate(() => {
+    const dt = new DataTransfer();
+    dt.items.add(new File(['x'], 'x.txt'));
+    window.dispatchEvent(new DragEvent('drop', { dataTransfer: dt, bubbles: true, cancelable: true }));
+  });
+  await win.getByText('أفلت الملف لفحصه', { exact: false }).waitFor({ state: 'detached' });
+  await win.locator('.toast').first().waitFor();
+  await win.getByRole('button', { name: 'اعرض كل الأدوات (الوضع الاحترافي)' }).click();
+  await win.locator('.nav-item', { hasText: 'صيد التهديدات' }).waitFor();
 
   // 9) Settings (English)
   await win.getByRole('button', { name: 'English' }).click();

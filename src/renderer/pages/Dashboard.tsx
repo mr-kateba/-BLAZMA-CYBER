@@ -9,7 +9,7 @@ import { Constellation } from '../components/Logo';
 import { useApp } from '../components/AppContext';
 import { useI18n } from '../i18n/I18nProvider';
 import { formatBytes, formatDateTime, formatDuration } from '../format';
-import type { PageId } from '../nav';
+import { visibleNav, type PageId } from '../nav';
 
 const HISTORY = 30;
 
@@ -201,7 +201,10 @@ function SecurityHero() {
 
 export function Dashboard() {
   const { t, locale } = useI18n();
-  const { navigate } = useApp();
+  const { navigate, settings } = useApp();
+  const expert = settings.uiMode === 'expert';
+  const simplePages = new Set(visibleNav('simple').flatMap((sec) => sec.items.map((i) => i.id)));
+  const tools = expert ? TOOLS : TOOLS.filter((tool) => simplePages.has(tool.to));
   const snap = usePoll(async () => {
     const r = await window.blazma.system.snapshot();
     if (!r.ok) throw new Error(r.error);
@@ -247,6 +250,7 @@ export function Dashboard() {
         <Card><ErrorState code={snap.error} onRetry={snap.reload} /></Card>
       ) : (
         <div className="grid g-4">
+          {expert && (<>
           <StatCard
             icon={Monitor} tone="blue" label={t('dashboard.os')} loading={loading}
             value={s?.osName}
@@ -302,7 +306,9 @@ export function Dashboard() {
             </div>
           </div>
 
+          </>)}
           <Card
+            className={expert ? '' : 'span-4'}
             title={t('dashboard.systemStatus')} icon={ShieldCheck} tone="green"
             actions={<button className="icon-btn" style={{ width: 30, height: 30 }} title={t('common.refresh')} aria-label={t('common.refresh')} onClick={sec.reload}><RefreshCw size={14} /></button>}
           >
@@ -316,7 +322,7 @@ export function Dashboard() {
         <div className="page-sub small">{t('dashboard.quickToolsSub')}</div>
       </div>
       <div className="grid g-4">
-        {TOOLS.map((tool) => {
+        {tools.map((tool) => {
           const disabled = tool.phase !== undefined;
           return (
             <button

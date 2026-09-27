@@ -30,8 +30,8 @@ export function App() {
   if (!settings.language) {
     return (
       <LanguagePicker
-        onPick={async (lang: Lang) => {
-          const r = await window.blazma.settings.update({ language: lang, reportLanguage: lang });
+        onPick={async (lang: Lang, uiMode) => {
+          const r = await window.blazma.settings.update({ language: lang, reportLanguage: lang, uiMode });
           if (r.ok) setSettings(r.data);
         }}
       />

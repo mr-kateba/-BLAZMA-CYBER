@@ -1503,3 +1503,50 @@ table.data tbody tr:hover td {
 .nav-item:has(.nav-external) .nav-label {
   flex: 0 1 auto;
 }
+.mode-switch {
+  width: 100%;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.span-4 {
+  grid-column: 1 / -1;
+}
+
+/* Drop a file anywhere */
+.global-drop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+  border: 3px dashed var(--primary);
+  background: rgba(47, 134, 255, 0.08);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 90px;
+}
+.global-drop-label {
+  background: var(--panel-solid);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-weight: 600;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+.verdict-advice {
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.linksum-list {
+  margin: 0;
+  padding-inline-start: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  line-height: 1.6;
+}
+.linksum-list li.tone-red::marker { color: var(--red); }
+.linksum-list li.tone-amber::marker { color: var(--amber); }
+.linksum-list li.tone-green::marker { color: var(--green); }

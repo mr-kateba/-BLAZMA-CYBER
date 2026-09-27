@@ -35,6 +35,9 @@ function General() {
       <Row title={t('settings.language')} desc={t('settings.languageDesc')}>
         <Select value={settings.language ?? 'en'} onChange={(v) => void updateSettings({ language: v })} options={[{ v: 'ar', label: 'العربية' }, { v: 'en', label: 'English' }]} />
       </Row>
+      <Row title={t('mode.title')} desc={t(settings.uiMode === 'simple' ? 'mode.simpleHint' : 'mode.expertHint')}>
+        <Select<Settings['uiMode']> value={settings.uiMode} onChange={(v) => void updateSettings({ uiMode: v })} options={[{ v: 'simple', label: t('mode.simple') }, { v: 'expert', label: t('mode.expert') }]} />
+      </Row>
       <Row title={t('settings.theme')}>
         <Select<Settings['theme']> value={settings.theme} onChange={(v) => void updateSettings({ theme: v })} options={[{ v: 'dark', label: t('settings.themeDark') }, { v: 'midnight', label: t('settings.themeMidnight') }]} />
       </Row>

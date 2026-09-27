@@ -1,10 +1,10 @@
-import { lazy, Suspense, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { ExternalLink, Search, Settings as SettingsIcon } from 'lucide-react';
 import { Skeleton } from './components/ui';
 import { Logo } from './components/Logo';
 import { useApp } from './components/AppContext';
 import { useI18n } from './i18n/I18nProvider';
-import { ALL_ITEMS, NAV, findItem, type PageId } from './nav';
+import { findItem, labelKeyFor, visibleNav, type PageId } from './nav';
 import { Dashboard } from './pages/Dashboard';
 
 // Every page except the dashboard is loaded on first visit (smaller startup bundle).
@@ -77,7 +77,8 @@ function Page({ id }: { id: PageId }) {
 
 function TopSearch() {
   const { t } = useI18n();
-  const { navigate } = useApp();
+  const { navigate, settings } = useApp();
+  const mode = settings.uiMode;
   const [q, setQ] = useState('');
   const [open, setOpen] = useState(false);
   const [idx, setIdx] = useState(0);
@@ -86,8 +87,11 @@ function TopSearch() {
   const results = useMemo(() => {
     const s = q.trim().toLowerCase();
     if (!s) return [];
-    return ALL_ITEMS.filter((i) => t(i.labelKey).toLowerCase().includes(s) || i.id.includes(s)).slice(0, 8);
-  }, [q, t]);
+    return visibleNav(mode)
+      .flatMap((sec) => sec.items)
+      .filter((i) => t(labelKeyFor(i, mode)).toLowerCase().includes(s) || i.id.includes(s))
+      .slice(0, 8);
+  }, [q, t, mode]);
 
   const go = (id: PageId) => {
     navigate(id);
@@ -126,13 +130,67 @@ function TopSearch() {
             return (
               <button key={r.id} className={i === idx ? 'active' : ''} onMouseDown={() => go(r.id)}>
                 <Icon size={16} color="var(--primary)" />
-                <span style={{ flex: 1 }}>{t(r.labelKey)}</span>
+                <span style={{ flex: 1 }}>{t(labelKeyFor(r, mode))}</span>
                 {r.planned && <span className="nav-soon">{t('nav.planned')}</span>}
               </button>
             );
           })}
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * Drop a file anywhere in the window to analyze it. Drops already handled by a page's own drop zone
+ * (which call preventDefault) are left alone. Files are only read, never opened.
+ */
+function GlobalDrop() {
+  const { t } = useI18n();
+  const { analyzeFile, toast } = useApp();
+  const [over, setOver] = useState(false);
+  useEffect(() => {
+    let depth = 0;
+    const hasFiles = (e: DragEvent) => Array.from(e.dataTransfer?.types ?? []).includes('Files');
+    const enter = (e: DragEvent) => {
+      if (!hasFiles(e)) return;
+      depth += 1;
+      setOver(true);
+    };
+    const leave = (e: DragEvent) => {
+      if (!hasFiles(e)) return;
+      depth = Math.max(0, depth - 1);
+      if (depth === 0) setOver(false);
+    };
+    const dragOver = (e: DragEvent) => {
+      if (hasFiles(e)) e.preventDefault();
+    };
+    const drop = (e: DragEvent) => {
+      depth = 0;
+      setOver(false);
+      if (!hasFiles(e) || e.defaultPrevented) return;
+      e.preventDefault();
+      const f = e.dataTransfer?.files?.[0];
+      if (!f) return;
+      const p = window.blazma.files.pathForFile(f);
+      if (p) analyzeFile(p);
+      else toast('red', t('errors.path_empty'));
+    };
+    window.addEventListener('dragenter', enter);
+    window.addEventListener('dragleave', leave);
+    window.addEventListener('dragover', dragOver);
+    window.addEventListener('drop', drop);
+    return () => {
+      window.removeEventListener('dragenter', enter);
+      window.removeEventListener('dragleave', leave);
+      window.removeEventListener('dragover', dragOver);
+      window.removeEventListener('drop', drop);
+    };
+  }, [analyzeFile, toast, t]);
+  if (!over) return null;
+  return (
+    <div className="global-drop" aria-hidden="true">
+      <div className="global-drop-label">{t('file.dropAnywhere')}</div>
     </div>
   );
 }
@@ -144,6 +202,7 @@ export function Shell() {
   return (
     <>
       <div className="app-bg" />
+      <GlobalDrop />
       <div className="shell">
         <header className="topbar">
           <div className="brand">
@@ -179,7 +238,7 @@ export function Shell() {
 
         <aside className="sidebar">
           <nav aria-label="Main">
-            {NAV.map((section, si) => (
+            {visibleNav(settings.uiMode).map((section, si) => (
               <div key={si}>
                 {section.titleKey && <div className="nav-section">{t(section.titleKey)}</div>}
                 {section.items.map((item) => {
@@ -193,7 +252,7 @@ export function Shell() {
                       onClick={() => navigate(item.id)}
                     >
                       <Icon size={17} strokeWidth={1.8} />
-                      <span className="nav-label">{t(item.labelKey)}</span>
+                      <span className="nav-label">{t(labelKeyFor(item, settings.uiMode))}</span>
                       {item.planned && <span className="nav-soon">{t('nav.planned')}</span>}
                       {item.external && <ExternalLink size={13} className="nav-external" aria-hidden="true" />}
                     </button>
@@ -203,6 +262,17 @@ export function Shell() {
             ))}
           </nav>
           <div className="sidebar-footer">
+            <button
+              className="btn sm mode-switch"
+              onClick={() => {
+                const next = settings.uiMode === 'simple' ? 'expert' : 'simple';
+                void updateSettings({ uiMode: next });
+                // Leaving expert mode on a page that simple mode hides → back to the dashboard.
+                if (next === 'simple' && !visibleNav('simple').some((s) => s.items.some((i) => i.id === page))) navigate('dashboard');
+              }}
+            >
+              {t(settings.uiMode === 'simple' ? 'mode.switchToExpert' : 'mode.switchToSimple')}
+            </button>
             <div>
               <span className="ltr">BLAZMA CYBER v0.1.0</span>
             </div>

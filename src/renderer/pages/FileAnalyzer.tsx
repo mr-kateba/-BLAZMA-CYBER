@@ -85,6 +85,7 @@ export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAn
           <div className="small dim">{t('file.assessment')}</div>
           <div className="v-title">{t(`verdict.${assessment.verdict}`)}</div>
           <div className="muted small">{t(`verdict.desc.${assessment.verdict}`)}</div>
+          <div className="verdict-advice"><strong>{t('verdict.adviceTitle')}</strong> {t(`verdict.advice.${assessment.verdict}`)}</div>
         </div>
         <div className="row-wrap" style={{ justifyContent: 'flex-end' }}>
           <AddToCase
