@@ -1,0 +1,93 @@
+import { app, BrowserWindow, Menu, session, shell, type IpcMainInvokeEvent } from 'electron';
+import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { registerIpc } from './ipc';
+import { logger } from './services/logger';
+
+const DEV_URL = process.env.BLAZMA_DEV_URL; // set only by scripts/dev.mjs
+const RENDERER_INDEX = join(__dirname, '..', 'renderer', 'index.html');
+const RENDERER_BASE = pathToFileURL(join(__dirname, '..', 'renderer')).href;
+
+let win: BrowserWindow | null = null;
+
+function isTrustedUrl(url: string | undefined): boolean {
+  if (!url) return false;
+  if (DEV_URL && url.startsWith(DEV_URL)) return true;
+  return url.startsWith(RENDERER_BASE);
+}
+
+function isTrustedSender(e: IpcMainInvokeEvent): boolean {
+  return e.senderFrame !== null && e.sender === win?.webContents && isTrustedUrl(e.senderFrame.url);
+}
+
+// Single instance: a second launch focuses the existing window.
+if (!app.requestSingleInstanceLock()) {
+  app.quit();
+}
+
+app.on('second-instance', () => {
+  if (win) {
+    if (win.isMinimized()) win.restore();
+    win.focus();
+  }
+});
+
+// Hardening that applies to every webContents, including any unexpected one.
+app.on('web-contents-created', (_e, contents) => {
+  contents.on('will-navigate', (ev, url) => {
+    if (!isTrustedUrl(url)) {
+      ev.preventDefault();
+      logger.security('navigation_blocked', { url });
+    }
+  });
+  contents.setWindowOpenHandler(({ url }) => {
+    // External links open in the user's browser only for https, never inside Blazma.
+    if (url.startsWith('https://')) void shell.openExternal(url);
+    return { action: 'deny' };
+  });
+  contents.on('will-attach-webview', (ev) => ev.preventDefault());
+});
+
+function createWindow() {
+  win = new BrowserWindow({
+    width: 1440,
+    height: 900,
+    minWidth: 1100,
+    minHeight: 700,
+    backgroundColor: '#060b18',
+    title: 'BLAZMA CYBER',
+    show: false,
+    titleBarStyle: 'hidden',
+    titleBarOverlay: { color: '#070d1c', symbolColor: '#8fa6cf', height: 48 },
+    webPreferences: {
+      preload: join(__dirname, '..', 'preload', 'index.cjs'),
+      contextIsolation: true,
+      sandbox: true,
+      nodeIntegration: false,
+      webSecurity: true,
+      allowRunningInsecureContent: false,
+      spellcheck: false,
+      devTools: !app.isPackaged,
+    },
+  });
+  win.once('ready-to-show', () => win?.show());
+  win.on('closed', () => (win = null));
+  if (DEV_URL) void win.loadURL(DEV_URL);
+  else void win.loadFile(RENDERER_INDEX);
+}
+
+app.whenReady().then(() => {
+  Menu.setApplicationMenu(null);
+  // Deny every permission request (camera, mic, geolocation, notifications via web API, ...).
+  session.defaultSession.setPermissionRequestHandler((_wc, permission, cb) => {
+    logger.security('permission_denied', { permission });
+    cb(false);
+  });
+  session.defaultSession.setPermissionCheckHandler(() => false);
+
+  registerIpc(() => win, isTrustedSender);
+  logger.info('app_started', { version: app.getVersion(), platform: process.platform });
+  createWindow();
+});
+
+app.on('window-all-closed', () => app.quit());
