@@ -28,6 +28,11 @@ export function summarizeDomain(r: DomainLookupResult, now: Date): LinkSummary {
   for (const rep of r.reputation) {
     if (!rep.found) continue;
     facts++;
+    if (rep.listed) {
+      // abuse.ch: on a malware-distribution / IOC list (still active, or only in the past).
+      s.push(rep.listedActive === false ? { key: 'listedHistorical', tone: 'amber', vars: { service: rep.service } } : { key: 'listedActive', tone: 'red', vars: { service: rep.service } });
+      continue;
+    }
     const bad = (rep.malicious ?? 0) + (rep.suspicious ?? 0);
     if ((rep.malicious ?? 0) > 0) s.push({ key: 'reputationBad', tone: 'red', vars: { service: rep.service, count: bad } });
     else if ((rep.suspicious ?? 0) > 0) s.push({ key: 'reputationSuspicious', tone: 'amber', vars: { service: rep.service, count: bad } });

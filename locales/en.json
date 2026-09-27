@@ -345,9 +345,9 @@
     "inQuarantine": "This file is in quarantine",
     "scanning": "Running detection engines",
     "hashRep": "Hash reputation",
-    "hashRepCheck": "Check SHA-256 on VirusTotal",
-    "hashRepNote": "External lookup: only the SHA-256 hash is sent. The file is never uploaded.",
-    "hashRepNeedsKey": "Add a VirusTotal API key in Settings to enable this.",
+    "hashRepCheck": "Check the hash with reputation services",
+    "hashRepNote": "External lookup ({{services}}): only the SHA-256 hash is sent. The file is never uploaded.",
+    "hashRepNeedsKey": "Add a VirusTotal or abuse.ch key in Settings to enable this (abuse.ch keys are free).",
     "hashRepOffline": "Blocked by Offline Mode",
     "reassessed": "Assessment updated with hash reputation",
     "encryptedNotice": "This file is encrypted ({{scheme}}). Use Password Recovery to recover access to files you own.",
@@ -400,7 +400,11 @@
       "vt_clean": "VirusTotal: known file, no engine flags it",
       "vt_unknown": "VirusTotal: hash not known",
       "capa_risky": "capa found {{count}} kinds of behaviour often used by malware",
-      "packer_die": "Packed or protected with {{name}} (hides the code)"
+      "packer_die": "Packed or protected with {{name}} (hides the code)",
+      "abusech_unknown": "Not listed by abuse.ch",
+      "mb_listed": "MalwareBazaar: this exact file is a reported malware sample ({{family}})",
+      "threatfox_listed": "ThreatFox: this file hash is a known malware indicator ({{family}})",
+      "urlhaus_payload": "URLhaus: this exact file was distributed by {{count}} malware URL(s)"
     }
   },
   "hashlab": {
@@ -539,7 +543,8 @@
       "abuseipdb": "AbuseIPDB",
       "shodan": "Shodan",
       "censys": "Censys",
-      "ipinfo": "ipinfo.io (optional token)"
+      "ipinfo": "ipinfo.io (optional token)",
+      "abusech": "abuse.ch (MalwareBazaar · URLhaus · ThreatFox)"
     },
     "enginesDesc": "Detection and analysis engines used by BLAZMA CYBER.",
     "engineStatus": {
@@ -567,7 +572,8 @@
     "recoveryEnginesDesc": "Optional external engines you install. BLAZMA CYBER only runs them; it never bundles or downloads them.",
     "capaOnAnalyze": "Explain what programs can do (capa)",
     "dieOnAnalyze": "Identify compiler / packer (Detect It Easy)",
-    "bundledNote": "Engines included with BLAZMA were downloaded from their official releases when this version was built and verified with pinned SHA-256 checksums. BLAZMA never downloads or updates programs by itself."
+    "bundledNote": "Engines included with BLAZMA were downloaded from their official releases when this version was built and verified with pinned SHA-256 checksums. BLAZMA never downloads or updates programs by itself.",
+    "abusechNote": "One free Auth-Key from auth.abuse.ch covers all three services."
   },
   "activity": {
     "kind": {
@@ -866,7 +872,10 @@
       "osint:ct": "Certificate Transparency (crt.sh)",
       "osint:wayback": "Wayback Machine",
       "osint:github": "GitHub API",
-      "osint:emailDns": "Mail domain DNS"
+      "osint:emailDns": "Mail domain DNS",
+      "reputation:malwarebazaar": "MalwareBazaar (abuse.ch)",
+      "reputation:urlhaus": "URLhaus (abuse.ch)",
+      "reputation:threatfox": "ThreatFox (abuse.ch)"
     },
     "options": "Sources to query",
     "needsKey": "needs API key",
@@ -891,7 +900,16 @@
       "reputationScore": "Community score",
       "lastAnalysis": "Last analysis",
       "names": "Known file names",
-      "open": "Open in browser"
+      "open": "Open in browser",
+      "listed": "Listed",
+      "listedActive": "On the malware list",
+      "listedHistorical": "Listed in the past (no active malware URL now)",
+      "threat": "Malware / threat",
+      "confidence": "Confidence",
+      "urls": "Malware URLs",
+      "urlsValue": "{{count}} known · {{online}} online now",
+      "firstSeen": "First seen",
+      "lastSeen": "Last seen"
     }
   },
   "ipintel": {
@@ -1005,7 +1023,7 @@
     },
     "value": "Indicator",
     "services": "Services",
-    "noKeys": "No reputation API key is configured yet.",
+    "noKeys": "No reputation API key is configured yet. A free abuse.ch key enables MalwareBazaar, URLhaus and ThreatFox.",
     "configureKeys": "Add API keys",
     "hashOnly": "Only the hash is sent — files are never uploaded."
   },
@@ -1784,7 +1802,9 @@
       "tlsUntrusted": "Its security certificate is not trusted.",
       "tlsExpired": "Its security certificate has expired.",
       "tlsOk": "It has a valid security certificate (padlock). Note: scam sites can have one too.",
-      "noAddress": "The name doesn't point to any server right now."
+      "noAddress": "The name doesn't point to any server right now.",
+      "listedActive": "{{service}}: this address is on a malware / abuse list right now.",
+      "listedHistorical": "{{service}}: this address was used to spread malware in the past."
     }
   },
   "capa": {

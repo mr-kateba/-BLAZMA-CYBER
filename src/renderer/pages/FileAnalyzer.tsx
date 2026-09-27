@@ -3,13 +3,13 @@ import {
   AlertOctagon, AlertTriangle, Binary, Boxes, CircleCheck, Cpu, CircleHelp, FileSearch, Fingerprint, Globe, Link2, ListTree, RotateCcw, ScanSearch, ShieldAlert,
   ShieldCheck, ShieldHalf, TriangleAlert, X, type LucideIcon,
 } from 'lucide-react';
-import type { FileAnalysis, ReputationResult, TaskProgress } from '../../shared/api';
-import { assess, vtSignal, type SignalSource, type Verdict } from '../../core/detection';
+import { REPUTATION_FOR_KIND, type FileAnalysis, type LookupSource, type ReputationResult, type TaskProgress } from '../../shared/api';
+import { abusechSignal, assess, vtSignal, type SignalSource, type Verdict } from '../../core/detection';
 import { entropyLabel } from '../../core/entropy';
 import { Badge, Card, CopyButton, Explain, DataTable, ErrorState, FileDrop, IconTile, Ltr, Notice, Progress, type Tone } from '../components/ui';
 import { useI18n } from '../i18n/I18nProvider';
 import { useApp } from '../components/AppContext';
-import { ReputationCard, useKeyStatus } from '../components/intel';
+import { hasRepKey, ReputationCard, useKeyStatus } from '../components/intel';
 import { AddToCase } from '../components/AddToCase';
 import { formatBytes, formatDateTime, formatDuration, newTaskId } from '../format';
 
@@ -47,19 +47,21 @@ export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAn
   const keys = useKeyStatus();
   const [quarantined, setQuarantined] = useState(false);
   const [assessment, setAssessment] = useState(r.assessment);
-  const [rep, setRep] = useState<{ loading?: boolean; result?: ReputationResult; error?: string }>({});
+  const [rep, setRep] = useState<{ loading?: boolean; results?: ReputationResult[]; failed?: LookupSource[]; error?: string }>({});
+  const hashServices = REPUTATION_FOR_KIND.hash.filter((s) => hasRepKey(keys, s));
   const checkHash = async () => {
     setRep({ loading: true });
-    const x = await window.blazma.intel.reputation('hash', r.hashes.sha256, ['virustotal']);
+    const x = await window.blazma.intel.reputation('hash', r.hashes.sha256, hashServices);
     if (!x.ok) return setRep({ error: x.error });
-    const res = x.data.results[0];
-    if (!res) return setRep({ error: x.data.sources[0]?.error ?? 'unknown' });
-    setRep({ result: res });
+    const failed = x.data.sources.filter((s) => !s.ok);
+    if (x.data.results.length === 0) return setRep({ error: failed[0]?.error ?? 'unknown' });
+    setRep({ results: x.data.results, failed });
     const available = new Set<SignalSource>(['entropy', 'static', 'hash_reputation']);
     if (r.defender.ran) available.add('defender');
     if (r.yara.ran) available.add('yara');
     if (r.signature.checked) available.add('signature');
-    setAssessment(assess([...r.assessment.signals.filter((s) => s.source !== 'hash_reputation'), vtSignal(res)], { availableSources: available }));
+    const repSignals = x.data.results.map((res) => (res.service === 'virustotal' ? vtSignal(res) : abusechSignal(res)));
+    setAssessment(assess([...r.assessment.signals.filter((s) => s.source !== 'hash_reputation'), ...repSignals], { availableSources: available }));
     toast('blue', t('file.reassessed'));
   };
   const moveToQuarantine = async () => {
@@ -171,16 +173,23 @@ export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAn
 
       {r.capa.ran && r.capa.capabilities.length > 0 && <CapaCard capa={r.capa} />}
 
-      {rep.result ? (
-        <ReputationCard r={rep.result} />
+      {rep.results ? (
+        <>
+          <div className="grid g-3">{rep.results.map((x) => <ReputationCard key={x.service} r={x} />)}</div>
+          {rep.failed && rep.failed.length > 0 && (
+            <Notice tone="amber">
+              {rep.failed.map((f) => <div key={f.id}>{t(`intel.src.${f.id}`)}: {t(`errors.${f.error ?? 'unknown'}`)}</div>)}
+            </Notice>
+          )}
+        </>
       ) : (
         <Card title={t('file.hashRep')} explain="reputation" icon={Globe} tone="purple">
           <div className="row-wrap" style={{ alignItems: 'center' }}>
-            <button className="btn" disabled={!keys?.virustotal || settings.offlineMode || rep.loading} onClick={() => void checkHash()}>
+            <button className="btn" disabled={hashServices.length === 0 || settings.offlineMode || rep.loading} onClick={() => void checkHash()}>
               <Globe size={15} /> {t('file.hashRepCheck')}
             </button>
             <span className="small dim">
-              {settings.offlineMode ? t('file.hashRepOffline') : keys && !keys.virustotal ? t('file.hashRepNeedsKey') : t('file.hashRepNote')}
+              {settings.offlineMode ? t('file.hashRepOffline') : keys && hashServices.length === 0 ? t('file.hashRepNeedsKey') : t('file.hashRepNote', { services: hashServices.map((s) => t(`intel.src.reputation:${s}`)).join(' · ') })}
             </span>
           </div>
           {rep.loading && <div style={{ marginTop: 10 }}><Progress indeterminate /></div>}
@@ -200,7 +209,7 @@ export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAn
           {assessment.incomplete && <div style={{ marginTop: 12 }}><Notice tone="amber" icon={TriangleAlert}>{t('file.incompleteNote')}</Notice></div>}
           <div className="small dim" style={{ marginTop: 12 }}>{t('file.enginesMissing')}:</div>
           <div className="col" style={{ gap: 4, marginTop: 6 }}>
-            {r.unavailableEngines.filter((e) => !(e.engine === 'hash_reputation' && rep.result)).map((e) => (
+            {r.unavailableEngines.filter((e) => !(e.engine === 'hash_reputation' && rep.results)).map((e) => (
               <div key={e.engine} className="row small">
                 <Badge tone="gray">{t(`file.engine.${e.engine}`)}</Badge>
                 <span className="dim">{t(`errors.${e.reason}`)}</span>

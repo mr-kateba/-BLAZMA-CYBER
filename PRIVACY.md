@@ -29,7 +29,8 @@ that needs them. Currently:
 | Domain Intelligence → RDAP | data.iana.org (bootstrap) + the TLD registry's RDAP server | The queried domain | No |
 | Domain Intelligence → TLS certificate | The queried domain itself (port 443, handshake only) | A TLS handshake (SNI = the domain) | No |
 | Reputation (IP/domain/hash) | VirusTotal, AbuseIPDB, Shodan | The queried IP, domain or **file hash** | Yes (yours) |
-| File Analyzer → "Check SHA-256 on VirusTotal" | VirusTotal | The file's SHA-256 hash only | Yes (yours) |
+| Reputation (abuse.ch) | MalwareBazaar, URLhaus, ThreatFox | The queried IP, domain or **file hash** (MalwareBazaar: hashes only) | Yes (yours, free) |
+| File Analyzer → "Check the hash with reputation services" | VirusTotal and/or abuse.ch (the services you have keys for) | The file's SHA-256 hash only | Yes (yours) |
 | OSINT → Certificate Transparency | crt.sh | The queried domain | No |
 | OSINT → Wayback Machine | archive.org | The queried domain or URL | No |
 | OSINT → GitHub profile | api.github.com | The queried username | No |

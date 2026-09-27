@@ -387,6 +387,17 @@ try {
   await win.getByText(offlineAr, { exact: false }).first().waitFor();
   assert.equal(await pwBox.inputValue(), '', 'the password field is cleared after checking');
 
+  // Phase D3: abuse.ch services are offered for file hashes; without a key they are visibly disabled
+  // (never faked), and the notice explains that a free abuse.ch key enables them.
+  await win.locator('.nav-item', { hasText: 'مركز السمعة' }).click();
+  await win.getByRole('tab', { name: 'هاش ملف' }).click();
+  for (const svc of ['MalwareBazaar (abuse.ch)', 'URLhaus (abuse.ch)', 'ThreatFox (abuse.ch)']) {
+    assert.ok(await win.locator('button.opt', { hasText: svc }).isDisabled(), `${svc} must be disabled without a key`);
+  }
+  await win.getByText('مفتاح abuse.ch المجاني', { exact: false }).waitFor();
+  await win.waitForTimeout(300);
+  await win.screenshot({ path: join(out, '33-reputation-abusech-ar.png'), fullPage: true });
+
   // 6) Hash Lab identify (Arabic)
   await win.locator('.nav-item', { hasText: 'مختبر الهاشات' }).click();
   await win.getByRole('tab', { name: 'تعرّف' }).click();

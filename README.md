@@ -32,7 +32,8 @@ adapters rather than re-implementing them.
   status (Windows), recent activity. Public IP only on explicit request.
 - **File Analyzer** — streaming MD5/SHA-1/SHA-256/SHA-512, file type by magic bytes, entropy, PE
   headers/sections/imports/exports, embedded IOCs, notable strings, Authenticode (Windows),
-  encrypted-file detection, optional Defender + YARA-X, hash-only VirusTotal reputation, and a
+  encrypted-file detection, optional Defender + YARA-X, hash-only reputation (VirusTotal,
+  MalwareBazaar, URLhaus, ThreatFox), and a
   combined assessment that never claims "clean" when engines are missing. Files are never executed.
 - **Security Center** — Microsoft Defender quick/full/file/folder scans (file/folder scans are
   report-only), threat history, quarantine.
@@ -43,7 +44,12 @@ adapters rather than re-implementing them.
 **Intelligence**
 - **IP / Domain Intelligence** — reverse DNS, RDAP, Team Cymru ASN, approximate location (ipinfo),
   Tor exit check, DNS records, SPF/DMARC, TLS certificate, hosting infrastructure.
-- **Reputation Center** — VirusTotal, AbuseIPDB, Shodan with your own keys (hashes, never uploads).
+- **Reputation Center** — VirusTotal, AbuseIPDB, Shodan and abuse.ch (MalwareBazaar, URLhaus,
+  ThreatFox — one free key) with your own keys (hashes, never uploads).
+- **Check an email** — local phishing analysis of a saved .eml or pasted source: sender spoofing,
+  SPF/DKIM/DMARC, deceptive links, dangerous attachments (handed to File Analyzer, never opened).
+- **Was my password leaked?** — Have I Been Pwned via k-anonymity: only 5 characters of the
+  password's SHA-1 hash leave the computer.
 - **OSINT Workspace** — domain, email, username or URL: Certificate Transparency (crt.sh), Wayback
   Machine snapshots, GitHub public profile, mail-domain DNS; provenance (endpoint + time) on every
   source; pivot links open in your browser only after confirmation.

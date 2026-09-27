@@ -13,6 +13,8 @@ import type {
   ApiKeyService, AsnInfo, DnsRecords, DomainLookupOptions, DomainLookupResult, DomainRdap, GeoInfo, IndicatorKind, IpLookupOptions,
   IpLookupResult, IpRdap, LookupSource, ReputationResult, ReputationService, TlsInfo,
 } from '../../shared/api';
+import { REPUTATION_FOR_KIND, REPUTATION_KEY, REPUTATION_SERVICES } from '../../shared/api';
+import { ABUSECH_ENDPOINTS, abusechStatus, parseMalwareBazaar, parseThreatFox, parseUrlhausHost, parseUrlhausPayload } from '../../core/abusech';
 import { NetworkGate } from '../../core/network-gate';
 import { classifyIP, isDomain, isIP, isIPv4 } from '../../core/validation';
 import {
@@ -166,21 +168,27 @@ export class IntelService {
         continue;
       }
       if (res.status === 404) return null;
-      // 401/403 means "bad key" only when we actually sent one; otherwise the server refused us.
-      if (res.status === 401 || res.status === 403) throw new IntelError(meta.authenticated ? 'api_key_invalid' : 'remote_forbidden');
-      if (res.status === 429) throw new IntelError('rate_limited');
-      if (!res.ok) throw new IntelError('api_error');
-      const len = Number(res.headers.get('content-length') ?? 0);
-      if (len > maxBytes) throw new IntelError('response_too_large');
-      const text = await res.text();
-      if (text.length > maxBytes) throw new IntelError('response_too_large');
-      try {
-        return JSON.parse(text);
-      } catch {
-        throw new IntelError('invalid_response');
-      }
+      return readJsonResponse(res, !!meta.authenticated, maxBytes);
     }
     throw new IntelError('too_many_redirects');
+  }
+
+  /** POST through the gate (no redirects followed). `body` is form-encoded or JSON; the answer must be JSON. */
+  async postJson(url: string, body: { form: Record<string, string> } | { json: unknown }, meta: { module: string; service: string; dataKind: string; headers?: Record<string, string>; authenticated?: boolean; timeoutMs?: number }): Promise<unknown> {
+    const isForm = 'form' in body;
+    const res = await this.gate.request({
+      module: meta.module,
+      service: meta.service,
+      url,
+      dataKind: meta.dataKind,
+      init: {
+        method: 'POST',
+        headers: { accept: 'application/json', 'content-type': isForm ? 'application/x-www-form-urlencoded' : 'application/json', ...(meta.headers ?? {}) },
+        body: isForm ? new URLSearchParams(body.form).toString() : JSON.stringify(body.json),
+      },
+      timeoutMs: meta.timeoutMs ?? 15_000,
+    });
+    return readJsonResponse(res, !!meta.authenticated, MAX_JSON_BYTES);
   }
 
   private async getBootstrap(kind: 'ipv4' | 'ipv6' | 'dns', module: string): Promise<unknown> {
@@ -242,9 +250,10 @@ export class IntelService {
   }
 
   private async reputationOne(service: ReputationService, kind: IndicatorKind, value: string, module: string): Promise<ReputationResult> {
-    const key = this.secret(service);
+    const key = this.secret(REPUTATION_KEY[service]);
     if (!key) throw new IntelError('api_key_missing');
     const dataKind = kind === 'ip' ? 'privacy.data.ip_address' : kind === 'domain' ? 'privacy.data.domain' : 'privacy.data.file_hash';
+    if (service === 'malwarebazaar' || service === 'urlhaus' || service === 'threatfox') return this.abusech(service, kind, value, module, dataKind, key);
     if (service === 'virustotal') {
       const json = await this.getJson(vtPath(kind as VtKind, value), { module, service: 'virustotal', dataKind, headers: { 'x-apikey': key }, authenticated: true });
       return json ? parseVirusTotal(json, kind as VtKind, value) : { service, found: false };
@@ -258,6 +267,35 @@ export class IntelService {
     }
     const json = await this.getJson(`https://api.shodan.io/shodan/host/${encodeURIComponent(value)}?key=${encodeURIComponent(key)}`, { module, service: 'shodan', dataKind, authenticated: true });
     return json ? parseShodanHost(json) : { service, found: false };
+  }
+
+  /** abuse.ch (MalwareBazaar / URLhaus / ThreatFox): POST APIs with the user's Auth-Key. */
+  private async abusech(service: 'malwarebazaar' | 'urlhaus' | 'threatfox', kind: IndicatorKind, value: string, module: string, dataKind: string, key: string): Promise<ReputationResult> {
+    const meta = { module, service, dataKind, headers: { 'Auth-Key': key }, authenticated: true };
+    let json: unknown;
+    if (service === 'malwarebazaar') {
+      json = await this.postJson(ABUSECH_ENDPOINTS.malwarebazaar, { form: { query: 'get_info', hash: value } }, meta);
+    } else if (service === 'urlhaus') {
+      json = kind === 'hash'
+        ? await this.postJson(ABUSECH_ENDPOINTS.urlhausPayload, { form: value.length === 32 ? { md5_hash: value } : { sha256_hash: value } }, meta)
+        : await this.postJson(ABUSECH_ENDPOINTS.urlhausHost, { form: { host: value } }, meta);
+    } else {
+      json = await this.postJson(ABUSECH_ENDPOINTS.threatfox, { json: kind === 'hash' ? { query: 'search_hash', hash: value } : { query: 'search_ioc', search_term: value } }, meta);
+    }
+    const status = abusechStatus(json);
+    if (status === 'not_found') return { service, found: false };
+    if (status !== 'ok') throw new IntelError(status);
+    if (service === 'malwarebazaar') return parseMalwareBazaar(json);
+    if (service === 'threatfox') return parseThreatFox(json);
+    return kind === 'hash' ? parseUrlhausPayload(json) : parseUrlhausHost(json);
+  }
+
+  /** Why a service cannot answer for this indicator, or null when it can. */
+  private repSkip(service: ReputationService, kind: IndicatorKind, value: string): string | null {
+    if (!REPUTATION_FOR_KIND[kind].includes(service)) return 'unsupported_indicator';
+    // URLhaus payloads and ThreatFox hashes are indexed by MD5 / SHA-256 only.
+    if (kind === 'hash' && (service === 'urlhaus' || service === 'threatfox') && value.length === 40) return 'unsupported_indicator';
+    return null;
   }
 
   // ------------------------------------------------------------ public API
@@ -278,7 +316,7 @@ export class IntelService {
       step('geo', opts.geo, true, () => this.geo(ip)),
       step('tor', opts.tor, true, () => this.torList()),
       Promise.all(
-        uniq(opts.reputation).map((svc) => step(`reputation:${svc}`, true, true, () => this.reputationOne(svc, 'ip', ip, 'ipIntel'))),
+        uniq(opts.reputation).filter((s) => REPUTATION_FOR_KIND.ip.includes(s)).map((svc) => step(`reputation:${svc}`, true, true, () => this.reputationOne(svc, 'ip', ip, 'ipIntel'))),
       ),
     ]);
 
@@ -309,7 +347,7 @@ export class IntelService {
       step('tls', opts.tls, () =>
         this.gate.run({ module: 'domainIntel', service: 'tls', host: `${domain}:443`, dataKind: 'privacy.data.domain' }, () => this.tls(domain, 443, 10_000)),
       ),
-      Promise.all(uniq(opts.reputation).filter((s) => s === 'virustotal').map((svc) => step(`reputation:${svc}`, true, () => this.reputationOne(svc, 'domain', domain, 'domainIntel')))),
+      Promise.all(uniq(opts.reputation).filter((s) => REPUTATION_FOR_KIND.domain.includes(s)).map((svc) => step(`reputation:${svc}`, true, () => this.reputationOne(svc, 'domain', domain, 'domainIntel')))),
     ]);
 
     let infrastructure: DomainLookupResult['infrastructure'] = [];
@@ -348,14 +386,12 @@ export class IntelService {
       value = value.toLowerCase();
       if (!HASH_RE.test(value)) throw new IntelError('invalid_hash');
     }
-    const list = (Array.isArray(services) ? services : []).filter(
-      (s): s is ReputationService => s === 'virustotal' || s === 'abuseipdb' || s === 'shodan',
-    );
-    const applicable = uniq(list).filter((s) => kind === 'ip' || s === 'virustotal');
+    const list = (Array.isArray(services) ? services : []).filter((s): s is ReputationService => (REPUTATION_SERVICES as readonly unknown[]).includes(s));
+    const applicable = uniq(list).filter((s) => REPUTATION_FOR_KIND[kind].includes(s));
     if (applicable.length === 0) throw new IntelError('no_service_selected');
     const sources: LookupSource[] = [];
     const module = kind === 'hash' ? 'fileAnalyzer' : 'reputation';
-    const results = await Promise.all(applicable.map((svc) => this.step(sources, `reputation:${svc}`, true, null, () => this.reputationOne(svc, kind, value, module))));
+    const results = await Promise.all(applicable.map((svc) => this.step(sources, `reputation:${svc}`, true, this.repSkip(svc, kind, value), () => this.reputationOne(svc, kind, value, module))));
     return { results: results.filter((r): r is ReputationResult => !!r), sources };
   }
 
@@ -413,6 +449,22 @@ export class IntelService {
       sources.push({ id, external: true, ok: false, error: known, queriedAt, ...prov });
       return null;
     }
+  }
+}
+
+async function readJsonResponse(res: Response, authenticated: boolean, maxBytes: number): Promise<unknown> {
+  // 401/403 means "bad key" only when we actually sent one; otherwise the server refused us.
+  if (res.status === 401 || res.status === 403) throw new IntelError(authenticated ? 'api_key_invalid' : 'remote_forbidden');
+  if (res.status === 429) throw new IntelError('rate_limited');
+  if (!res.ok) throw new IntelError('api_error');
+  const len = Number(res.headers.get('content-length') ?? 0);
+  if (len > maxBytes) throw new IntelError('response_too_large');
+  const text = await res.text();
+  if (text.length > maxBytes) throw new IntelError('response_too_large');
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new IntelError('invalid_response');
   }
 }
 

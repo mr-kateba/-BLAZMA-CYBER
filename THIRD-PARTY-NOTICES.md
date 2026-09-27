@@ -69,7 +69,8 @@ Rejected: unmaintained npm "hash identifier" and "PE parser" packages (small, ea
 and fully tested in-house: `src/core/hash-id.ts`, `src/core/pe.ts`); i18next (unnecessary for
 this project's needs; replaced by `src/core/i18n.ts`).
 
-External web services (VirusTotal, AbuseIPDB, Shodan, ipinfo.io, api.ipify.org, IANA/RIR RDAP,
+External web services (VirusTotal, AbuseIPDB, Shodan, abuse.ch MalwareBazaar / URLhaus / ThreatFox,
+Have I Been Pwned Pwned Passwords, ipinfo.io, api.ipify.org, IANA/RIR RDAP,
 Team Cymru, the Tor Project exit list, crt.sh, the Internet Archive Wayback Machine, the GitHub
 REST API) are used only on explicit user action, through NetworkGate, and are subject to their own
 terms. A Censys key can be stored but is not used yet. No API keys are distributed.

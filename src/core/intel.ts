@@ -7,6 +7,7 @@
 //  - VirusTotal v3, AbuseIPDB v2, Shodan host, ipinfo.io JSON, Tor bulk exit list
 
 import type { AsnInfo, DomainRdap, GeoInfo, IpRdap, ReputationResult } from '../shared/api';
+import { ABUSECH_LINK_HOSTS } from './abusech';
 import { isIPv4, isIPv6 } from './validation';
 
 type Json = Record<string, unknown>;
@@ -256,7 +257,7 @@ export function vtPath(kind: VtKind, value: string): string {
 }
 
 /** Hosts whose result pages the UI may open in the user's browser (always via NetworkGate). */
-export const EXTERNAL_LINK_HOSTS: readonly string[] = ['www.virustotal.com'];
+export const EXTERNAL_LINK_HOSTS: readonly string[] = ['www.virustotal.com', ...ABUSECH_LINK_HOSTS];
 
 /** Returns the host when `url` is an https link to an allowlisted host (no credentials/port), else null. */
 export function externalLinkHost(url: unknown): string | null {

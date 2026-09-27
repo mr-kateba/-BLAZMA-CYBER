@@ -87,10 +87,10 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE Fixed: rule validation treated YARA-X warnings (exit code 2) and the word "error" in rule text as failures
 - DONE Verified on Windows CI: engines fetched + SHA-256 verified; capa on notepad.exe → 30 capabilities / 11 ATT&CK techniques (49 s); DIE → Microsoft Linker 14.38 / MSVC 19.38; RL pack → 0 matches on 150 System32 files
 
-## Phase D — Phishing & reputation — IN PROGRESS
+## Phase D — Phishing & reputation — DONE
 - DONE D1 "Check an email": local .eml / pasted-source analysis — sender consistency (display-name spoofing, Reply-To/Return-Path), SPF/DKIM/DMARC as recorded by the provider, real link destinations (mismatch, IP, @-trick, look-alike, shortener, http), risky attachments (executable, double extension, RTLO, macros, archives, HTML) with hand-off to File Analyzer under a non-executable name; Arabic encodings (RFC 2047/2231, windows-1256)
 - DONE D2 "Was my password leaked?": Have I Been Pwned Pwned Passwords via k-anonymity (only a 5-char SHA-1 prefix is sent, with padding, through NetworkGate; matching is local; field cleared on submit; never logged or kept in history) + local observations while typing (length, character kinds, sequences, keyboard patterns, years) — no invented strength score
-- TODO D3 abuse.ch MalwareBazaar / URLhaus / ThreatFox
+- DONE D3 abuse.ch: MalwareBazaar (hash), URLhaus (host/IP + payload hash) and ThreatFox (IOC/hash) in Reputation Center, IP/Domain Intelligence, File Analyzer and the "Is this site trustworthy?" summary; one free Auth-Key (DPAPI-stored); exact-hash listings are evidence (MalwareBazaar = malicious, ThreatFox by confidence, URLhaus payload = strong); "not listed" is never "clean"; SHA-1 skipped with a reason where unsupported. Parsers are tested against the documented response formats; not yet exercised against the live APIs with a real key
 
 ## Phase 7 — Polish
 - DONE Terminal: opens the regular Windows terminal (Windows Terminal, else PowerShell) in its own window — no in-app terminal by decision (the GUI never runs commands from user input)

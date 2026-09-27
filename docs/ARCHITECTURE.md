@@ -131,7 +131,8 @@ Writes are atomic (temp file + rename). Corrupt JSON is set aside, never crashes
 | DNS | Node `dns` (`Resolver`) | built-in | — | Through NetworkGate when querying external resolvers |
 | RDAP | IANA bootstrap + registry RDAP (HTTPS) | built-in fetch via NetworkGate | public data | Replaces port-43 WHOIS |
 | TLS | Node `tls.connect` + `getPeerCertificate` | built-in | — | Through NetworkGate |
-| Reputation | VirusTotal, AbuseIPDB, Shodan | HTTPS adapters via NetworkGate, user's own keys | service ToS | Hash lookups only; file upload is not implemented. Censys not implemented |
+| Reputation | VirusTotal, AbuseIPDB, Shodan, abuse.ch (MalwareBazaar, URLhaus, ThreatFox) | HTTPS adapters via NetworkGate, user's own keys (one abuse.ch Auth-Key for all three; POST APIs) | service ToS | Hash lookups only; file upload is not implemented. Censys not implemented |
+| Leaked passwords | Have I Been Pwned — Pwned Passwords | k-anonymity range API via NetworkGate (5-char SHA-1 prefix, padding) | service ToS (no key) | Matching is local; the password is never logged |
 | OSINT | crt.sh, Wayback availability API, GitHub REST API, mail-domain DNS | HTTPS/DNS via NetworkGate | service ToS / public data | Public, unauthenticated sources only |
 | Reports | Electron `printToPDF` | built-in | — | HTML report → PDF in a hidden sandboxed window, JavaScript disabled |
 

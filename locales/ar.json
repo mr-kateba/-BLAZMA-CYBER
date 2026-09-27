@@ -345,9 +345,9 @@
     "inQuarantine": "هذا الملف موجود في الحجر",
     "scanning": "تشغيل محركات الكشف",
     "hashRep": "سمعة الهاش",
-    "hashRepCheck": "افحص SHA-256 على VirusTotal",
-    "hashRepNote": "استعلام خارجي: يُرسل هاش SHA-256 فقط. لا يُرفع الملف أبدًا.",
-    "hashRepNeedsKey": "أضف مفتاح VirusTotal في الإعدادات لتفعيل ذلك.",
+    "hashRepCheck": "افحص الهاش لدى خدمات السمعة",
+    "hashRepNote": "استعلام خارجي ({{services}}): يُرسل هاش SHA-256 فقط. لا يُرفع الملف أبدًا.",
+    "hashRepNeedsKey": "أضف مفتاح VirusTotal أو abuse.ch في الإعدادات لتفعيل ذلك (مفاتيح abuse.ch مجانية).",
     "hashRepOffline": "محجوب بسبب وضع عدم الاتصال",
     "reassessed": "حُدّث التقييم بنتيجة سمعة الهاش",
     "encryptedNotice": "هذا الملف مشفّر ({{scheme}}). استخدم استعادة كلمات المرور لاستعادة الوصول إلى الملفات التي تملكها.",
@@ -400,7 +400,11 @@
       "vt_clean": "VirusTotal: ملف معروف ولا يصنّفه أي محرك كتهديد",
       "vt_unknown": "VirusTotal: الهاش غير معروف",
       "capa_risky": "وجد capa {{count}} أنواع من السلوك تستخدمها البرامج الضارة كثيرًا",
-      "packer_die": "مضغوط أو محمي بـ {{name}} (يخفي الكود)"
+      "packer_die": "مضغوط أو محمي بـ {{name}} (يخفي الكود)",
+      "abusech_unknown": "غير مُدرج لدى abuse.ch",
+      "mb_listed": "MalwareBazaar: هذا الملف نفسه عيّنة برمجية خبيثة مُبلّغ عنها ({{family}})",
+      "threatfox_listed": "ThreatFox: هاش هذا الملف مؤشر معروف لبرمجية خبيثة ({{family}})",
+      "urlhaus_payload": "URLhaus: هذا الملف نفسه وُزّع عبر {{count}} رابط خبيث"
     }
   },
   "hashlab": {
@@ -539,7 +543,8 @@
       "abuseipdb": "AbuseIPDB",
       "shodan": "Shodan",
       "censys": "Censys",
-      "ipinfo": "ipinfo.io (رمز اختياري)"
+      "ipinfo": "ipinfo.io (رمز اختياري)",
+      "abusech": "abuse.ch (MalwareBazaar · URLhaus · ThreatFox)"
     },
     "enginesDesc": "محركات الكشف والتحليل التي يستخدمها BLAZMA CYBER.",
     "engineStatus": {
@@ -567,7 +572,8 @@
     "recoveryEnginesDesc": "محركات خارجية اختيارية تثبّتها. لا يشغّلها BLAZMA CYBER إلا كأداة؛ ولا يضمّنها أو ينزّلها أبدًا.",
     "capaOnAnalyze": "اشرح ما تستطيع البرامج فعله (capa)",
     "dieOnAnalyze": "تعرّف على المترجم / أداة التغليف (Detect It Easy)",
-    "bundledNote": "المحركات المضمّنة مع BLAZMA نُزّلت من إصداراتها الرسمية عند بناء هذه النسخة، وتم التحقق منها ببصمات SHA-256 مثبّتة. BLAZMA لا ينزّل ولا يحدّث أي برنامج بنفسه أبدًا."
+    "bundledNote": "المحركات المضمّنة مع BLAZMA نُزّلت من إصداراتها الرسمية عند بناء هذه النسخة، وتم التحقق منها ببصمات SHA-256 مثبّتة. BLAZMA لا ينزّل ولا يحدّث أي برنامج بنفسه أبدًا.",
+    "abusechNote": "مفتاح Auth-Key مجاني واحد من auth.abuse.ch يكفي للخدمات الثلاث."
   },
   "activity": {
     "kind": {
@@ -866,7 +872,10 @@
       "osint:ct": "شفافية الشهادات (crt.sh)",
       "osint:wayback": "أرشيف Wayback Machine",
       "osint:github": "واجهة GitHub",
-      "osint:emailDns": "DNS نطاق البريد"
+      "osint:emailDns": "DNS نطاق البريد",
+      "reputation:malwarebazaar": "MalwareBazaar (abuse.ch)",
+      "reputation:urlhaus": "URLhaus (abuse.ch)",
+      "reputation:threatfox": "ThreatFox (abuse.ch)"
     },
     "options": "المصادر المطلوب الاستعلام منها",
     "needsKey": "يحتاج مفتاح API",
@@ -891,7 +900,16 @@
       "reputationScore": "تقييم المجتمع",
       "lastAnalysis": "آخر تحليل",
       "names": "أسماء ملفات معروفة",
-      "open": "افتح في المتصفح"
+      "open": "افتح في المتصفح",
+      "listed": "مُدرج",
+      "listedActive": "على قائمة البرمجيات الخبيثة",
+      "listedHistorical": "أُدرج سابقًا (لا يوجد رابط خبيث نشط الآن)",
+      "threat": "البرمجية الخبيثة / التهديد",
+      "confidence": "درجة الثقة",
+      "urls": "روابط خبيثة",
+      "urlsValue": "{{count}} معروفة · {{online}} تعمل الآن",
+      "firstSeen": "أول ظهور",
+      "lastSeen": "آخر ظهور"
     }
   },
   "ipintel": {
@@ -1005,7 +1023,7 @@
     },
     "value": "المؤشر",
     "services": "الخدمات",
-    "noKeys": "لم يُعدّ أي مفتاح API لخدمات السمعة بعد.",
+    "noKeys": "لم يُعدّ أي مفتاح API لخدمات السمعة بعد. مفتاح abuse.ch المجاني يفعّل MalwareBazaar وURLhaus وThreatFox.",
     "configureKeys": "إضافة مفاتيح API",
     "hashOnly": "يُرسل الهاش فقط — لا تُرفع الملفات أبدًا."
   },
@@ -1784,7 +1802,9 @@
       "tlsUntrusted": "شهادة الأمان الخاصة به غير موثوقة.",
       "tlsExpired": "شهادة الأمان الخاصة به منتهية.",
       "tlsOk": "لديه شهادة أمان صالحة (القفل). انتبه: مواقع الاحتيال قد تملك واحدة أيضًا.",
-      "noAddress": "الاسم لا يشير إلى أي خادم حاليًا."
+      "noAddress": "الاسم لا يشير إلى أي خادم حاليًا.",
+      "listedActive": "{{service}}: هذا العنوان على قائمة برمجيات خبيثة / إساءة الآن.",
+      "listedHistorical": "{{service}}: استُخدم هذا العنوان لنشر برمجيات خبيثة في الماضي."
     }
   },
   "capa": {

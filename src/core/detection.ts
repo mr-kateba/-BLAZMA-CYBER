@@ -89,3 +89,17 @@ export function vtSignal(r: { found: boolean; malicious?: number; suspicious?: n
   if (sus >= 1) return { source: 'hash_reputation', weight: 'weak', reasonKey: 'assessment.reason.vt_suspicious', reasonArgs: { count: sus } };
   return { source: 'hash_reputation', weight: 'clean', reasonKey: 'assessment.reason.vt_clean' };
 }
+
+/**
+ * Converts an abuse.ch file-hash answer into evidence. These are exact hash matches against
+ * community-curated malware collections, so a listing is strong evidence on its own:
+ * MalwareBazaar = a reported malware sample; ThreatFox = a malware IOC (confidence-weighted);
+ * URLhaus = a payload served by malware distribution URLs. "Not listed" is neutral, never "clean".
+ */
+export function abusechSignal(r: { service: string; found: boolean; threat?: string | null; confidence?: number; urlCount?: number }): Signal {
+  if (!r.found) return { source: 'hash_reputation', weight: 'neutral', reasonKey: 'assessment.reason.abusech_unknown' };
+  const family = r.threat ?? '—';
+  if (r.service === 'malwarebazaar') return { source: 'hash_reputation', weight: 'malicious', reasonKey: 'assessment.reason.mb_listed', reasonArgs: { family } };
+  if (r.service === 'threatfox') return { source: 'hash_reputation', weight: (r.confidence ?? 0) >= 75 ? 'malicious' : 'strong', reasonKey: 'assessment.reason.threatfox_listed', reasonArgs: { family } };
+  return { source: 'hash_reputation', weight: 'strong', reasonKey: 'assessment.reason.urlhaus_payload', reasonArgs: { count: r.urlCount ?? 0 } };
+}

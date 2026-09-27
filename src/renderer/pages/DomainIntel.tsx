@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { CalendarClock, Link2, LockKeyhole, Mail, Route, Search, Server, ShieldAlert, ShieldCheck } from 'lucide-react';
-import type { DomainLookupOptions, DomainLookupResult } from '../../shared/api';
+import { REPUTATION_FOR_KIND, type DomainLookupOptions, type DomainLookupResult, type ReputationService } from '../../shared/api';
 import { isDomain } from '../../core/validation';
 import { Badge, Card, DataTable, ErrorState, IconTile, Ltr, Notice, Progress } from '../components/ui';
-import { KV, OfflineBanner, OptionPills, ReputationCard, SourcesTable, useKeyStatus } from '../components/intel';
+import { hasRepKey, KV, OfflineBanner, OptionPills, ReputationCard, SourcesTable, useKeyStatus } from '../components/intel';
 import { AddToCase } from '../components/AddToCase';
 import { useI18n } from '../i18n/I18nProvider';
 import { formatDateTime } from '../format';
@@ -25,7 +25,7 @@ export function DomainIntel() {
   const valid = useMemo(() => looksLikeDomain(value), [value]);
 
   useEffect(() => {
-    if (keys?.virustotal) setOpts((o) => ({ ...o, reputation: ['virustotal'] }));
+    if (keys) setOpts((o) => ({ ...o, reputation: REPUTATION_FOR_KIND.domain.filter((s) => hasRepKey(keys, s)) }));
   }, [keys]);
 
   const run = async () => {
@@ -72,11 +72,11 @@ export function DomainIntel() {
             <OptionPills
               items={[
                 ...(['dns', 'rdap', 'tls', 'infrastructure'] as const).map((k) => ({ id: k, label: t(`domainintel.opt.${k}`), checked: opts[k] })),
-                { id: 'virustotal', label: t('intel.src.reputation:virustotal'), checked: opts.reputation.includes('virustotal'), disabled: !keys?.virustotal, hint: keys && !keys.virustotal ? t('intel.needsKey') : undefined },
+                ...REPUTATION_FOR_KIND.domain.map((s) => ({ id: s, label: t(`intel.src.reputation:${s}`), checked: opts.reputation.includes(s), disabled: !hasRepKey(keys, s), hint: keys && !hasRepKey(keys, s) ? t('intel.needsKey') : undefined })),
               ]}
               onToggle={(id) =>
-                setOpts((o) => id === 'virustotal'
-                  ? { ...o, reputation: o.reputation.length ? [] : ['virustotal'] }
+                setOpts((o) => (REPUTATION_FOR_KIND.domain as readonly string[]).includes(id)
+                  ? { ...o, reputation: o.reputation.includes(id as ReputationService) ? o.reputation.filter((x) => x !== id) : [...o.reputation, id as ReputationService] }
                   : { ...o, [id]: !o[id as keyof DomainLookupOptions] })
               }
             />

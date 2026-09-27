@@ -100,7 +100,7 @@ npm run dist:win     # الناتج: release\BLAZMA-CYBER-<الإصدار>-x64-s
 | Microsoft Defender | فحص الملفات والمجلدات | موجود مع Windows — لا يحتاج إعدادًا |
 | YARA-X بإصدار مختلف | مضمَّن أصلًا — فقط إذا أردت استخدام نسختك الخاصة | **الإعدادات ← المحركات ← إعداد** ثم اختر مسار `yr.exe` |
 | John the Ripper / hashcat | استعادة كلمات المرور لملفاتك المصرّح لك بها فقط | **الإعدادات ← المحركات ← إعداد** (يفتح استعادة كلمات المرور) ثم اختر الملف التنفيذي |
-| مفاتيح VirusTotal / AbuseIPDB / Shodan | فحص السمعة | **الإعدادات ← مفاتيح API** (تُحفظ مشفّرة بـ DPAPI) |
+| مفاتيح VirusTotal / AbuseIPDB / Shodan / abuse.ch | فحص السمعة (مفتاح abuse.ch مجاني من auth.abuse.ch ويشغّل MalwareBazaar وURLhaus وThreatFox) | **الإعدادات ← مفاتيح API** (تُحفظ مشفّرة بـ DPAPI) |
 
 ---
 

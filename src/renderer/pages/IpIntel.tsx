@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Building2, Earth, Globe, MapPin, Network, Route, Search, ShieldAlert, ShieldCheck } from 'lucide-react';
-import type { IpLookupOptions, IpLookupResult, ReputationService } from '../../shared/api';
+import { REPUTATION_FOR_KIND, type IpLookupOptions, type IpLookupResult, type ReputationService } from '../../shared/api';
 import { isIP } from '../../core/validation';
 import { Badge, Card, ErrorState, IconTile, Ltr, Notice, Progress } from '../components/ui';
-import { KV, OfflineBanner, OptionPills, ReputationCard, SourcesTable, useKeyStatus } from '../components/intel';
+import { hasRepKey, KV, OfflineBanner, OptionPills, ReputationCard, SourcesTable, useKeyStatus } from '../components/intel';
 import { AddToCase } from '../components/AddToCase';
 import { useI18n } from '../i18n/I18nProvider';
 import { formatDateTime } from '../format';
 
-const REP: ReputationService[] = ['virustotal', 'abuseipdb', 'shodan'];
+const REP = REPUTATION_FOR_KIND.ip;
 
 export function IpIntel() {
   const { t, locale } = useI18n();
@@ -20,7 +20,7 @@ export function IpIntel() {
 
   // Pre-select reputation services that have a key.
   useEffect(() => {
-    if (keys) setOpts((o) => ({ ...o, reputation: REP.filter((s) => keys[s]) }));
+    if (keys) setOpts((o) => ({ ...o, reputation: REP.filter((s) => hasRepKey(keys, s)) }));
   }, [keys]);
 
   const run = async () => {
@@ -70,13 +70,13 @@ export function IpIntel() {
                   id: s,
                   label: t(`intel.src.reputation:${s}`),
                   checked: opts.reputation.includes(s),
-                  disabled: !keys?.[s],
-                  hint: keys && !keys[s] ? t('intel.needsKey') : undefined,
+                  disabled: !hasRepKey(keys, s),
+                  hint: keys && !hasRepKey(keys, s) ? t('intel.needsKey') : undefined,
                 })),
               ]}
               onToggle={(id) =>
                 setOpts((o) =>
-                  (REP as string[]).includes(id)
+                  (REP as readonly string[]).includes(id)
                     ? { ...o, reputation: o.reputation.includes(id as ReputationService) ? o.reputation.filter((x) => x !== id) : [...o.reputation, id as ReputationService] }
                     : { ...o, [id]: !o[id as keyof IpLookupOptions] },
                 )

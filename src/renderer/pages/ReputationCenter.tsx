@@ -1,17 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { KeyRound, Scale, Search } from 'lucide-react';
-import type { IndicatorKind, LookupSource, ReputationResult, ReputationService } from '../../shared/api';
+import { REPUTATION_FOR_KIND, type IndicatorKind, type LookupSource, type ReputationResult, type ReputationService } from '../../shared/api';
 import { isIP } from '../../core/validation';
 import { Card, EmptyState, ErrorState, IconTile, Notice, Progress, Tabs } from '../components/ui';
-import { OfflineBanner, OptionPills, ReputationCard, SourcesTable, useKeyStatus } from '../components/intel';
+import { hasRepKey, OfflineBanner, OptionPills, ReputationCard, SourcesTable, useKeyStatus } from '../components/intel';
 import { useApp } from '../components/AppContext';
 import { useI18n } from '../i18n/I18nProvider';
 
-const FOR_KIND: Record<IndicatorKind, ReputationService[]> = {
-  ip: ['virustotal', 'abuseipdb', 'shodan'],
-  domain: ['virustotal'],
-  hash: ['virustotal'],
-};
+const FOR_KIND = REPUTATION_FOR_KIND;
 
 export function ReputationCenter() {
   const { t } = useI18n();
@@ -22,7 +18,7 @@ export function ReputationCenter() {
   const [selected, setSelected] = useState<ReputationService[]>([]);
   const [state, setState] = useState<{ loading?: boolean; data?: { results: ReputationResult[]; sources: LookupSource[] }; error?: string }>({});
 
-  const available = FOR_KIND[kind].filter((s) => keys?.[s]);
+  const available = FOR_KIND[kind].filter((s) => hasRepKey(keys, s));
   useEffect(() => setSelected(available), [kind, keys]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const valid = useMemo(() => {
@@ -33,7 +29,7 @@ export function ReputationCenter() {
     return v.includes('.');
   }, [kind, value]);
 
-  const anyKey = keys ? (['virustotal', 'abuseipdb', 'shodan'] as const).some((s) => keys[s]) : true;
+  const anyKey = keys ? FOR_KIND.ip.concat(FOR_KIND.hash).some((s) => hasRepKey(keys, s)) : true;
 
   return (
     <div className="page">
@@ -76,8 +72,8 @@ export function ReputationCenter() {
                 id: s,
                 label: t(`intel.src.reputation:${s}`),
                 checked: selected.includes(s),
-                disabled: !keys?.[s],
-                hint: keys && !keys[s] ? t('intel.needsKey') : undefined,
+                disabled: !hasRepKey(keys, s),
+                hint: keys && !hasRepKey(keys, s) ? t('intel.needsKey') : undefined,
               }))}
               onToggle={(id) => setSelected((x) => (x.includes(id as ReputationService) ? x.filter((y) => y !== id) : [...x, id as ReputationService]))}
             />

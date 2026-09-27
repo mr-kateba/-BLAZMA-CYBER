@@ -301,7 +301,7 @@ export interface AppInfo {
   secureStorageAvailable: boolean;
 }
 
-export type ApiKeyService = 'virustotal' | 'abuseipdb' | 'shodan' | 'censys' | 'ipinfo';
+export type ApiKeyService = 'virustotal' | 'abuseipdb' | 'shodan' | 'censys' | 'ipinfo' | 'abusech';
 
 // ---------------- Intelligence (Phase 3) ----------------
 
@@ -351,7 +351,21 @@ export interface GeoInfo {
   org: string | null;
 }
 
-export type ReputationService = 'virustotal' | 'abuseipdb' | 'shodan';
+export type ReputationService = 'virustotal' | 'abuseipdb' | 'shodan' | 'malwarebazaar' | 'urlhaus' | 'threatfox';
+
+export const REPUTATION_SERVICES: readonly ReputationService[] = ['virustotal', 'abuseipdb', 'shodan', 'malwarebazaar', 'urlhaus', 'threatfox'];
+
+/** Which reputation services can answer for which indicator kind. */
+export const REPUTATION_FOR_KIND: Record<'ip' | 'domain' | 'hash', readonly ReputationService[]> = {
+  ip: ['virustotal', 'abuseipdb', 'shodan', 'urlhaus', 'threatfox'],
+  domain: ['virustotal', 'urlhaus', 'threatfox'],
+  hash: ['virustotal', 'malwarebazaar', 'urlhaus', 'threatfox'],
+};
+
+/** The API key each reputation service uses (one abuse.ch Auth-Key covers MalwareBazaar, URLhaus and ThreatFox). */
+export const REPUTATION_KEY: Record<ReputationService, ApiKeyService> = {
+  virustotal: 'virustotal', abuseipdb: 'abuseipdb', shodan: 'shodan', malwarebazaar: 'abusech', urlhaus: 'abusech', threatfox: 'abusech',
+};
 
 export interface ReputationResult {
   service: ReputationService;
@@ -374,6 +388,17 @@ export interface ReputationResult {
   names?: string[];
   typeDescription?: string | null;
   lastAnalysis?: string | null;
+  /** abuse.ch: the indicator is on a malware/abuse list (true) — `listedActive` false means only historical. */
+  listed?: boolean;
+  listedActive?: boolean;
+  /** abuse.ch: malware family / signature / threat type as reported. */
+  threat?: string | null;
+  firstSeen?: string | null;
+  lastSeen?: string | null;
+  urlCount?: number;
+  onlineUrls?: number;
+  /** ThreatFox confidence level 0–100 (highest among matching IOCs). */
+  confidence?: number;
   link?: string;
 }
 

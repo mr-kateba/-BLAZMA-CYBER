@@ -81,7 +81,7 @@ function Privacy() {
   );
 }
 
-const SERVICES: ApiKeyService[] = ['virustotal', 'abuseipdb', 'shodan', 'ipinfo', 'censys'];
+const SERVICES: ApiKeyService[] = ['virustotal', 'abusech', 'abuseipdb', 'shodan', 'ipinfo', 'censys'];
 
 function ApiKeys({ secure }: { secure: boolean | null }) {
   const { t } = useI18n();
@@ -96,7 +96,7 @@ function ApiKeys({ secure }: { secure: boolean | null }) {
       {SERVICES.map((s) => {
         const configured = status.data?.[s] ?? false;
         return (
-          <Row key={s} title={t(`settings.service.${s}`)} desc={s === 'censys' ? t('settings.censysNote') : s === 'ipinfo' ? t('settings.ipinfoNote') : undefined}>
+          <Row key={s} title={t(`settings.service.${s}`)} desc={s === 'censys' ? t('settings.censysNote') : s === 'ipinfo' ? t('settings.ipinfoNote') : s === 'abusech' ? t('settings.abusechNote') : undefined}>
             <Badge tone={configured ? 'green' : 'gray'}>{t(configured ? 'common.configured' : 'common.notConfigured')}</Badge>
             <input
               className="input mono"

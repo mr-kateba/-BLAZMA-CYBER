@@ -1,6 +1,6 @@
 import { Check, CircleCheck, CloudOff, ExternalLink, ShieldAlert, ShieldCheck, TriangleAlert } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import type { ApiKeyService, LookupSource, ReputationResult } from '../../shared/api';
+import { REPUTATION_KEY, type ApiKeyService, type LookupSource, type ReputationResult, type ReputationService } from '../../shared/api';
 import { Badge, Card, DataTable, Ltr, Notice, type Tone } from './ui';
 import { useApp } from './AppContext';
 import { useI18n } from '../i18n/I18nProvider';
@@ -72,8 +72,14 @@ export function SourcesTable({ sources }: { sources: LookupSource[] }) {
   );
 }
 
-function repTone(r: ReputationResult): Tone {
+/** Whether the API key a reputation service needs is configured (null while loading). */
+export function hasRepKey(keys: Record<ApiKeyService, boolean> | null, s: ReputationService): boolean {
+  return !!keys?.[REPUTATION_KEY[s]];
+}
+
+export function repTone(r: ReputationResult): Tone {
   if (!r.found) return 'gray';
+  if (r.listed) return r.listedActive === false ? 'amber' : 'red';
   if ((r.malicious ?? 0) > 0 || (r.abuseScore ?? 0) >= 50 || (r.vulns?.length ?? 0) > 0) return 'red';
   if ((r.suspicious ?? 0) > 0 || (r.abuseScore ?? 0) >= 10) return 'amber';
   return 'green';
@@ -99,6 +105,12 @@ export function ReputationCard({ r }: { r: ReputationResult }) {
     >
       {!r.found ? <div className="muted">{t('intel.rep.notFound')}</div> : (
         <dl className="kv">
+          {r.listed && kv(t('intel.rep.listed'), <Badge tone={tone}>{t(r.listedActive === false ? 'intel.rep.listedHistorical' : 'intel.rep.listedActive')}</Badge>)}
+          {r.threat && kv(t('intel.rep.threat'), <Ltr>{r.threat}</Ltr>)}
+          {r.confidence !== undefined && kv(t('intel.rep.confidence'), <Ltr>{r.confidence}%</Ltr>)}
+          {r.urlCount !== undefined && kv(t('intel.rep.urls'), t('intel.rep.urlsValue', { count: r.urlCount, online: r.onlineUrls ?? 0 }))}
+          {r.firstSeen && kv(t('intel.rep.firstSeen'), formatDateTime(locale, r.firstSeen))}
+          {r.lastSeen && kv(t('intel.rep.lastSeen'), formatDateTime(locale, r.lastSeen))}
           {r.malicious !== undefined && kv(t('intel.rep.title'), <span>{t('intel.rep.detections', { malicious: r.malicious ?? 0, suspicious: r.suspicious ?? 0, harmless: r.harmless ?? 0, undetected: r.undetected ?? 0 })}</span>)}
           {r.reputation !== undefined && r.reputation !== null && kv(t('intel.rep.reputationScore'), <Ltr>{r.reputation}</Ltr>)}
           {r.typeDescription && kv(t('file.type'), <Ltr>{r.typeDescription}</Ltr>)}
