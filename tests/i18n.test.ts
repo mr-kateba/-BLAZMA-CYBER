@@ -18,7 +18,7 @@ describe('localization', () => {
     }
   });
   it('no Arabic string is left untranslated (identical to English) unless it is a technical term', () => {
-    const allowed = /^(BLAZMA CYBER|العربية|YARA-X|RDAP|RDAP \/ WHOIS|ASN|CIDR|Tor|SPF|DMARC|DNSSEC|IPv\{\{v\}\}|MIME|Microsoft Defender|YARA|Electron|English|Left-to-right interface|VirusTotal|AbuseIPDB|Shodan|Censys|\{\{.*)$/;
+    const allowed = /^(BLAZMA CYBER|العربية|YARA-X|RDAP|RDAP \/ WHOIS|Ping|DNS|ASN|CIDR|Tor|SPF|DMARC|DNSSEC|IPv\{\{v\}\}|MIME|Microsoft Defender|YARA|Electron|English|Left-to-right interface|VirusTotal|AbuseIPDB|Shodan|Censys|\{\{.*)$/;
     const get = (d: Dict, key: string) => key.split('.').reduce<any>((n, p) => n[p], d) as string;
     const same = flattenKeys(en as Dict).filter((k) => get(en as Dict, k) === get(ar as Dict, k) && !allowed.test(get(en as Dict, k)));
     expect(same).toEqual([]);

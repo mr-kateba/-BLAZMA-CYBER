@@ -314,6 +314,7 @@ export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAn
 
 export function FileAnalyzer() {
   const { t } = useI18n();
+  const { takePendingFile } = useApp();
   const [state, setState] = useState<State>({ kind: 'idle' });
 
   useEffect(
@@ -333,6 +334,12 @@ export function FileAnalyzer() {
       return r.ok ? { kind: 'done', result: r.data } : r.error === 'cancelled' ? { kind: 'idle' } : { kind: 'error', code: r.error, path };
     });
   };
+
+  useEffect(() => {
+    const p = takePendingFile();
+    if (p) void start(p);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const pct = state.kind === 'running' && state.progress && state.progress.totalBytes > 0
     ? (state.progress.processedBytes / state.progress.totalBytes) * 100 : 0;
