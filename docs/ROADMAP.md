@@ -100,12 +100,12 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE E5 Event-log hunting with bundled Hayabusa 4.1.0 (SHA-256 pinned; rules/.git pruned; AGPL + DRL license texts shipped): .evtx file or folder (unelevated, cancellable) or this computer (explained, then UAC — the only elevated action, engine-only, read-only); minimum level + period; summary by level and MITRE ATT&CK tactic, rules that matched (with rule authors, per DRL), most-severe-first matches. Verified locally with the Linux build on public attack samples (E2E); Windows CI runs it on an exported System log and live
 - DONE E6 Memory implant scan with bundled HollowsHunter 0.4.1.1 (BSD-2, SHA-256 pinned): programs of the current user, `/quiet /json /ofilter 2` (no dumps; /kill and /suspend never used); summary parsed exactly as hh_report.cpp writes it; plain-language severity (hidden code / modified in memory / unusual) with false-positive guidance. Windows CI runs it on the runner's processes
 
-## Phase F — Integration & portability — IN PROGRESS
+## Phase F — Integration & portability — DONE
 - DONE F1 IOC export: CSV (RFC 4180, spreadsheet-formula neutralized) and STIX 2.1 bundle (identity, one indicator per IOC with escaped patterns, grouping for the case) from a case's evidence — hashes (incl. file evidence hashes), IPv4/IPv6, domains, URLs, emails, file names
 - DONE F2 MITRE ATT&CK: Enterprise ATT&CK 19.2 table generated from MITRE's official STIX data (scripts/make-attack-data.mjs; 697 techniques, 15 tactics, 146 revoked ids mapped to their replacements); event-log hunting shows an ATT&CK map by tactic with links to attack.mitre.org
 - DONE F3 Portable mode: `portable.txt` next to the executable keeps all BLAZMA data and Chromium's own data in `BLAZMA-data` beside the program (own single-instance lock; read-only media fall back to the normal location); CI and releases build `*-x64-portable.zip` and smoke-test it in portable mode; Settings shows the copy type
 - DONE F4 Manual update check (Settings → About): only on click, through NetworkGate (blocked in Offline Mode), reads this repository's GitHub release list, SemVer comparison incl. pre-releases; opens the release page built by the main process — nothing is downloaded or installed
-- TODO F5 Bundled John the Ripper / hashcat
+- DECIDED F5: John the Ripper / hashcat stay user-installed and are not bundled (unchanged decision: password recovery is orchestration only, for files the user owns)
 
 ## Phase 7 — Polish
 - DONE Terminal: opens the regular Windows terminal (Windows Terminal, else PowerShell) in its own window — no in-app terminal by decision (the GUI never runs commands from user input)
