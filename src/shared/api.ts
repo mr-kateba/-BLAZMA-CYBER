@@ -22,6 +22,7 @@ import type { EmailAnalysis } from '../core/email';
 import type { DieSummary } from '../core/die';
 import type { CtSummary, GithubProfile, OsintPivot, OsintTargetType, WaybackSnapshot } from '../core/osint';
 import type { AccountStatus, AccountUnknownReason, UsernameGroup } from '../core/username-check';
+import type { MacKind } from '../core/oui';
 
 export type Theme = 'dark' | 'midnight';
 export type StartPage = 'dashboard' | 'file-analyzer' | 'hash-lab' | 'privacy';
@@ -505,6 +506,7 @@ export interface DomainLookupResult {
 
 export type { OsintTargetType } from '../core/osint';
 export type { AccountStatus, AccountUnknownReason, UsernameGroup } from '../core/username-check';
+export type { MacKind } from '../core/oui';
 export type { EmailAnalysis, EmailAttachment, EmailLink, EmailSignal, AuthResult } from '../core/email';
 
 /** Pwned Passwords answer. Never contains the password or its hash. */
@@ -765,9 +767,16 @@ export interface RouteRow {
   metric: number | null;
 }
 
+/** Who made a device, from its MAC address (offline IEEE registry). */
+export interface MacMaker {
+  kind: MacKind;
+  vendor: string | null;
+}
+
 export interface NeighborRow {
   address: string;
   mac: string | null;
+  maker: MacMaker | null;
   state: string | null;
   interface: string | null;
 }
@@ -776,7 +785,7 @@ export interface DiscoveryResult {
   subnet: string;
   interface: string;
   probed: number;
-  alive: Array<{ address: string; mac: string | null }>;
+  alive: Array<{ address: string; mac: string | null; maker: MacMaker | null }>;
   durationMs: number;
 }
 

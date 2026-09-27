@@ -7,6 +7,7 @@ import { Badge, Card, DataTable, EmptyState, ErrorState, IconTile, Ltr, Notice, 
 import { OfflineBanner } from '../components/intel';
 import { useApp } from '../components/AppContext';
 import { useI18n } from '../i18n/I18nProvider';
+import { DeviceMaker } from '../components/DeviceMaker';
 import { formatDuration, newTaskId } from '../format';
 
 type Tab = 'ping' | 'trace' | 'dns' | 'ports' | 'adapters' | 'routes' | 'neighbors' | 'discovery';
@@ -274,6 +275,7 @@ function DiscoveryTab() {
             <DataTable rowKey={(x) => x.address} rows={s.r.alive} columns={[
               { key: 'a', label: t('net.address'), render: (x) => <Ltr mono>{x.address}</Ltr> },
               { key: 'm', label: 'MAC', render: (x) => <Ltr mono>{x.mac ?? '—'}</Ltr> },
+              { key: 'v', label: t('net.maker.title'), render: (x) => <DeviceMaker maker={x.maker} /> },
             ]} />
           )}
         </Card>
@@ -317,6 +319,7 @@ export function NetworkToolkit() {
           <SimpleTable<NeighborRow> load={() => window.blazma.net.neighbors()} empty={t('forensics.empty')} columns={[
             { key: 'a', label: t('net.address'), render: (r) => <Ltr mono>{r.address}</Ltr> },
             { key: 'm', label: 'MAC', render: (r) => <Ltr mono>{r.mac ?? '—'}</Ltr> },
+            { key: 'v', label: t('net.maker.title'), render: (r) => <DeviceMaker maker={r.maker} /> },
             { key: 's', label: t('forensics.col.state'), render: (r) => <Badge tone="gray">{r.state ?? '—'}</Badge> },
             { key: 'i', label: t('net.interface'), render: (r) => <Ltr>{r.interface ?? '—'}</Ltr> },
           ]} />

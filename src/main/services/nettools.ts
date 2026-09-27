@@ -21,6 +21,12 @@ import { NetworkGate } from '../../core/network-gate';
 import { classifyIP, isHostname, isIP, isIPv4, parsePortList } from '../../core/validation';
 import { networkOf, parsePingOutput, parseProcArp, parseProcRoute, subnetHosts, wellKnownService } from '../../core/netparse';
 import { runPowerShellJson } from './powershell';
+import { macInfo } from '../../core/oui';
+
+function withMaker(mac: string | null) {
+  const m = macInfo(mac);
+  return m ? { kind: m.kind, vendor: m.vendor } : null;
+}
 
 export class NetToolsError extends Error {
   constructor(readonly code: string) {
@@ -326,7 +332,7 @@ export class NetToolsService {
       probed: hosts.length,
       alive: [...found]
         .sort((a, b) => Number(a.split('.')[3]) - Number(b.split('.')[3]))
-        .map((address) => ({ address, mac: macOf(address) })),
+        .map((address) => ({ address, mac: macOf(address), maker: withMaker(macOf(address)) })),
       durationMs: Date.now() - started,
     };
   }
@@ -386,14 +392,18 @@ export class NetToolsService {
   }
 
   async neighbors(): Promise<NeighborRow[]> {
-    if (!isWin()) return parseProcArp(await readFile('/proc/net/arp', 'utf8').catch(() => ''));
+    if (!isWin()) return parseProcArp(await readFile('/proc/net/arp', 'utf8').catch(() => '')).map((n) => ({ ...n, maker: withMaker(n.mac) }));
     const r = await runPowerShellJson<unknown>(NEIGHBORS_SCRIPT, { timeoutMs: 30_000 });
     if (!r.ok) throw new NetToolsError(r.error);
-    return arr<Record<string, unknown>>(r.data).map((x) => ({
-      address: String(x.ip ?? ''),
-      mac: typeof x.mac === 'string' ? x.mac.replace(/-/g, ':').toLowerCase() : null,
-      state: typeof x.state === 'string' ? x.state : null,
-      interface: typeof x.iface === 'string' ? x.iface : null,
-    }));
+    return arr<Record<string, unknown>>(r.data).map((x) => {
+      const mac = typeof x.mac === 'string' ? x.mac.replace(/-/g, ':').toLowerCase() : null;
+      return {
+        address: String(x.ip ?? ''),
+        mac,
+        maker: withMaker(mac),
+        state: typeof x.state === 'string' ? x.state : null,
+        interface: typeof x.iface === 'string' ? x.iface : null,
+      };
+    });
   }
 }

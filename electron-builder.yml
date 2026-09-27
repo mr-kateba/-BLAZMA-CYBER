@@ -27,6 +27,8 @@ extraResources:
     to: licenses/mitre-attack.txt
   - from: engines/licenses/whatsmyname.txt
     to: licenses/whatsmyname.txt
+  - from: engines/licenses/oui-data.txt
+    to: licenses/oui-data.txt
 electronLanguages:
   - en-US
   - ar

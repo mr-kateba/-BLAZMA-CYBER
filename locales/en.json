@@ -1204,7 +1204,16 @@
     "discover": "Discover devices",
     "noSubnets": "No private network adapter found",
     "discoverSummary": "{{alive}} device(s) found of {{probed}} addresses",
-    "noHosts": "No devices answered"
+    "noHosts": "No devices answered",
+    "maker": {
+      "title": "Manufacturer",
+      "random": "Private address",
+      "randomHint": "A random (locally administered) MAC address — phones and laptops use these on Wi-Fi for privacy, so the maker cannot be known.",
+      "multicast": "Group address",
+      "broadcast": "Broadcast",
+      "unknown": "Not in the registry",
+      "vendor": "Manufacturer"
+    }
   },
   "recovery": {
     "title": "Password Recovery",
