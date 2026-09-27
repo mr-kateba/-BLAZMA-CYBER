@@ -63,10 +63,10 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - TODO Hash Lab wordlist management
 
 ## Phase 6 — Investigation
-- TODO Cases (CASE-YYYY-NNN), evidence vs. notes, timeline
-- TODO Threat Hunting with cross-module correlation
+- DONE Cases (CASE-YYYY-NNN), evidence vs. notes, auto timeline; "Add to case" from File Analyzer / IP / Domain intel
+- DONE Threat Hunting: cross-module correlation (cases, quarantine, activity, network log, live processes/connections/services/startup, YARA rules) + persistence review flags
+- DONE Reports: escaped, script-free HTML (strict CSP), JSON export, PDF via offline printToPDF; Arabic RTL / English LTR
 - TODO OSINT workspace (lawful public sources, provenance on every result)
-- TODO Reports (HTML/JSON, Arabic/English; PDF later)
 - TODO Integrated PowerShell terminal (separate from GUI operations)
 
 ## Phase 7 — Polish

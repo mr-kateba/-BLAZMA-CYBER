@@ -151,7 +151,7 @@ const TOOLS: Tool[] = [
   { id: 'passwordRecovery', icon: KeyRound, tone: 'amber', to: 'password-recovery' },
   { id: 'networkTools', icon: Network, tone: 'green', to: 'network-toolkit' },
   { id: 'privacy', icon: ShieldCheck, tone: 'cyan', to: 'privacy' },
-  { id: 'newCase', icon: FolderPlus, tone: 'purple', to: 'cases', phase: 6 },
+  { id: 'newCase', icon: FolderPlus, tone: 'purple', to: 'cases' },
 ];
 
 const ACTIVITY_ICON: Record<ActivityEntry['kind'], LucideIcon> = {

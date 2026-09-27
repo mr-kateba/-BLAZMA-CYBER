@@ -5,7 +5,7 @@
 // Usage: node scripts/ui-smoke.mjs [samplePath]
 // On Linux CI run under xvfb-run. --no-sandbox is used ONLY by this test harness (root in containers).
 import { _electron as electron } from 'playwright';
-import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import assert from 'node:assert/strict';
@@ -231,6 +231,47 @@ try {
     await win.getByRole('button', { name: 'العربية' }).click();
   }
 
+  // 5f) Phase 6: case → evidence → note → Arabic HTML report → threat hunting correlation
+  await app.evaluate(({ shell }) => { shell.openPath = async () => ''; shell.showItemInFolder = () => {}; });
+  await win.getByRole('button', { name: 'English' }).click();
+  await win.locator('.nav-item', { hasText: 'Cases' }).click();
+  await win.getByText('No cases yet').waitFor();
+  await win.getByLabel('Case name').fill('E2E phishing <b>wave</b>');
+  await win.getByRole('button', { name: 'Create case' }).click();
+  await win.getByText(/CASE-\d{4}-001/).first().waitFor();
+  await win.locator('input.input.mono').first().fill('203.0.113.77');
+  await win.getByRole('button', { name: 'Add', exact: true }).click();
+  await win.getByText('203.0.113.77').first().waitFor();
+  await win.getByRole('tab', { name: 'Analyst notes' }).click();
+  await win.getByPlaceholder('Write an analyst note…').fill('Sender domain spoofed; see headers.');
+  await win.getByRole('button', { name: 'Add note' }).click();
+  await win.getByText('Sender domain spoofed').waitFor();
+  await win.getByRole('button', { name: 'العربية' }).click();
+  await win.getByRole('tab', { name: 'التقرير' }).click();
+  await win.waitForTimeout(300);
+  await win.screenshot({ path: join(out, '23-case-report-ar.png') });
+  await win.getByRole('button', { name: 'إنشاء تقرير' }).first().click();
+  await win.getByText('أُنشئ التقرير').first().waitFor({ timeout: 20000 });
+  const repDir = join(dataDir, 'reports');
+  const html = readdirSync(repDir).filter((f) => f.endsWith('.html')).map((f) => readFileSync(join(repDir, f), 'utf8'))[0];
+  assert.ok(html, 'an HTML report file must exist');
+  assert.match(html, /<html lang="ar" dir="rtl">/);
+  assert.ok(html.includes('203.0.113.77'), 'report contains the evidence');
+  assert.ok(!html.includes('<b>wave</b>') && html.includes('&lt;b&gt;wave&lt;/b&gt;'), 'case name must be escaped');
+  assert.ok(!/<script/i.test(html), 'report contains no scripts');
+
+  await win.locator('.nav-item', { hasText: 'التقارير' }).click();
+  await win.getByText('HTML').first().waitFor();
+  await win.screenshot({ path: join(out, '24-reports-ar.png') });
+
+  await win.locator('.nav-item', { hasText: 'صيد التهديدات' }).click();
+  await win.locator('input.input.mono').first().fill('203.0.113.77');
+  await win.getByRole('button', { name: 'ابحث', exact: true }).click();
+  await win.getByText(/نتيجة ·/).first().waitFor({ timeout: 30000 });
+  await win.getByText(/CASE-\d{4}-001/).first().waitFor();
+  await win.waitForTimeout(300);
+  await win.screenshot({ path: join(out, '25-threat-hunting-ar.png') });
+
   // 6) Hash Lab identify (Arabic)
   await win.locator('.nav-item', { hasText: 'مختبر الهاشات' }).click();
   await win.getByRole('tab', { name: 'تعرّف' }).click();
@@ -246,7 +287,7 @@ try {
   await win.screenshot({ path: join(out, '08-privacy-ar.png') });
 
   // 8) A planned module is labeled honestly
-  await win.locator('.nav-item', { hasText: 'صيد التهديدات' }).click();
+  await win.locator('.nav-item', { hasText: 'مساحة OSINT' }).click();
   await win.getByText('هذه الوحدة غير متاحة بعد').waitFor();
   await win.screenshot({ path: join(out, '09-planned-module-ar.png') });
 

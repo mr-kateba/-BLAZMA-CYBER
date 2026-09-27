@@ -35,6 +35,9 @@ Private, loopback and reserved IP addresses are **never** sent to external servi
 resolver may be asked for reverse DNS). Files are **never uploaded**: reputation uses hashes only.
 File upload is not implemented; if it is ever added it will require explicit confirmation.
 
+Cases, reports and threat-hunting searches are **local only**: they are stored under the app's
+data folder, are never uploaded, and can be removed from the Privacy Center (clear data → cases / reports).
+
 Every attempted external request (sent, blocked or failed) is recorded in **Privacy Center →
 Network Activity** with the time, module, service, host and the *category* of data sent.
 Queried values and API keys are not stored in that log.

@@ -4,6 +4,7 @@ import type { IpLookupOptions, IpLookupResult, ReputationService } from '../../s
 import { isIP } from '../../core/validation';
 import { Badge, Card, ErrorState, IconTile, Ltr, Notice, Progress } from '../components/ui';
 import { KV, OfflineBanner, OptionPills, ReputationCard, SourcesTable, useKeyStatus } from '../components/intel';
+import { AddToCase } from '../components/AddToCase';
 import { useI18n } from '../i18n/I18nProvider';
 import { formatDateTime } from '../format';
 
@@ -103,6 +104,7 @@ export function IpIntel() {
                   {hosting && /hosting|data center/i.test(hosting) && <Badge tone="amber">{t('ipintel.hostingHint')}</Badge>}
                 </div>
               </div>
+              <AddToCase items={[{ kind: 'ip', value: r.ip, source: 'ipIntel', details: { scope: r.scope, asn: r.asn ? `AS${r.asn.asn}` : null, asName: r.asn?.name ?? null, country: r.rdap?.country ?? r.asn?.country ?? null, network: r.rdap?.name ?? null, tor: r.tor } }]} />
             </div>
             {r.scope !== 'public' && <Notice tone="cyan">{t('ipintel.scopeNote')}</Notice>}
 

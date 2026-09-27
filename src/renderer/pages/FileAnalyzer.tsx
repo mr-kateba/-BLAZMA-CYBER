@@ -10,6 +10,7 @@ import { Badge, Card, CopyButton, DataTable, ErrorState, FileDrop, IconTile, Ltr
 import { useI18n } from '../i18n/I18nProvider';
 import { useApp } from '../components/AppContext';
 import { ReputationCard, useKeyStatus } from '../components/intel';
+import { AddToCase } from '../components/AddToCase';
 import { formatBytes, formatDateTime, formatDuration, newTaskId } from '../format';
 
 const VERDICT: Record<Verdict, { tone: Tone; icon: LucideIcon }> = {
@@ -86,6 +87,10 @@ export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAn
           <div className="muted small">{t(`verdict.desc.${assessment.verdict}`)}</div>
         </div>
         <div className="row-wrap" style={{ justifyContent: 'flex-end' }}>
+          <AddToCase
+            small={false}
+            items={[{ kind: 'file', value: r.path, label: r.name, source: 'fileAnalyzer', details: { sha256: r.hashes.sha256, md5: r.hashes.md5, verdict: assessment.verdict, type: r.type.id, size: r.sizeBytes } }]}
+          />
           {inQuarantine ? (
             <Badge tone="cyan" icon={ShieldCheck}>{t('file.inQuarantine')}</Badge>
           ) : quarantined ? (

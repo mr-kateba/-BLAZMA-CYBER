@@ -629,6 +629,101 @@ export interface DiscoveryResult {
   durationMs: number;
 }
 
+// ---------------- Investigations (Phase 6) ----------------
+
+export type EvidenceKind = 'file' | 'hash' | 'ip' | 'domain' | 'url' | 'email' | 'process' | 'connection' | 'finding' | 'other';
+
+export interface Evidence {
+  id: string;
+  kind: EvidenceKind;
+  /** The indicator itself (hash, IP, domain, path…). */
+  value: string;
+  label: string | null;
+  /** Module that produced it (fileAnalyzer, ipIntel, hunt, manual…). */
+  source: string;
+  addedAt: string;
+  /** Optional structured snapshot (e.g. verdict, hashes, ASN) captured when added. */
+  details: Record<string, string | number | boolean | null> | null;
+}
+
+export interface CaseNote {
+  id: string;
+  text: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TimelineEvent {
+  id: string;
+  time: string;
+  title: string;
+  detail: string | null;
+  kind: 'evidence' | 'note' | 'event' | 'status';
+}
+
+export interface InvestigationCase {
+  id: string; // CASE-YYYY-NNN
+  name: string;
+  description: string;
+  tags: string[];
+  status: 'open' | 'closed';
+  createdAt: string;
+  updatedAt: string;
+  evidence: Evidence[];
+  notes: CaseNote[];
+  timeline: TimelineEvent[];
+}
+
+export type CaseSummary = Pick<InvestigationCase, 'id' | 'name' | 'status' | 'tags' | 'createdAt' | 'updatedAt'> & { evidenceCount: number; noteCount: number };
+
+export type ReportFormat = 'html' | 'json' | 'pdf';
+
+export interface ReportOptions {
+  format: ReportFormat;
+  language: Lang;
+  includeMachineInfo: boolean;
+  includeNotes: boolean;
+  includeTimeline: boolean;
+}
+
+export interface ReportRecord {
+  id: string;
+  caseId: string;
+  caseName: string;
+  format: ReportFormat;
+  language: Lang;
+  path: string;
+  createdAt: string;
+  sizeBytes: number;
+}
+
+export type HuntSource = 'case' | 'quarantine' | 'activity' | 'network_log' | 'process' | 'connection' | 'service' | 'startup' | 'task' | 'yara_rule';
+
+export interface HuntHit {
+  source: HuntSource;
+  title: string;
+  detail: string | null;
+  time: string | null;
+  /** Reference for navigation, e.g. a case id. */
+  ref: string | null;
+}
+
+export interface HuntResult {
+  query: string;
+  indicatorType: 'ip' | 'domain' | 'hash' | 'text';
+  hits: HuntHit[];
+  searched: Array<{ source: HuntSource; ok: boolean; error?: string }>;
+  durationMs: number;
+}
+
+export interface PersistenceItem {
+  kind: 'startup' | 'task' | 'service';
+  name: string;
+  command: string;
+  location: string | null;
+  flags: string[]; // i18n keys under hunt.flag.*
+}
+
 // ---------------- Password Recovery (Phase 5) ----------------
 
 export type RecoveryEngineKind = 'john' | 'hashcat';
@@ -675,7 +770,7 @@ export type RecoveryEventMsg =
   | { id: string; type: 'error'; error: string }
   | { id: string; type: 'stopped' };
 
-export type ClearTarget = 'activity' | 'network_activity' | 'logs' | 'temp' | 'intel_cache';
+export type ClearTarget = 'activity' | 'network_activity' | 'logs' | 'temp' | 'intel_cache' | 'reports' | 'cases';
 
 export interface BlazmaApi {
   app: {
@@ -748,6 +843,30 @@ export interface BlazmaApi {
     events(log: EventLogName, levels: number[], max: number): Promise<Result<ForensicsResult<EventRow>>>;
     signatures(paths: string[], taskId: string): Promise<Result<SignatureRow[]>>;
     powershellHistory(): Promise<Result<{ path: string; lines: string[]; total: number }>>;
+  };
+  cases: {
+    list(): Promise<Result<CaseSummary[]>>;
+    get(id: string): Promise<Result<InvestigationCase>>;
+    create(name: string, description: string, tags: string[]): Promise<Result<InvestigationCase>>;
+    update(id: string, patch: { name?: string; description?: string; tags?: string[]; status?: 'open' | 'closed' }): Promise<Result<InvestigationCase>>;
+    remove(id: string): Promise<Result<true>>;
+    addEvidence(id: string, ev: { kind: EvidenceKind; value: string; label?: string | null; source: string; details?: Evidence['details'] }): Promise<Result<InvestigationCase>>;
+    removeEvidence(id: string, evidenceId: string): Promise<Result<InvestigationCase>>;
+    addNote(id: string, text: string): Promise<Result<InvestigationCase>>;
+    updateNote(id: string, noteId: string, text: string): Promise<Result<InvestigationCase>>;
+    removeNote(id: string, noteId: string): Promise<Result<InvestigationCase>>;
+    addEvent(id: string, title: string, detail: string | null, time: string | null): Promise<Result<InvestigationCase>>;
+  };
+  reports: {
+    generate(caseId: string, options: ReportOptions): Promise<Result<ReportRecord | null>>;
+    list(): Promise<Result<ReportRecord[]>>;
+    open(id: string): Promise<Result<true>>;
+    reveal(id: string): Promise<Result<true>>;
+    remove(id: string): Promise<Result<true>>;
+  };
+  hunt: {
+    search(query: string, taskId: string): Promise<Result<HuntResult>>;
+    persistence(): Promise<Result<PersistenceItem[]>>;
   };
   recovery: {
     detect(path: string): Promise<Result<{ encryption: EncryptionInfo; name: string; sizeBytes: number }>>;

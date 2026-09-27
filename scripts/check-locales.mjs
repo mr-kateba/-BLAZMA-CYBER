@@ -15,6 +15,8 @@ const ph = (s) => [...s.matchAll(/\{\{\s*(\w+)\s*\}\}/g)].map((m) => m[1]).sort(
 const en = flat(load('en'));
 const ar = flat(load('ar'));
 const problems = [];
+const dotted = (d, p = '') => Object.entries(d).flatMap(([k, v]) => [...(k.includes('.') ? [`${p}${k}`] : []), ...(typeof v === 'object' ? dotted(v, `${p}${k}.`) : [])]);
+for (const l of ['en', 'ar']) for (const k of dotted(load(l))) problems.push(`key contains a dot (unreachable by t()): ${l}:${k}`);
 for (const k of Object.keys(en)) if (!(k in ar)) problems.push(`missing in ar: ${k}`);
 for (const k of Object.keys(ar)) if (!(k in en)) problems.push(`missing in en: ${k}`);
 for (const k of Object.keys(en)) if (k in ar && ph(en[k]) !== ph(ar[k])) problems.push(`placeholder mismatch: ${k}`);

@@ -121,10 +121,11 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
   VirusTotal/AbuseIPDB/Shodan), hash-only file reputation, Windows Forensics (read-only collectors,
   Linux /proc fallbacks), Network Toolkit (ping/trace/DNS/ports/routes/ARP/discovery with
   authorization confirmation), Password Recovery (encrypted-file detection + bring-your-own
-  John/hashcat engine, authorization required, results never logged).
+  John/hashcat engine, authorization required, results never logged), Cases (evidence/notes/timeline),
+  Reports (escaped HTML with strict CSP, JSON, PDF via offline printToPDF), Threat Hunting
+  (cross-module correlation + persistence review).
 - Latest audit: docs/AUDIT-REPORT.md (3 bugs found and fixed; weaknesses and proposed features listed).
-- NOT YET: forensics, network toolkit,
-  password recovery, cases, reports, threat hunting, OSINT, terminal, packaging/installer.
+- NOT YET: OSINT workspace, integrated terminal, packaging/installer.
 - Verified on Linux (Xvfb) only in this environment. Windows-specific PowerShell paths
   (Defender/firewall/Authenticode) are implemented but **still need verification on real Windows**.
 
@@ -148,4 +149,5 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
 | 2026-09 | Port check / discovery need an explicit authorization checkbox; discovery limited to attached private /24 | Authorized-use only; prevents accidental scanning of others |
 | 2026-09 | Password recovery = orchestration only; engine is user-installed John/hashcat | Spec: don't reimplement cracking engines; keeps BLAZMA auditable and license-clean |
 | 2026-09 | Recovered secrets reach the UI once, never logs/history | Secrets must not persist on disk |
+| 2026-09 | Reports: every value HTML-escaped, no scripts, `default-src 'none'` CSP; PDF rendered in a hidden sandboxed window with JavaScript disabled | Evidence strings come from malware/untrusted sources; a report must never become an attack vector |
 | 2026-09 | File/folder Defender scans use -DisableRemediation | Blazma reports; the user decides (quick/full follow Defender policy, stated in UI) |

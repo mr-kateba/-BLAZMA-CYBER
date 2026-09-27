@@ -13,6 +13,9 @@ import { IntelError, IntelService } from './services/intel';
 import * as forensics from './services/forensics';
 import { NetToolsError, NetToolsService } from './services/nettools';
 import { RecoveryError, RecoveryService, detectFileEncryption } from './services/recovery';
+import { CaseError, CaseService } from './services/cases';
+import { ReportError, ReportService } from './services/reports';
+import { HuntService } from './services/hunt';
 import type { RecoveryEngineKind } from '../shared/api';
 import type { DefenderScanKind } from '../shared/api';
 import { validateAbsolutePath } from '../core/validation';
@@ -33,7 +36,7 @@ function fail(error: string, detail?: string): Result<never> {
 }
 
 function errorCode(e: unknown): string {
-  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError || e instanceof RecoveryError) return e.code;
+  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError || e instanceof RecoveryError || e instanceof CaseError || e instanceof ReportError) return e.code;
   if (e instanceof OfflineModeError) return 'offline_mode';
   return 'internal_error';
 }
@@ -54,9 +57,12 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
   const quarantine = new QuarantineService();
   const intel = new IntelService({ gate, secret: (svc) => secrets.get(svc) });
   const net = new NetToolsService(gate);
+  const cases = new CaseService();
+  const reports = new ReportService();
   const recovery = new RecoveryService((kind) => (kind === 'john' ? settings.get().johnPath : settings.get().hashcatPath));
   const engineKind = (v: unknown): RecoveryEngineKind => { if (v !== 'john' && v !== 'hashcat') throw new RecoveryError('invalid_input'); return v; };
   const yara = new YaraService(() => settings.get().yaraPath);
+  const hunt = new HuntService(cases, history, quarantine, yara);
 
   /** Engines used by File Analyzer, according to settings and platform. */
   const analysisEngines = (): AnalysisEngines => {
@@ -183,7 +189,7 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
   });
 
   handle('privacy:networkActivity', () => history.network.list());
-  handle('privacy:clear', (target: unknown) => {
+  handle('privacy:clear', async (target: unknown) => {
     const t = target as ClearTarget;
     switch (t) {
       case 'activity':
@@ -200,6 +206,12 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
       }
       case 'intel_cache':
         intel.clearCache();
+        break;
+      case 'reports':
+        await reports.clearAll();
+        break;
+      case 'cases':
+        cases.clearAll();
         break;
       case 'temp': {
         const dir = subDir('temp');
@@ -405,6 +417,50 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
       return r;
     }),
   );
+
+  // ---- Investigations: cases, reports, threat hunting ----
+  const caseOk = (c: unknown) => ({ ok: true as const, data: c });
+  handle('cases:list', () => caseOk(cases.list()));
+  handle('cases:get', (id: unknown) => caseOk(cases.get(id)));
+  handle('cases:create', (name: unknown, desc: unknown, tags: unknown) => {
+    const c = cases.create(name, desc, tags);
+    logger.info('case_created', { id: c.id });
+    return caseOk(c);
+  });
+  handle('cases:update', (id: unknown, patch: unknown) => caseOk(cases.update(id, patch)));
+  handle('cases:remove', (id: unknown) => {
+    cases.remove(id);
+    logger.security('case_deleted', { id });
+    return { ok: true, data: true };
+  });
+  handle('cases:addEvidence', (id: unknown, ev: unknown) => caseOk(cases.addEvidence(id, ev)));
+  handle('cases:removeEvidence', (id: unknown, evId: unknown) => caseOk(cases.removeEvidence(id, evId)));
+  handle('cases:addNote', (id: unknown, text: unknown) => caseOk(cases.addNote(id, text)));
+  handle('cases:updateNote', (id: unknown, noteId: unknown, text: unknown) => caseOk(cases.updateNote(id, noteId, text)));
+  handle('cases:removeNote', (id: unknown, noteId: unknown) => caseOk(cases.removeNote(id, noteId)));
+  handle('cases:addEvent', (id: unknown, title: unknown, detail: unknown, time: unknown) => caseOk(cases.addEvent(id, title, detail, time)));
+
+  handle('reports:generate', async (caseId: unknown, options: unknown) => {
+    const rec = await reports.generate(cases.get(caseId), options);
+    logger.info('report_generated', { caseId: rec.caseId, format: rec.format, language: rec.language });
+    return { ok: true, data: rec };
+  });
+  handle('reports:list', () => ({ ok: true, data: reports.list() }));
+  handle('reports:open', async (id: unknown) => {
+    await reports.open(id);
+    return { ok: true, data: true };
+  });
+  handle('reports:reveal', (id: unknown) => {
+    reports.reveal(id);
+    return { ok: true, data: true };
+  });
+  handle('reports:remove', async (id: unknown) => {
+    await reports.remove(id);
+    return { ok: true, data: true };
+  });
+
+  handle('hunt:search', (query: unknown, taskId: unknown) => runTask(taskId, () => hunt.search(query)));
+  handle('hunt:persistence', async () => ({ ok: true, data: await hunt.persistence() }));
 
   // ---- Password Recovery (authorized, local; results never logged) ----
   handle('recovery:detect', async (path: unknown) => ({ ok: true, data: await detectFileEncryption(path) }));

@@ -451,7 +451,9 @@
       "network_activity": "Clear network activity log",
       "logs": "Delete application logs",
       "temp": "Delete temporary files",
-      "intel_cache": "Clear cached intelligence"
+      "intel_cache": "Clear cached intelligence",
+      "reports": "Delete all reports",
+      "cases": "Delete all cases"
     },
     "confirmTitle": "Confirm deletion",
     "confirmBody": "“{{what}}” will be permanently deleted. This cannot be undone.",
@@ -631,7 +633,10 @@
     "engine_check_failed": "That file is not a working recovery engine.",
     "engine_run_failed": "The recovery engine failed to run.",
     "authorization_required": "You must confirm you are authorized before starting.",
-    "wordlist_not_found": "The selected wordlist file was not found."
+    "wordlist_not_found": "The selected wordlist file was not found.",
+    "case_not_found": "This case no longer exists.",
+    "note_not_found": "This note no longer exists.",
+    "report_not_found": "This report no longer exists."
   },
   "defender": {
     "status": {
@@ -1153,5 +1158,189 @@
     "stopped": "Stopped",
     "newSession": "New recovery",
     "reveal": "Recovered password"
+  },
+  "cases": {
+    "title": "Cases",
+    "subtitle": "Local investigations: evidence, analyst notes and a timeline.",
+    "new": "New case",
+    "name": "Case name",
+    "description": "Description",
+    "tags": "Tags (comma-separated)",
+    "create": "Create case",
+    "empty": "No cases yet",
+    "emptyHint": "Create a case, then add evidence from the File Analyzer, intelligence pages or Threat Hunting.",
+    "evidenceCount": "{{count}} evidence",
+    "noteCount": "{{count}} notes",
+    "status": {
+      "open": "Open",
+      "closed": "Closed"
+    },
+    "close": "Close case",
+    "reopen": "Reopen",
+    "delete": "Delete case",
+    "deleteBody": "“{{name}}” and all its evidence and notes will be permanently deleted.",
+    "back": "All cases",
+    "tab": {
+      "evidence": "Evidence",
+      "notes": "Analyst notes",
+      "timeline": "Timeline",
+      "report": "Report"
+    },
+    "evidenceSep": "Evidence is what was observed; notes are your interpretation. They are kept separate.",
+    "addEvidence": "Add evidence",
+    "kindLabel": "Type",
+    "value": "Value",
+    "label": "Label (optional)",
+    "add": "Add",
+    "noEvidence": "No evidence yet",
+    "noNotes": "No notes yet",
+    "notePlaceholder": "Write an analyst note…",
+    "addNote": "Add note",
+    "edit": "Edit",
+    "save": "Save",
+    "addEvent": "Add timeline event",
+    "eventTitle": "Event",
+    "eventTime": "When",
+    "kind": {
+      "file": "File",
+      "hash": "Hash",
+      "ip": "IP address",
+      "domain": "Domain",
+      "url": "URL",
+      "email": "Email",
+      "process": "Process",
+      "connection": "Connection",
+      "finding": "Finding",
+      "other": "Other"
+    },
+    "tl": {
+      "created": "Case created",
+      "closed": "Case closed",
+      "reopened": "Case reopened",
+      "evidenceAdded": "Evidence added",
+      "noteAdded": "Note added"
+    },
+    "addToCase": "Add to case",
+    "pickCase": "Choose a case",
+    "orNew": "…or create a new case",
+    "added": "Added to {{id}}",
+    "noOpenCases": "No open cases"
+  },
+  "reports": {
+    "title": "Reports",
+    "subtitle": "Reports generated locally from your cases.",
+    "generate": "Generate report",
+    "format": "Format",
+    "language": "Report language",
+    "includeNotes": "Include analyst notes",
+    "includeTimeline": "Include timeline",
+    "includeMachine": "Include machine information (OS, host name)",
+    "machineNote": "Off by default: reports should not reveal your computer unless you choose.",
+    "generated": "Report created",
+    "empty": "No reports yet",
+    "emptyHint": "Open a case and use its Report tab.",
+    "open": "Open",
+    "reveal": "Show in folder",
+    "delete": "Delete",
+    "col": {
+      "case": "Case",
+      "format": "Format",
+      "language": "Language",
+      "created": "Created",
+      "size": "Size"
+    }
+  },
+  "report": {
+    "title": "Investigation report",
+    "generated": "Generated {{time}}",
+    "caseInfo": "Case information",
+    "caseId": "Case ID",
+    "caseName": "Name",
+    "status": "Status",
+    "created": "Created",
+    "updated": "Updated",
+    "tags": "Tags",
+    "modules": "Modules used",
+    "findings": "Findings",
+    "indicators": "Indicators",
+    "evidence": "Evidence",
+    "notes": "Analyst notes",
+    "timeline": "Timeline",
+    "machine": "Machine information",
+    "os": "Operating system",
+    "arch": "Architecture",
+    "hostname": "Host name",
+    "appVersion": "BLAZMA CYBER version",
+    "item": "Item",
+    "verdict": "Assessment",
+    "source": "Source",
+    "kind": "Type",
+    "value": "Value",
+    "added": "Added",
+    "none": "None",
+    "footer": "Generated locally by BLAZMA CYBER. Heuristic findings can be false positives; review the evidence.",
+    "module": {
+      "fileAnalyzer": "File Analyzer",
+      "ipIntel": "IP Intelligence",
+      "domainIntel": "Domain Intelligence",
+      "reputation": "Reputation Center",
+      "hunt": "Threat Hunting",
+      "forensics": "Windows Forensics",
+      "networkToolkit": "Network Toolkit",
+      "manual": "Manual",
+      "quarantine": "Quarantine"
+    }
+  },
+  "hunt": {
+    "title": "Threat Hunting",
+    "subtitle": "Search an indicator across your cases, quarantine, history and this computer.",
+    "placeholder": "IP, domain, hash, file or process name…",
+    "search": "Hunt",
+    "searching": "Searching local sources…",
+    "localOnly": "Hunting is 100% local: nothing is sent anywhere.",
+    "type": {
+      "ip": "IP address",
+      "domain": "Domain",
+      "hash": "Hash",
+      "text": "Text"
+    },
+    "summary": "{{count}} hit(s) · {{time}}",
+    "noHits": "No matches in local sources",
+    "tab": {
+      "search": "Search",
+      "persistence": "Persistence review"
+    },
+    "source": {
+      "case": "Case",
+      "quarantine": "Quarantine",
+      "activity": "Activity",
+      "network_log": "Network activity",
+      "process": "Process",
+      "connection": "Connection",
+      "service": "Service",
+      "startup": "Startup",
+      "task": "Scheduled task",
+      "yara_rule": "YARA rule"
+    },
+    "sourcesSearched": "Sources searched",
+    "timeline": "Timeline of hits",
+    "col": {
+      "source": "Source",
+      "match": "Match",
+      "detail": "Detail",
+      "time": "Time"
+    },
+    "persistenceDesc": "Programs set to start automatically, with location notes for review. Notes are prompts, not verdicts.",
+    "load": "Review persistence",
+    "noItems": "No autostart entries found",
+    "flag": {
+      "userFolder": "Runs from a user or temporary folder",
+      "outsideSystem": "Runs from outside Windows / Program Files"
+    },
+    "kind": {
+      "startup": "Startup",
+      "task": "Scheduled task",
+      "service": "Service"
+    }
   }
 }

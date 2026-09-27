@@ -34,6 +34,12 @@ malware samples or third-party data in reports.
   authorization confirmation. BLAZMA runs a user-installed engine (John the Ripper / hashcat) with
   argument arrays; masks are charset-restricted and paths validated. Recovered passwords are shown
   once in the UI and never written to logs, history or disk. Nothing leaves the machine.
+- **Reports** — evidence often contains attacker-controlled text (file names, domains, extracted
+  strings). Every value in an HTML report is escaped, the document contains no scripts and carries a
+  `default-src 'none'` CSP, so opening a report cannot load remote content or run code. PDFs are
+  rendered from that HTML in a hidden, sandboxed window with JavaScript disabled.
+- **Threat hunting** — searches only local data and read-only live views (processes, connections,
+  services, startup entries). Persistence flags are review prompts, never verdicts or automatic actions.
 - **Resource limits** — streaming I/O, 32 MB static-analysis window, capped IOC/string/import
   counts, subprocess timeouts and output caps.
 - **Windows security controls are never weakened** — BLAZMA CYBER does not disable Defender,
