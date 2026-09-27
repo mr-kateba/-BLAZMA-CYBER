@@ -1,0 +1,290 @@
+import { useEffect, useState } from 'react';
+import {
+  AlertOctagon, Binary, CircleCheck, CircleHelp, FileSearch, Fingerprint, Link2, ListTree, RotateCcw, ShieldAlert,
+  TriangleAlert, X, type LucideIcon,
+} from 'lucide-react';
+import type { FileAnalysis, TaskProgress } from '../../shared/api';
+import type { Verdict } from '../../core/detection';
+import { entropyLabel } from '../../core/entropy';
+import { Badge, Card, CopyButton, DataTable, ErrorState, FileDrop, IconTile, Ltr, Notice, Progress, type Tone } from '../components/ui';
+import { useI18n } from '../i18n/I18nProvider';
+import { formatBytes, formatDateTime, formatDuration, newTaskId } from '../format';
+
+const VERDICT: Record<Verdict, { tone: Tone; icon: LucideIcon }> = {
+  no_detections: { tone: 'green', icon: CircleCheck },
+  unknown: { tone: 'gray', icon: CircleHelp },
+  suspicious: { tone: 'amber', icon: TriangleAlert },
+  malicious: { tone: 'red', icon: AlertOctagon },
+};
+
+type State =
+  | { kind: 'idle' }
+  | { kind: 'running'; path: string; taskId: string; progress: TaskProgress | null }
+  | { kind: 'done'; result: FileAnalysis }
+  | { kind: 'error'; code: string; path: string };
+
+export function HashRows({ hashes, highlight }: { hashes: Record<string, string>; highlight?: string | null }) {
+  const labels: Record<string, string> = { md5: 'MD5', sha1: 'SHA-1', sha256: 'SHA-256', sha512: 'SHA-512' };
+  return (
+    <div>
+      {Object.entries(hashes).filter(([k]) => k in labels).map(([k, v]) => (
+        <div key={k} className={`hash-row ${highlight === k ? 'match' : ''}`}>
+          <span className="algo">{labels[k]}</span>
+          <Ltr mono breakAll>{v}</Ltr>
+          <CopyButton value={v} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Result({ r, onReset }: { r: FileAnalysis; onReset: () => void }) {
+  const { t, locale } = useI18n();
+  const v = VERDICT[r.assessment.verdict];
+  const VIcon = v.icon;
+  const sig = r.signature;
+  const sigTone: Tone = !sig.checked ? 'gray' : sig.status === 'valid' ? 'green' : sig.status === 'not_signed' ? 'amber' : 'red';
+  const iocCount = r.iocs.urls.length + r.iocs.domains.length + r.iocs.ipv4.length + r.iocs.emails.length;
+  const funcs = r.pe?.imports.reduce((n, i) => n + i.functions.length, 0) ?? 0;
+
+  return (
+    <div className="col" style={{ gap: 16 }}>
+      <div className="verdict" style={{ '--tone': `var(--${v.tone === 'gray' ? 'text-3' : v.tone === 'amber' ? 'amber' : v.tone})` } as React.CSSProperties}>
+        <IconTile icon={VIcon} tone={v.tone} />
+        <div style={{ flex: 1 }}>
+          <div className="small dim">{t('file.assessment')}</div>
+          <div className="v-title">{t(`verdict.${r.assessment.verdict}`)}</div>
+          <div className="muted small">{t(`verdict.desc.${r.assessment.verdict}`)}</div>
+        </div>
+        <button className="btn" onClick={onReset}>
+          <RotateCcw size={15} /> {t('file.analyzeAnother')}
+        </button>
+      </div>
+
+      <div className="grid g-2">
+        <Card title={t('file.reasons')} icon={ShieldAlert} tone={v.tone}>
+          {r.assessment.reasons.length === 0 ? (
+            <div className="muted small">{t('file.noReasons')}</div>
+          ) : (
+            <ul style={{ margin: 0, paddingInlineStart: 18, display: 'grid', gap: 6 }}>
+              {r.assessment.reasons.map((x, i) => <li key={i}>{t(x.key, x.args)}</li>)}
+            </ul>
+          )}
+          {r.assessment.incomplete && <div style={{ marginTop: 12 }}><Notice tone="amber" icon={TriangleAlert}>{t('file.incompleteNote')}</Notice></div>}
+          <div className="small dim" style={{ marginTop: 12 }}>{t('file.enginesMissing')}:</div>
+          <div className="col" style={{ gap: 4, marginTop: 6 }}>
+            {r.unavailableEngines.map((e) => (
+              <div key={e.engine} className="row small">
+                <Badge tone="gray">{t(`file.engine.${e.engine}`)}</Badge>
+                <span className="dim">{t(`errors.${e.reason}`)}</span>
+              </div>
+            ))}
+          </div>
+          <div className="tiny dim" style={{ marginTop: 12 }}>{t('file.falsePositives')}</div>
+        </Card>
+
+        <Card title={t('file.overview')} icon={FileSearch} tone="blue">
+          <dl className="kv">
+            <dt>{t('file.name')}</dt><dd><Ltr breakAll>{r.name}</Ltr></dd>
+            <dt>{t('file.path')}</dt><dd><Ltr mono breakAll className="small">{r.path}</Ltr></dd>
+            <dt>{t('file.size')}</dt><dd>{formatBytes(t, r.sizeBytes)} <span className="dim small">(<Ltr>{r.sizeBytes.toLocaleString('en')}</Ltr>)</span></dd>
+            <dt>{t('file.type')}</dt><dd><Ltr>{r.type.description}</Ltr></dd>
+            <dt>{t('file.mime')}</dt><dd><Ltr mono className="small">{r.type.mime}</Ltr></dd>
+            <dt>{t('file.created')}</dt><dd>{formatDateTime(locale, r.created)}</dd>
+            <dt>{t('file.modified')}</dt><dd>{formatDateTime(locale, r.modified)}</dd>
+            <dt>{t('file.entropy')}</dt>
+            <dd>
+              <Ltr>{r.entropy.toFixed(3)}</Ltr> / 8 · <Badge tone={entropyLabel(r.entropy) === 'high' ? 'amber' : 'gray'}>{t(`file.entropyLevel.${entropyLabel(r.entropy)}`)}</Badge>
+            </dd>
+            <dt>{t('file.duration')}</dt><dd>{formatDuration(t, r.durationMs)}</dd>
+          </dl>
+        </Card>
+      </div>
+
+      <div className="grid g-2">
+        <Card title={t('file.hashes')} icon={Fingerprint} tone="cyan">
+          <HashRows hashes={r.hashes as unknown as Record<string, string>} />
+        </Card>
+        <Card title={t('file.signature')} icon={ShieldAlert} tone={sigTone}>
+          {!sig.checked ? (
+            <div className="col" style={{ alignItems: 'flex-start' }}>
+              <Badge tone="gray">{t('file.sig.notChecked')}</Badge>
+              <span className="small muted">{t(`errors.${sig.reason ?? 'unknown'}`)}</span>
+            </div>
+          ) : (
+            <dl className="kv">
+              <dt>{t('file.signature')}</dt>
+              <dd><Badge tone={sigTone}>{t(`file.sig.${sig.status}`, { raw: sig.rawStatus ?? '' })}</Badge></dd>
+              {sig.publisher && (<><dt>{t('file.sig.publisher')}</dt><dd><Ltr>{sig.publisher}</Ltr></dd></>)}
+              {sig.issuer && (<><dt>{t('file.sig.issuer')}</dt><dd><Ltr>{sig.issuer}</Ltr></dd></>)}
+              {sig.validTo && (<><dt>{t('file.sig.validity')}</dt><dd>{formatDateTime(locale, sig.validFrom)} → {formatDateTime(locale, sig.validTo)}</dd></>)}
+              {sig.thumbprint && (<><dt>{t('file.sig.thumbprint')}</dt><dd><Ltr mono breakAll className="small">{sig.thumbprint}</Ltr></dd></>)}
+            </dl>
+          )}
+        </Card>
+      </div>
+
+      {(r.pe || r.peError) && (
+        <Card title={t('file.pe.title')} icon={Binary} tone="purple">
+          {r.peError ? (
+            <Notice tone="amber">{t('file.pe.parseError', { reason: r.peError })}</Notice>
+          ) : r.pe && (
+            <div className="col" style={{ gap: 16 }}>
+              <dl className="kv" style={{ gridTemplateColumns: 'repeat(4, max-content 1fr)' }}>
+                <dt>{t('file.pe.machine')}</dt><dd><Ltr>{r.pe.machine}</Ltr></dd>
+                <dt>{t('file.pe.kind')}</dt><dd>{t(r.pe.isDll ? 'file.pe.dll' : 'file.pe.exe')}</dd>
+                <dt>{t('file.pe.subsystem')}</dt><dd><Ltr mono className="small">{r.pe.subsystem}</Ltr></dd>
+                <dt>{t('file.pe.entry')}</dt><dd><Ltr mono>0x{r.pe.entryPoint.toString(16)}</Ltr></dd>
+                <dt>{t('file.pe.timestamp')}</dt>
+                <dd title={t('file.pe.timestampNote')}>{formatDateTime(locale, new Date(r.pe.timestamp * 1000).toISOString())} <span className="tiny dim">({t('file.pe.timestampNote')})</span></dd>
+              </dl>
+              {r.pe.packerHints.length > 0 && <Notice tone="amber">{t('file.pe.packer')}: <Ltr mono>{r.pe.packerHints.join(', ')}</Ltr></Notice>}
+              <div>
+                <h4 className="small" style={{ marginBottom: 8 }}>{t('file.pe.sections')} ({r.pe.sections.length})</h4>
+                <DataTable
+                  rowKey={(s, i) => `${s.name}-${i}`}
+                  rows={r.pe.sections}
+                  columns={[
+                    { key: 'n', label: t('file.pe.sectionName'), render: (s) => <Ltr mono>{s.name || '—'}</Ltr> },
+                    { key: 'v', label: t('file.pe.virtualSize'), render: (s) => formatBytes(t, s.virtualSize) },
+                    { key: 'r', label: t('file.pe.rawSize'), render: (s) => formatBytes(t, s.rawSize) },
+                    {
+                      key: 'e', label: t('file.pe.entropy'),
+                      render: (s) => <span className="row"><Ltr mono>{s.entropy.toFixed(2)}</Ltr>{entropyLabel(s.entropy) === 'high' && <Badge tone="amber">{t('file.entropyLevel.high')}</Badge>}</span>,
+                    },
+                    { key: 'f', label: t('file.pe.flags'), render: (s) => <Ltr mono className="small">{`${s.executable ? 'X' : '-'}${s.writable ? 'W' : '-'}`}</Ltr> },
+                  ]}
+                />
+              </div>
+              <div className="grid g-2">
+                <div>
+                  <h4 className="small" style={{ marginBottom: 8 }}>
+                    {t('file.pe.imports')} · <span className="dim">{t('file.pe.importsCount', { dlls: r.pe.imports.length, funcs })}</span>
+                  </h4>
+                  {r.pe.imports.length === 0 ? <div className="small dim">{t('file.pe.noImports')}</div> : (
+                    <div className="table-wrap" style={{ maxHeight: 260, padding: 10 }}>
+                      {r.pe.imports.map((imp) => (
+                        <details key={imp.dll} style={{ marginBottom: 4 }}>
+                          <summary style={{ cursor: 'pointer' }}><Ltr mono>{imp.dll}</Ltr> <span className="dim small">({imp.functions.length})</span></summary>
+                          <div className="chip-list" style={{ margin: '6px 0 8px', paddingInlineStart: 14 }}>
+                            {imp.functions.map((f, i) => <span key={i} className="chip"><Ltr mono>{f}</Ltr></span>)}
+                          </div>
+                        </details>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <h4 className="small" style={{ marginBottom: 8 }}>{t('file.pe.exports')} ({r.pe.exports.length})</h4>
+                  {r.pe.exports.length === 0 ? <div className="small dim">{t('file.pe.noExports')}</div> : (
+                    <div className="table-wrap chip-list" style={{ maxHeight: 260, padding: 10 }}>
+                      {r.pe.exports.slice(0, 500).map((e, i) => <span key={i} className="chip"><Ltr mono>{e}</Ltr></span>)}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </Card>
+      )}
+
+      <div className="grid g-2">
+        <Card title={`${t('file.iocs')} (${iocCount})`} icon={Link2} tone="amber">
+          {iocCount === 0 ? <div className="small muted">{t('file.noIocs')}</div> : (
+            <div className="col" style={{ gap: 12 }}>
+              {([['urls', r.iocs.urls], ['domains', r.iocs.domains], ['ips', r.iocs.ipv4], ['emails', r.iocs.emails]] as const).map(([k, list]) =>
+                list.length > 0 && (
+                  <div key={k}>
+                    <div className="small dim" style={{ marginBottom: 5 }}>{t(`file.${k}`)} ({list.length})</div>
+                    <div className="table-wrap" style={{ maxHeight: 160, padding: 8 }}>
+                      {list.slice(0, 200).map((x) => <div key={x} className="small"><Ltr mono breakAll>{x}</Ltr></div>)}
+                    </div>
+                  </div>
+                ),
+              )}
+            </div>
+          )}
+        </Card>
+        <Card title={`${t('file.strings')} (${r.interestingStrings.length})`} icon={ListTree} tone="purple" subtitle={t('file.stringsNote', { size: formatBytes(t, r.stringsScannedBytes) })}>
+          {r.interestingStrings.length === 0 ? <div className="small muted">{t('file.noStrings')}</div> : (
+            <div className="table-wrap" style={{ maxHeight: 300, padding: 8 }}>
+              {r.interestingStrings.map((s, i) => <div key={i} className="small" style={{ padding: '3px 0' }}><Ltr mono breakAll>{s}</Ltr></div>)}
+            </div>
+          )}
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+export function FileAnalyzer() {
+  const { t } = useI18n();
+  const [state, setState] = useState<State>({ kind: 'idle' });
+
+  useEffect(
+    () =>
+      window.blazma.files.onProgress((p) =>
+        setState((s) => (s.kind === 'running' && s.taskId === p.taskId ? { ...s, progress: p } : s)),
+      ),
+    [],
+  );
+
+  const start = async (path: string) => {
+    const taskId = newTaskId();
+    setState({ kind: 'running', path, taskId, progress: null });
+    const r = await window.blazma.files.analyze(path, taskId);
+    setState((s) => {
+      if (s.kind !== 'running' || s.taskId !== taskId) return s;
+      return r.ok ? { kind: 'done', result: r.data } : r.error === 'cancelled' ? { kind: 'idle' } : { kind: 'error', code: r.error, path };
+    });
+  };
+
+  const pct = state.kind === 'running' && state.progress && state.progress.totalBytes > 0
+    ? (state.progress.processedBytes / state.progress.totalBytes) * 100 : 0;
+
+  return (
+    <div className="page">
+      <div className="page-head">
+        <IconTile icon={FileSearch} tone="purple" />
+        <div>
+          <h1 className="page-title">{t('file.title')}</h1>
+          <div className="page-sub">{t('file.subtitle')}</div>
+        </div>
+      </div>
+
+      {state.kind === 'idle' && (
+        <FileDrop onFile={start} title={t('file.dropTitle')} hint={t('file.dropHint')} activeText={t('file.dropActive')} browseLabel={t('common.browse')} />
+      )}
+
+      {state.kind === 'running' && (
+        <Card>
+          <div className="row" style={{ marginBottom: 14 }}>
+            <IconTile icon={FileSearch} tone="cyan" small />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontWeight: 600 }}>{t('file.analyzing')}</div>
+              <div className="small dim" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><Ltr mono>{state.path}</Ltr></div>
+            </div>
+            <button className="btn danger sm" onClick={() => void window.blazma.files.cancel(state.taskId)}>
+              <X size={14} /> {t('common.cancel')}
+            </button>
+          </div>
+          <Progress value={pct} indeterminate={!state.progress || state.progress.stage === 'analyzing'} />
+          <div className="row small muted" style={{ marginTop: 8 }}>
+            <span>{t(state.progress?.stage === 'analyzing' ? 'file.processing' : 'file.hashing')}</span>
+            <span className="spacer" />
+            {state.progress && <span>{formatBytes(t, state.progress.processedBytes)} / {formatBytes(t, state.progress.totalBytes)} · <Ltr>{Math.round(pct)}%</Ltr></span>}
+          </div>
+        </Card>
+      )}
+
+      {state.kind === 'error' && (
+        <Card>
+          <ErrorState code={state.code} onRetry={() => setState({ kind: 'idle' })} />
+          <div className="small dim" style={{ textAlign: 'center' }}><Ltr mono>{state.path}</Ltr></div>
+        </Card>
+      )}
+
+      {state.kind === 'done' && <Result r={state.result} onReset={() => setState({ kind: 'idle' })} />}
+    </div>
+  );
+}
