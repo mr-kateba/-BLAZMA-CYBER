@@ -1,7 +1,7 @@
 import os from 'node:os';
 import { readdir, statfs } from 'node:fs/promises';
 import type { NetInterface, SystemSnapshot } from '../../shared/api';
-import { getWindowsFacts } from './windows-security';
+import { peekWindowsFacts } from './windows-security';
 
 let prevCpu: { idle: number; total: number } | null = null;
 
@@ -66,7 +66,8 @@ export async function getSystemSnapshot(): Promise<SystemSnapshot> {
   const external = ifaces.filter((i) => !i.internal && !i.address.startsWith('fe80'));
   const primary = external.find((i) => i.family === 'IPv4') ?? null;
 
-  const win = await getWindowsFacts();
+  // Never block the snapshot on PowerShell: use the last known Windows facts (refreshed in background).
+  const win = peekWindowsFacts() ?? { osCaption: null, osVersion: null, osBuild: null, physicalCores: null, processCount: null };
   const release = os.release();
 
   return {

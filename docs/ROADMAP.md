@@ -62,5 +62,15 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - TODO Accessibility audit, keyboard navigation review
 - TODO Performance profiling, security review, docs with screenshots from Windows
 
+## Proposed additions (from docs/AUDIT-REPORT.md §7) — TODO, not yet scheduled
+- TODO Device Security Score (BitLocker, UAC, Secure Boot, TPM, SMBv1, RDP, updates) — read-only, Arabic explanations
+- TODO Tamper checks: hosts file, proxy, DNS servers, untrusted root certificates
+- TODO Phishing email (.eml) analyzer: SPF/DKIM/DMARC results, received chain, real link targets, attachments
+- TODO Pwned Passwords check via k-anonymity (only 5 hash chars leave the machine)
+- TODO "What does this mean?" educational explanations for every indicator
+- TODO Downloads folder watcher, File Integrity Monitoring, browser-extension audit
+- TODO MITRE ATT&CK mapping, Sigma via external engine, IOC export (CSV/JSON/STIX 2.1), portable mode
+- TODO Windows CI job (GitHub Actions windows-latest) to verify PowerShell paths
+
 ## BLOCKED
 - (none)
