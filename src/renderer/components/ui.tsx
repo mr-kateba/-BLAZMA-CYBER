@@ -320,3 +320,16 @@ export function usePoll<T>(loader: () => Promise<T>, intervalMs: number | null, 
   }, [intervalMs, tick, ...deps]);
   return { data, error, reload: () => setTick((x) => x + 1) };
 }
+
+/** Case-insensitive client-side filter over selected fields. */
+export function useFilter<R>(rows: R[] | null | undefined, fields: (r: R) => Array<string | number | null | undefined>) {
+  const [q, setQ] = useState('');
+  const filtered = !rows ? [] : !q.trim() ? rows : rows.filter((r) => fields(r).some((f) => f !== null && f !== undefined && String(f).toLowerCase().includes(q.trim().toLowerCase())));
+  return { q, setQ, filtered };
+}
+
+export function FilterInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
+  return (
+    <input className="input" style={{ maxWidth: 280, height: 34 }} value={value} placeholder={placeholder} aria-label={placeholder} onChange={(e) => onChange(e.target.value)} />
+  );
+}

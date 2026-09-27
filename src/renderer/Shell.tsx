@@ -15,6 +15,8 @@ import { YaraScanner } from './pages/YaraScanner';
 import { IpIntel } from './pages/IpIntel';
 import { DomainIntel } from './pages/DomainIntel';
 import { ReputationCenter } from './pages/ReputationCenter';
+import { WindowsForensics } from './pages/WindowsForensics';
+import { NetworkToolkit } from './pages/NetworkToolkit';
 
 function Page({ id }: { id: PageId }) {
   switch (id) {
@@ -36,6 +38,10 @@ function Page({ id }: { id: PageId }) {
       return <DomainIntel />;
     case 'reputation':
       return <ReputationCenter />;
+    case 'windows-forensics':
+      return <WindowsForensics />;
+    case 'network-toolkit':
+      return <NetworkToolkit />;
     case 'settings-api':
       return <SettingsPage tab="apiKeys" />;
     case 'settings-engines':

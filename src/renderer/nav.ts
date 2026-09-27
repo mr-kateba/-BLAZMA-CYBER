@@ -55,8 +55,8 @@ export const NAV: NavSection[] = [
   {
     titleKey: 'nav.section.forensics',
     items: [
-      { id: 'windows-forensics', labelKey: 'nav.windowsForensics', icon: MonitorCog, planned: p(4, 'windowsForensics') },
-      { id: 'network-toolkit', labelKey: 'nav.networkToolkit', icon: Network, planned: p(4, 'networkToolkit') },
+      { id: 'windows-forensics', labelKey: 'nav.windowsForensics', icon: MonitorCog },
+      { id: 'network-toolkit', labelKey: 'nav.networkToolkit', icon: Network },
       { id: 'threat-hunting', labelKey: 'nav.threatHunting', icon: Crosshair, planned: p(6, 'threatHunting') },
     ],
   },

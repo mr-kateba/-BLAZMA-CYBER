@@ -966,6 +966,7 @@ table.data tbody tr:hover td {
   margin-bottom: 18px;
 }
 .tabs button {
+  white-space: nowrap;
   border: 0;
   background: transparent;
   color: var(--text-2);

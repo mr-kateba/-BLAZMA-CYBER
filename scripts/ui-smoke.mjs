@@ -9,6 +9,7 @@ import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import assert from 'node:assert/strict';
+import { createServer } from 'node:net';
 
 const root = resolve(import.meta.dirname, '..');
 const out = join(root, 'docs', 'screenshots');
@@ -181,6 +182,35 @@ try {
     await win.locator('.nav-item', { hasText: 'مركز الخصوصية' }).click();
     await win.getByRole('switch', { name: 'وضع عدم الاتصال' }).click();
   }
+
+  // 5d) Phase 4: forensics (real processes/sockets) and network toolkit (localhost only)
+  await win.getByRole('button', { name: 'English' }).click();
+  await win.locator('.nav-item', { hasText: 'Windows Forensics' }).click();
+  await win.getByText(/\d+ of \d+/).first().waitFor({ timeout: 30000 });
+  await win.getByPlaceholder('Filter…').fill('electron');
+  await win.waitForTimeout(300);
+  await win.screenshot({ path: join(out, '19-forensics-processes-en.png') });
+  await win.getByRole('tab', { name: 'Connections' }).click();
+  await win.getByText(/\d+ of \d+/).first().waitFor({ timeout: 30000 });
+
+  const srv = createServer((c) => c.end());
+  await new Promise((r) => srv.listen(0, '127.0.0.1', r));
+  const port = srv.address().port;
+  await win.locator('.nav-item', { hasText: 'Network Toolkit' }).click();
+  await win.getByText('Loopback').first().waitFor();
+  await win.getByRole('tab', { name: 'Port check' }).click();
+  await win.locator('input.input.mono').nth(1).fill(`${port},1`);
+  await win.getByRole('button', { name: 'Run', exact: true }).click();
+  // Authorization is required: the confirm button stays disabled until the box is ticked
+  const confirmBtn = win.locator('.dialog').getByRole('button', { name: 'Run' });
+  assert.equal(await confirmBtn.isDisabled(), true, 'authorization checkbox must be required');
+  await win.locator('.dialog input[type=checkbox]').check();
+  await confirmBtn.click();
+  await win.getByText(/1 open of 2/).waitFor({ timeout: 20000 });
+  await win.getByRole('button', { name: 'العربية' }).click();
+  await win.waitForTimeout(300);
+  await win.screenshot({ path: join(out, '20-port-check-ar.png') });
+  srv.close();
 
   // 6) Hash Lab identify (Arabic)
   await win.locator('.nav-item', { hasText: 'مختبر الهاشات' }).click();

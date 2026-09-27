@@ -118,7 +118,9 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
   Quarantine (neutralized, verified restore), YARA-X adapter + rule manager (tested with real yr 1.20.0),
   Security Center (Defender scans/history/quarantine UI; Defender needs Windows verification),
   IP / Domain Intelligence + Reputation Center (RDAP, DNS, Team Cymru ASN, TLS, ipinfo, Tor,
-  VirusTotal/AbuseIPDB/Shodan), hash-only file reputation.
+  VirusTotal/AbuseIPDB/Shodan), hash-only file reputation, Windows Forensics (read-only collectors,
+  Linux /proc fallbacks), Network Toolkit (ping/trace/DNS/ports/routes/ARP/discovery with
+  authorization confirmation).
 - Latest audit: docs/AUDIT-REPORT.md (3 bugs found and fixed; weaknesses and proposed features listed).
 - NOT YET: forensics, network toolkit,
   password recovery, cases, reports, threat hunting, OSINT, terminal, packaging/installer.
@@ -140,4 +142,7 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
 | 2026-09 | NetworkGate.run() also covers DNS and TLS | DNS queries and TLS handshakes disclose the queried indicator too; Offline Mode must block them |
 | 2026-09 | Private/reserved IPs never go to external sources | Privacy; geolocating RFC1918 space is meaningless |
 | 2026-09 | 401/403 = "invalid key" only when a key was sent | Avoids blaming the user's key for network/policy blocks |
+| 2026-09 | Forensics scripts are query-only (tested against a deny-list of state-changing cmdlets) | Forensics must never alter the evidence |
+| 2026-09 | Locale-independent sources: CIM/Get-* objects, SIDs (S-1-5-32-544), Test-Connection | ping.exe/tracert/group names are localized on Arabic Windows |
+| 2026-09 | Port check / discovery need an explicit authorization checkbox; discovery limited to attached private /24 | Authorized-use only; prevents accidental scanning of others |
 | 2026-09 | File/folder Defender scans use -DisableRemediation | Blazma reports; the user decides (quick/full follow Defender policy, stated in UI) |

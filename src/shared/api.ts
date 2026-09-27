@@ -249,7 +249,8 @@ export interface ActivityEntry {
   kind:
     | 'file_analysis' | 'hash_file' | 'hash_text' | 'hash_identify' | 'hash_compare'
     | 'defender_scan' | 'yara_scan' | 'quarantine' | 'restore'
-    | 'ip_lookup' | 'domain_lookup' | 'reputation_lookup';
+    | 'ip_lookup' | 'domain_lookup' | 'reputation_lookup'
+    | 'forensics' | 'port_check' | 'discovery';
   /** Displayable subject, e.g. a filename. Never a secret. */
   subject: string;
   summaryKey: string;
@@ -431,6 +432,197 @@ export interface DomainLookupResult {
 
 export type IndicatorKind = 'ip' | 'domain' | 'hash';
 
+// ---------------- Forensics (Phase 4) ----------------
+
+export interface ForensicsResult<T> {
+  rows: T[];
+  collectedAt: string;
+  source: 'powershell' | 'procfs';
+  /** Whether the collector ran elevated (null = unknown). */
+  elevated: boolean | null;
+  /** i18n key when some data could not be read (e.g. access denied as standard user). */
+  partial?: string;
+}
+
+export interface ProcessRow {
+  pid: number;
+  ppid: number | null;
+  name: string;
+  path: string | null;
+  commandLine: string | null;
+  user: string | null;
+  started: string | null;
+}
+
+export interface ConnectionRow {
+  protocol: 'TCP' | 'UDP';
+  localAddress: string;
+  localPort: number;
+  remoteAddress: string | null;
+  remotePort: number | null;
+  state: string | null;
+  pid: number | null;
+  process: string | null;
+}
+
+export interface ServiceRow {
+  name: string;
+  displayName: string | null;
+  state: string | null;
+  startMode: string | null;
+  commandLine: string | null;
+  binaryPath: string | null;
+  account: string | null;
+  pid: number | null;
+  description: string | null;
+  unquotedPath: boolean;
+}
+
+export interface DriverRow {
+  name: string;
+  displayName: string | null;
+  state: string | null;
+  startMode: string | null;
+  path: string | null;
+}
+
+export interface StartupRow {
+  name: string;
+  command: string;
+  location: string;
+  user: string | null;
+}
+
+export interface TaskRow {
+  name: string;
+  path: string;
+  state: string | null;
+  author: string | null;
+  actions: string[];
+  microsoft: boolean;
+}
+
+export interface UserRow {
+  name: string;
+  enabled: boolean | null;
+  lastLogon: string | null;
+  description: string | null;
+  admin: boolean;
+}
+
+export interface SoftwareRow {
+  name: string;
+  version: string | null;
+  publisher: string | null;
+  installDate: string | null;
+  scope: 'machine' | 'user';
+}
+
+export interface UsbRow {
+  name: string;
+  serial: string | null;
+  vendorProduct: string | null;
+}
+
+export interface EventRow {
+  time: string | null;
+  id: number;
+  level: string | null;
+  provider: string | null;
+  message: string;
+}
+
+export type EventLogName =
+  | 'System'
+  | 'Application'
+  | 'Security'
+  | 'Windows PowerShell'
+  | 'Microsoft-Windows-PowerShell/Operational'
+  | 'Microsoft-Windows-Windows Defender/Operational';
+
+export interface SignatureRow {
+  path: string;
+  status: NonNullable<SignatureInfo['status']>;
+  publisher: string | null;
+}
+
+export type ForensicsModule = 'processes' | 'connections' | 'services' | 'drivers' | 'startup' | 'tasks' | 'users' | 'software' | 'usb';
+
+// ---------------- Network Toolkit (Phase 4) ----------------
+
+export interface PingResult {
+  target: string;
+  address: string;
+  sent: number;
+  received: number;
+  rtts: Array<number | null>;
+  min: number | null;
+  avg: number | null;
+  max: number | null;
+}
+
+export interface TraceResult {
+  target: string;
+  address: string;
+  hops: Array<{ hop: number; address: string | null; rttMs: number | null }>;
+  reached: boolean;
+}
+
+export interface PortResult {
+  port: number;
+  state: 'open' | 'closed' | 'filtered';
+  service: string | null;
+  latencyMs: number | null;
+}
+
+export interface PortCheckResult {
+  target: string;
+  address: string;
+  results: PortResult[];
+  durationMs: number;
+}
+
+export interface DnsLookupResult {
+  name: string;
+  server: string | null;
+  records: Record<'A' | 'AAAA' | 'CNAME' | 'MX' | 'TXT' | 'NS', string[]>;
+}
+
+export interface AdapterRow {
+  name: string;
+  description: string | null;
+  status: string | null;
+  mac: string | null;
+  speed: string | null;
+  ipv4: string[];
+  ipv6: string[];
+  gateway: string | null;
+  dns: string[];
+  internal: boolean;
+}
+
+export interface RouteRow {
+  destination: string;
+  gateway: string | null;
+  interface: string | null;
+  metric: number | null;
+}
+
+export interface NeighborRow {
+  address: string;
+  mac: string | null;
+  state: string | null;
+  interface: string | null;
+}
+
+export interface DiscoveryResult {
+  subnet: string;
+  interface: string;
+  probed: number;
+  alive: Array<{ address: string; mac: string | null }>;
+  durationMs: number;
+}
+
 export type ClearTarget = 'activity' | 'network_activity' | 'logs' | 'temp' | 'intel_cache';
 
 export interface BlazmaApi {
@@ -498,6 +690,24 @@ export interface BlazmaApi {
     ip(ip: string, options: IpLookupOptions): Promise<Result<IpLookupResult>>;
     domain(domain: string, options: DomainLookupOptions): Promise<Result<DomainLookupResult>>;
     reputation(kind: IndicatorKind, value: string, services: ReputationService[]): Promise<Result<{ results: ReputationResult[]; sources: LookupSource[] }>>;
+  };
+  forensics: {
+    collect(module: ForensicsModule): Promise<Result<ForensicsResult<unknown>>>;
+    events(log: EventLogName, levels: number[], max: number): Promise<Result<ForensicsResult<EventRow>>>;
+    signatures(paths: string[], taskId: string): Promise<Result<SignatureRow[]>>;
+    powershellHistory(): Promise<Result<{ path: string; lines: string[]; total: number }>>;
+  };
+  net: {
+    ping(target: string, count: number, taskId: string): Promise<Result<PingResult>>;
+    traceroute(target: string, taskId: string): Promise<Result<TraceResult>>;
+    dns(name: string): Promise<Result<DnsLookupResult>>;
+    reverse(ip: string): Promise<Result<{ address: string; names: string[] }>>;
+    portCheck(target: string, ports: string, taskId: string): Promise<Result<PortCheckResult>>;
+    adapters(): Promise<Result<AdapterRow[]>>;
+    routes(): Promise<Result<RouteRow[]>>;
+    neighbors(): Promise<Result<NeighborRow[]>>;
+    subnets(): Promise<Result<Array<{ cidr: string; interface: string; address: string }>>>;
+    discover(cidr: string, taskId: string): Promise<Result<DiscoveryResult>>;
   };
   secrets: {
     status(): Promise<Record<ApiKeyService, boolean>>;

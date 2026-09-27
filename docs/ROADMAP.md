@@ -44,11 +44,15 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - TODO Censys adapter (API changed to Platform tokens; not implemented — a stored key is unused, stated in UI)
 - TODO Use Electron `net.fetch` for system-proxy support (after verifying redirect: 'manual' semantics)
 
-## Phase 4 — Forensics
-- TODO Processes (path, user, signature, hash, connections), services, drivers, startup, scheduled tasks
-- TODO Users/groups, installed software, event logs, PowerShell history, USB history
-- TODO Network Toolkit (ping, DNS, traceroute, adapters, routes, ARP, connections, listening ports, authorized port checks)
-- TODO Per-function elevation with explanation
+## Phase 4 — Forensics — DONE (Windows collectors need verification on real Windows)
+- DONE Processes (PID/PPID, path, user, command line, start time, connection count, batch Authenticode check, "Analyze" → File Analyzer)
+- DONE Connections (TCP/UDP, listening & established, owning process)
+- DONE Services (binary path extraction, account, unquoted-service-path flag, signatures), drivers, startup commands, scheduled tasks (hide Microsoft), local users + Administrators membership (by SID, locale-independent), installed software (HKLM/HKCU, 32/64-bit), USB storage history, event logs (allow-listed logs, level filter), PowerShell history (explicit, warned, never logged)
+- DONE Linux /proc fallbacks for processes and connections (verified live)
+- DONE Network Toolkit: adapters (gateway, DNS), ping, traceroute, DNS + reverse DNS, TCP port check (<=1024 ports, bounded concurrency, authorization confirmation), routes, ARP/neighbors, device discovery (private attached subnet only, <= /24, authorization confirmation)
+- DONE Public targets go through NetworkGate; local targets work in Offline Mode
+- IN PROGRESS Per-function elevation: functions needing admin explain why (Security log, full process paths); an elevated helper process is not implemented yet
+- Note: ping/traceroute use locale-independent PowerShell cmdlets on Windows (Test-Connection / Test-NetConnection); on Linux they require ping/traceroute to be installed (reported honestly when missing)
 
 ## Phase 5 — Recovery
 - TODO Password Recovery workspace (hashcat / John adapters, wordlist/mask/candidate modes, pause/resume/stop, never log results)

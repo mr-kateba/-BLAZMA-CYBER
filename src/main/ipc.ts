@@ -10,6 +10,8 @@ import { QuarantineError, QuarantineService } from './services/quarantine';
 import { DefenderError, findMpCmdRun, getThreatHistory, runDefenderScan } from './services/defender';
 import { YaraError, YaraService } from './services/yara';
 import { IntelError, IntelService } from './services/intel';
+import * as forensics from './services/forensics';
+import { NetToolsError, NetToolsService } from './services/nettools';
 import type { DefenderScanKind } from '../shared/api';
 import { validateAbsolutePath } from '../core/validation';
 import { basename } from 'node:path';
@@ -29,7 +31,7 @@ function fail(error: string, detail?: string): Result<never> {
 }
 
 function errorCode(e: unknown): string {
-  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError) return e.code;
+  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError) return e.code;
   if (e instanceof OfflineModeError) return 'offline_mode';
   return 'internal_error';
 }
@@ -49,6 +51,7 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
   const tasks = new Map<string, AbortController>();
   const quarantine = new QuarantineService();
   const intel = new IntelService({ gate, secret: (svc) => secrets.get(svc) });
+  const net = new NetToolsService(gate);
   const yara = new YaraService(() => settings.get().yaraPath);
 
   /** Engines used by File Analyzer, according to settings and platform. */
@@ -353,6 +356,51 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
     history.record({ kind: 'reputation_lookup', subject: String(value).trim().slice(0, 80), summaryKey: 'activity.summary.looked_up' });
     return { ok: true, data: r };
   });
+
+  // ---- Forensics (read-only) ----
+  const COLLECTORS = {
+    processes: forensics.processes, connections: forensics.connections, services: forensics.services, drivers: forensics.drivers,
+    startup: forensics.startup, tasks: forensics.tasks, users: forensics.users, software: forensics.software, usb: forensics.usb,
+  } as const;
+  handle('forensics:collect', async (module: unknown) => {
+    if (typeof module !== 'string' || !(module in COLLECTORS)) return fail('invalid_input');
+    const r = await COLLECTORS[module as keyof typeof COLLECTORS]();
+    history.record({ kind: 'forensics', subject: module, summaryKey: 'activity.summary.collected' });
+    return { ok: true, data: r };
+  });
+  handle('forensics:events', async (log: unknown, levels: unknown, max: unknown) => ({ ok: true, data: await forensics.events(log, levels, max) }));
+  handle('forensics:signatures', (paths: unknown, taskId: unknown) => runTask(taskId, () => forensics.signatures(paths)));
+  handle('forensics:psHistory', async () => {
+    // Sensitive: may contain secrets typed on the command line. Returned to the UI only; never logged.
+    logger.security('ps_history_viewed');
+    return { ok: true, data: await forensics.powershellHistory() };
+  });
+
+  // ---- Network Toolkit ----
+  handle('net:ping', (target: unknown, count: unknown, taskId: unknown) => runTask(taskId, (signal) => net.ping(target, count, signal)));
+  handle('net:traceroute', (target: unknown, taskId: unknown) => runTask(taskId, (signal) => net.traceroute(target, signal)));
+  handle('net:dns', async (name: unknown) => ({ ok: true, data: await net.dnsLookup(name) }));
+  handle('net:reverse', async (ip: unknown) => ({ ok: true, data: await net.reverseLookup(ip) }));
+  handle('net:portCheck', (target: unknown, ports: unknown, taskId: unknown) =>
+    runTask(taskId, async (signal) => {
+      const r = await net.portCheck(target, ports, signal, progress(taskId as string));
+      history.record({ kind: 'port_check', subject: r.address, summaryKey: 'activity.summary.port_checked' });
+      logger.security('port_check', { target: r.address, ports: r.results.length, open: r.results.filter((x) => x.state === 'open').length });
+      return r;
+    }),
+  );
+  handle('net:adapters', async () => ({ ok: true, data: await net.adapters() }));
+  handle('net:routes', async () => ({ ok: true, data: await net.routes() }));
+  handle('net:neighbors', async () => ({ ok: true, data: await net.neighbors() }));
+  handle('net:subnets', () => ({ ok: true, data: net.localSubnets() }));
+  handle('net:discover', (cidr: unknown, taskId: unknown) =>
+    runTask(taskId, async (signal) => {
+      const r = await net.discover(cidr, signal, progress(taskId as string));
+      history.record({ kind: 'discovery', subject: r.subnet, summaryKey: 'activity.summary.discovered' });
+      logger.security('network_discovery', { subnet: r.subnet, alive: r.alive.length });
+      return r;
+    }),
+  );
 
   handle('secrets:status', () => secrets.status());
   handle('secrets:set', (service: unknown, value: unknown) => {
