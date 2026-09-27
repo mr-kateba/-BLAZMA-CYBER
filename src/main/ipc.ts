@@ -13,6 +13,7 @@ import { IntelError, IntelService } from './services/intel';
 import { OsintService } from './services/osint';
 import { WifiError, wifiReport } from './services/wifi';
 import { NmapError, nmapInfo, parseNmapRequest, runNmap } from './services/nmap';
+import { FimError, FimService, fimPresets } from './services/fim';
 import { TrafficError, analyzeFile as analyzeCapture, captureEnvironment, captureInterfaces, liveCapture, openInWireshark, parseLiveOptions } from './services/traffic';
 import { accountProfileUrl, accountSiteCounts, checkUsernameAccounts } from './services/username-accounts';
 import { bundledEngine, bundledRulePack } from './services/bundled';
@@ -59,7 +60,7 @@ function fail(error: string, detail?: string): Result<never> {
 }
 
 function errorCode(e: unknown): string {
-  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError || e instanceof RecoveryError || e instanceof CaseError || e instanceof ReportError || e instanceof TerminalError || e instanceof DeviceSecurityError || e instanceof EmailError || e instanceof PwnedError || e instanceof EventHuntError || e instanceof MemoryScanError || e instanceof UpdateError || e instanceof WifiError || e instanceof TrafficError || e instanceof NmapError) return e.code;
+  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError || e instanceof RecoveryError || e instanceof CaseError || e instanceof ReportError || e instanceof TerminalError || e instanceof DeviceSecurityError || e instanceof EmailError || e instanceof PwnedError || e instanceof EventHuntError || e instanceof MemoryScanError || e instanceof UpdateError || e instanceof WifiError || e instanceof TrafficError || e instanceof NmapError || e instanceof FimError) return e.code;
   if (e instanceof OfflineModeError) return 'offline_mode';
   return 'internal_error';
 }
@@ -540,6 +541,33 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
       return r;
     });
   });
+
+  // ---- File integrity monitoring (read-only hashing of folders the user picks) ----
+  const fim = new FimService();
+  const fimProgress = (taskId: unknown) => (files: number, bytes: number) => progress(taskId as string)({ processedBytes: bytes, totalBytes: 0, stage: `files:${files}` });
+  handle('fim:list', () => ({ ok: true, data: fim.list() }));
+  handle('fim:presets', () => ({ ok: true, data: fimPresets() }));
+  handle('fim:create', (folder: unknown, name: unknown, taskId: unknown) =>
+    runTask(taskId, async (signal) => {
+      const w = await fim.create(folder, name, signal, fimProgress(taskId));
+      logger.info('fim_created', { files: w.files });
+      return w;
+    }),
+  );
+  handle('fim:check', (id: unknown, taskId: unknown) =>
+    runTask(taskId, async (signal) => {
+      const r = await fim.check(id, signal, fimProgress(taskId));
+      history.record({ kind: 'fim_check', subject: r.watch.name, summaryKey: 'activity.summary.fim_checked' });
+      logger.security('fim_check', { changes: r.totalChanges, hiddenEdits: r.diff.hiddenEdits.length });
+      return r;
+    }),
+  );
+  handle('fim:accept', (id: unknown, taskId: unknown) => runTask(taskId, (signal) => fim.accept(id, signal, fimProgress(taskId))));
+  handle('fim:remove', (id: unknown) => {
+    fim.remove(id);
+    return { ok: true, data: true };
+  });
+  handle('fim:resolve', (id: unknown, path: unknown) => ({ ok: true, data: fim.resolve(id, path) }));
 
   // ---- Wi-Fi (read-only) ----
   handle('wifi:report', async () => ({ ok: true, data: await wifiReport() }));

@@ -63,7 +63,8 @@
     "memoryScan": "Memory implant scan",
     "networkTraffic": "Network traffic",
     "wifi": "Wi-Fi",
-    "serviceScan": "Service scan (Nmap)"
+    "serviceScan": "Service scan (Nmap)",
+    "fileIntegrity": "File integrity"
   },
   "topbar": {
     "search": "Search tools, or paste an IP, hash, link or file path…",
@@ -623,7 +624,8 @@
       "event_hunt": "Event log hunting",
       "memory_scan": "Memory scan",
       "traffic_analysis": "Traffic analysis",
-      "nmap_scan": "Nmap scan"
+      "nmap_scan": "Nmap scan",
+      "fim_check": "Integrity check"
     },
     "summary": {
       "hashed": "Hashes calculated",
@@ -640,7 +642,8 @@
       "memory_clean": "nothing suspicious in memory",
       "traffic_analyzed": "capture analysed",
       "traffic_captured": "live capture analysed",
-      "nmap_scanned": "scan completed"
+      "nmap_scanned": "scan completed",
+      "fim_checked": "Compared with its fingerprint"
     }
   },
   "errors": {
@@ -752,7 +755,12 @@
     "file_too_large": "The file is too large for this analysis.",
     "no_wifi_adapter": "No Wi-Fi adapter on this computer",
     "nmap_missing": "Nmap is not installed.",
-    "nmap_target_not_local": "Only private addresses or networks this computer is attached to can be scanned."
+    "nmap_target_not_local": "Only private addresses or networks this computer is attached to can be scanned.",
+    "fim_not_folder": "This is not a folder or it cannot be opened.",
+    "fim_folder_missing": "The watched folder no longer exists or cannot be opened.",
+    "fim_not_found": "This watch no longer exists.",
+    "fim_too_many": "Too many watched folders (50). Remove one first.",
+    "invalid_path": "Invalid path."
   },
   "defender": {
     "status": {
@@ -1918,6 +1926,10 @@
     "service_scan": {
       "title": "What does a service scan show?",
       "text": "Every program that accepts network connections listens on a \"port\". A service scan knocks on the common ports of each device and records which ones answer and which program answers (for example a printer's web page, file sharing or remote desktop). Open ports are not a problem in themselves — the question is whether each one should be open."
+    },
+    "file_integrity": {
+      "title": "What is file integrity monitoring?",
+      "text": "A fingerprint is the SHA-256 of every file in a folder. Changing even one byte changes a file's SHA-256, so comparing fingerprints shows exactly what changed — even when the date was faked. Watch places where malware plants itself (Startup folders, the hosts file) or anything you want to keep unchanged."
     }
   },
   "mode": {
@@ -2727,5 +2739,63 @@
       "domainIntel": "Look up this domain",
       "analyzeFile": "Analyze this file (read-only)"
     }
+  },
+  "fim": {
+    "title": "File integrity monitor",
+    "subtitle": "Take a fingerprint of a folder, then check later exactly which files were added, removed or changed.",
+    "newTitle": "Watch a folder",
+    "newSub": "Blazma records the SHA-256 of every file (read-only; files are never opened or run).",
+    "suggested": "Suggested places malware likes to change:",
+    "chooseFolder": "Choose a folder…",
+    "privacyNote": "Fingerprints stay on this computer. Linked folders and junctions are not followed; up to 50,000 files per folder.",
+    "preset": {
+      "startup_user": "Your Startup folder",
+      "startup_all": "Startup folder (all users)",
+      "hosts_folder": "hosts file folder",
+      "powershell_profiles": "PowerShell profiles"
+    },
+    "fingerprinting": "Fingerprinting files",
+    "checking": "Checking {{name}}",
+    "progress": "{{files}} files · {{size}}",
+    "created": "Fingerprint saved: {{files}} files.",
+    "watchesTitle": "Watched folders",
+    "noWatches": "No folders watched yet",
+    "noWatchesHint": "Pick a folder above. Later, \"Check now\" compares it with the fingerprint.",
+    "watchMeta": "{{files}} files · {{size}} · since {{date}}",
+    "lastCheck": "last checked {{date}}",
+    "changesBadge": "{{n}} change(s)",
+    "noChangesBadge": "No changes",
+    "truncatedBadge": "Partial (file limit)",
+    "checkNow": "Check now",
+    "remove": "Remove",
+    "removeTitle": "Stop watching this folder?",
+    "removeBody": "The fingerprint of \"{{name}}\" will be deleted. The folder and its files are not touched.",
+    "accept": "Accept as the new fingerprint",
+    "acceptTitle": "Accept these changes?",
+    "acceptBody": "The current state of \"{{name}}\" becomes the new reference. Do this only after you reviewed the changes and they are expected (for example, an update you installed).",
+    "accepted": "New fingerprint saved.",
+    "resultTitle": "Check of {{name}}",
+    "resultChanged": "{{n}} change(s) since the fingerprint",
+    "resultSame": "Nothing changed since the fingerprint.",
+    "change": {
+      "modified": "Modified",
+      "added": "Added",
+      "removed": "Removed"
+    },
+    "unchanged": "Unchanged",
+    "all": "All",
+    "hiddenEdits": "{{n}} file(s) changed content but kept the same modification time. Timestamps are usually updated on every save — keeping the old one is a way to hide an edit. Review these files first.",
+    "execChanged": "{{n}} added or modified file(s) can run code (programs, scripts, shortcuts). Check that you expected them.",
+    "touched": "{{n}} file(s) have a new timestamp but identical content (not counted as changes).",
+    "unreadable": "{{n}} item(s) could not be read (in use or access denied) and were not compared.",
+    "filter": "Filter by path…",
+    "colChange": "Change",
+    "colFile": "File",
+    "colSize": "Size",
+    "colTime": "Modified",
+    "sameTime": "Same timestamp",
+    "runnable": "Can run code",
+    "analyze": "Analyze",
+    "listCapped": "Showing {{shown}} of {{total}} changes."
   }
 }

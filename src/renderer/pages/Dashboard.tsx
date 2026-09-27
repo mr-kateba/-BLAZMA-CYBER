@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  Activity, Radar, ChevronRight, Cpu, Earth, Mail, FileSearch, FolderPlus, Globe, HardDrive, Hash, KeyRound, Link2, MemoryStick,
+  Activity, Radar, FolderCheck, ChevronRight, Cpu, Earth, Mail, FileSearch, FolderPlus, Globe, HardDrive, Hash, KeyRound, Link2, MemoryStick,
   Monitor, MonitorCog, Network, RefreshCw, Router, ScanSearch, ScrollText, ShieldCheck, Wifi, ArrowLeft, ArrowRight, type LucideIcon,
 } from 'lucide-react';
 import type { ActivityEntry, SecurityStatus, SystemSnapshot } from '../../shared/api';
@@ -158,7 +158,7 @@ const TOOLS: Tool[] = [
 const ACTIVITY_ICON: Record<ActivityEntry['kind'], LucideIcon> = {
   file_analysis: FileSearch, hash_file: Hash, hash_text: Hash, hash_identify: Hash, hash_compare: Hash,
   defender_scan: ShieldCheck, yara_scan: FileSearch, quarantine: ShieldCheck, restore: RefreshCw,
-  ip_lookup: Earth, domain_lookup: Link2, reputation_lookup: Globe, osint_lookup: Globe, email_check: Mail, event_hunt: ScrollText, memory_scan: MemoryStick, traffic_analysis: Activity, nmap_scan: Radar,
+  ip_lookup: Earth, domain_lookup: Link2, reputation_lookup: Globe, osint_lookup: Globe, email_check: Mail, event_hunt: ScrollText, memory_scan: MemoryStick, traffic_analysis: Activity, nmap_scan: Radar, fim_check: FolderCheck,
   forensics: MonitorCog, port_check: Network, discovery: Network,
 };
 

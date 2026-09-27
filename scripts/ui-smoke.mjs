@@ -5,7 +5,7 @@
 // Usage: node scripts/ui-smoke.mjs [samplePath]
 // On Linux CI run under xvfb-run. --no-sandbox is used ONLY by this test harness (root in containers).
 import { _electron as electron } from 'playwright';
-import { existsSync, mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, utimesSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import assert from 'node:assert/strict';
@@ -396,6 +396,28 @@ try {
   await win.locator('.card', { hasText: 'حسابات بهذا الاسم' }).getByText('وضع عدم الاتصال', { exact: false }).first().waitFor();
   await win.waitForTimeout(300);
   await win.screenshot({ path: join(out, '37-osint-accounts-offline-ar.png') });
+
+  // File integrity: fingerprint a folder, change it (incl. an edit that keeps its timestamp), check.
+  const fimDir = mkdtempSync(join(tmpdir(), 'blazma-fim-'));
+  writeFileSync(join(fimDir, 'readme.txt'), 'hello');
+  writeFileSync(join(fimDir, 'tool.dll'), 'original');
+  writeFileSync(join(fimDir, 'old.txt'), 'bye');
+  await win.locator('.nav-item', { hasText: 'سلامة الملفات' }).click();
+  await win.locator('h1', { hasText: 'مراقبة سلامة الملفات' }).waitFor();
+  await stubOpen(fimDir);
+  await win.getByRole('button', { name: 'اختر مجلدًا…' }).click();
+  await win.locator('.fim-row').first().waitFor({ timeout: 30000 });
+  const dllTime = statSync(join(fimDir, 'tool.dll'));
+  writeFileSync(join(fimDir, 'tool.dll'), 'patched!');
+  utimesSync(join(fimDir, 'tool.dll'), dllTime.atime, dllTime.mtime);
+  rmSync(join(fimDir, 'old.txt'));
+  writeFileSync(join(fimDir, 'run.ps1'), 'Write-Output 1');
+  await win.getByRole('button', { name: 'افحص الآن' }).click();
+  await win.getByText('3 تغيير منذ أخذ البصمة').waitFor({ timeout: 30000 });
+  await win.getByText('1 ملف تغيّر محتواه لكنه احتفظ بنفس وقت التعديل', { exact: false }).waitFor();
+  await win.waitForTimeout(300);
+  await win.screenshot({ path: join(out, '43-file-integrity-ar.png'), fullPage: true });
+  rmSync(fimDir, { recursive: true, force: true });
 
   // Smart search: Ctrl+K, paste a (defanged) indicator, pick the suggested tool — it opens pre-filled.
   await win.keyboard.press('Control+K');

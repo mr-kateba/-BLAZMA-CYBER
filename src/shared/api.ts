@@ -294,7 +294,7 @@ export interface ActivityEntry {
   kind:
     | 'file_analysis' | 'hash_file' | 'hash_text' | 'hash_identify' | 'hash_compare'
     | 'defender_scan' | 'yara_scan' | 'quarantine' | 'restore'
-    | 'ip_lookup' | 'domain_lookup' | 'reputation_lookup' | 'osint_lookup' | 'email_check' | 'event_hunt' | 'memory_scan' | 'traffic_analysis' | 'nmap_scan'
+    | 'ip_lookup' | 'domain_lookup' | 'reputation_lookup' | 'osint_lookup' | 'email_check' | 'event_hunt' | 'memory_scan' | 'traffic_analysis' | 'nmap_scan' | 'fim_check'
     | 'forensics' | 'port_check' | 'discovery';
   /** Displayable subject, e.g. a filename. Never a secret. */
   subject: string;
@@ -512,6 +512,34 @@ export type { OsintTargetType } from '../core/osint';
 export type { AccountStatus, AccountUnknownReason, UsernameGroup } from '../core/username-check';
 export type { MacKind } from '../core/oui';
 export type { NmapFinding, NmapHost, NmapPort, NmapProfile, NmapRun, ServiceRisk } from '../core/nmap';
+export type { FimChange, FimDiff } from '../core/fim';
+
+/** A folder under file integrity monitoring (the stored fingerprint stays in the main process). */
+export interface FimWatch {
+  id: string;
+  name: string;
+  root: string;
+  createdAt: string;
+  files: number;
+  bytes: number;
+  unreadable: number;
+  truncated: boolean;
+  lastCheck: { at: string; added: number; removed: number; modified: number } | null;
+}
+
+export interface FimCheckResult {
+  watch: FimWatch;
+  diff: import('../core/fim').FimDiff;
+  /** Total changes (the list is capped for display). */
+  totalChanges: number;
+  unreadableNow: string[];
+  truncated: boolean;
+}
+
+export interface FimPreset {
+  id: 'startup_user' | 'startup_all' | 'hosts_folder' | 'powershell_profiles';
+  path: string;
+}
 export type { SavedProfile, WifiConnection, WifiFinding, WifiNetwork, WifiSecurity, WifiRating } from '../core/wifi';
 export type { TrafficReport, TrafficFinding, TrafficDevice, TrafficConversation, FindingSeverity } from '../core/traffic/analyzer';
 export type { EmailAnalysis, EmailAttachment, EmailLink, EmailSignal, AuthResult } from '../core/email';
@@ -1124,6 +1152,16 @@ export interface BlazmaApi {
     /** Local subnets this computer is attached to (the only networks Nmap may scan). */
     targets(): Promise<Result<Array<{ cidr: string; interface: string; address: string }>>>;
     scan(target: string, profile: NmapProfile, authorized: boolean, taskId: string): Promise<Result<NmapResult>>;
+  };
+  fim: {
+    list(): Promise<Result<FimWatch[]>>;
+    presets(): Promise<Result<FimPreset[]>>;
+    create(folder: string, name: string, taskId: string): Promise<Result<FimWatch>>;
+    check(id: string, taskId: string): Promise<Result<FimCheckResult>>;
+    accept(id: string, taskId: string): Promise<Result<FimWatch>>;
+    remove(id: string): Promise<Result<true>>;
+    /** Absolute path of a file in a watched folder, for read-only analysis. */
+    resolve(id: string, path: string): Promise<Result<string>>;
   };
   wifi: {
     /** Read-only: current connection, nearby networks and saved networks (never passwords). */

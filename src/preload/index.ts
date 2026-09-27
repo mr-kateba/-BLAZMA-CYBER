@@ -107,6 +107,15 @@ const api: BlazmaApi = {
     tamper: () => invoke('device:tamper'),
     openSettings: (link) => invoke('device:openSettings', link),
   },
+  fim: {
+    list: () => invoke('fim:list'),
+    presets: () => invoke('fim:presets'),
+    create: (folder, name, taskId) => invoke('fim:create', folder, name, taskId),
+    check: (id, taskId) => invoke('fim:check', id, taskId),
+    accept: (id, taskId) => invoke('fim:accept', id, taskId),
+    remove: (id) => invoke('fim:remove', id),
+    resolve: (id, path) => invoke('fim:resolve', id, path),
+  },
   nmap: {
     info: () => invoke('nmap:info'),
     targets: () => invoke('nmap:targets'),
