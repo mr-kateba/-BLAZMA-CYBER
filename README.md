@@ -57,8 +57,10 @@ adapters rather than re-implementing them.
 - **Was my password leaked?** — Have I Been Pwned via k-anonymity: only 5 characters of the
   password's SHA-1 hash leave the computer.
 - **OSINT Workspace** — domain, email, username or URL: Certificate Transparency (crt.sh), Wayback
-  Machine snapshots, GitHub public profile, mail-domain DNS; provenance (endpoint + time) on every
-  source; pivot links open in your browser only after confirmation.
+  Machine snapshots, GitHub public profile, mail-domain DNS; **accounts with a username** on 301
+  social networks (+338 other sites, optional) using the WhatsMyName rules — found / not found /
+  couldn't check, never guessed; provenance (endpoint + time) on every source; pivot links open in
+  your browser only after confirmation.
 
 **Forensics & network**
 - **Windows Forensics** — read-only collectors: processes, connections, services, drivers,

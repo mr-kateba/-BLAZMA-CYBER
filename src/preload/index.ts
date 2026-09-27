@@ -110,6 +110,9 @@ const api: BlazmaApi = {
   osint: {
     lookup: (type, value, options) => invoke('osint:lookup', type, value, options),
     openPivot: (type, value, pivotId) => invoke('osint:openPivot', type, value, pivotId),
+    accountSites: () => invoke('osint:accountSites'),
+    accounts: (username, groups, taskId) => invoke('osint:accounts', username, groups, taskId),
+    openAccount: (username, siteId) => invoke('osint:openAccount', username, siteId),
   },
   intel: {
     ip: (ip, options) => invoke('intel:ip', ip, options),

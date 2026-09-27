@@ -993,6 +993,7 @@ table.data tbody tr:hover td {
   display: inline-flex;
   flex-wrap: wrap;
   max-width: 100%;
+  align-self: flex-start;
   padding: 4px;
   gap: 2px;
   border-radius: 12px;

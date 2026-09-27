@@ -42,11 +42,6 @@ try {
   $v = RegNum $sb 'UEFISecureBootEnabled'
   $r.secureBoot = if ($v -eq -1) { $null } else { $v }
 } catch { $r.secureBoot = $null }
-try {
-  $shellApp = [Activator]::CreateInstance([Type]::GetTypeFromProgID('Shell.Application'))
-  $b = $shellApp.NameSpace($env:SystemDrive + '\\').Self.ExtendedProperty('System.Volume.BitLockerProtection')
-  $r.bitlocker = if ($null -eq $b) { $null } else { [int]$b }
-} catch { $r.bitlocker = $null }
 $last = $null
 try {
   $session = [Activator]::CreateInstance([Type]::GetTypeFromProgID('Microsoft.Update.Session'))

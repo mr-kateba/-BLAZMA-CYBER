@@ -25,6 +25,8 @@ export interface GateRequest {
   timeoutMs?: number;
   /** 'error' (default) refuses redirects; 'manual' returns 3xx responses so the caller can follow them through the gate. */
   redirect?: 'error' | 'manual';
+  /** Cancels the request (in addition to the timeout). */
+  signal?: AbortSignal;
 }
 
 /** Describes a non-HTTP network operation (DNS query, TLS handshake…) for the gate. */
@@ -71,6 +73,9 @@ export class NetworkGate {
 
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), req.timeoutMs ?? 15000);
+    const cancel = () => controller.abort();
+    req.signal?.addEventListener('abort', cancel, { once: true });
+    if (req.signal?.aborted) controller.abort();
     try {
       const res = await this.fetchImpl(url.toString(), { ...req.init, signal: controller.signal, redirect: req.redirect ?? 'error' });
       this.record({ ...base, outcome: 'allowed' });
@@ -80,6 +85,7 @@ export class NetworkGate {
       throw err;
     } finally {
       clearTimeout(timer);
+      req.signal?.removeEventListener('abort', cancel);
     }
   }
 

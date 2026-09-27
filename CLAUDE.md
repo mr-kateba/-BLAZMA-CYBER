@@ -130,7 +130,7 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
   John/hashcat engine, authorization required, results never logged), Cases (evidence/notes/timeline),
   Reports (escaped HTML with strict CSP, JSON, PDF via offline printToPDF), Threat Hunting
   (cross-module correlation + persistence review), OSINT workspace (CT, Wayback, GitHub, mail-domain DNS,
-  gated pivot links, provenance on every source).
+  gated pivot links, provenance on every source; accounts with a username on 301 social networks + 338 other sites via WhatsMyName rules).
   Phases A–D (docs/ROADMAP.md): simple mode + explanations, Device Security Score, bundled engines
   (YARA-X, capa, DIE, ReversingLabs rules), "Check an email" (local phishing analysis),
   "Was my password leaked?" (HIBP k-anonymity), abuse.ch reputation (MalwareBazaar/URLhaus/ThreatFox).
@@ -184,3 +184,5 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
 | 2026-09 | File/folder Defender scans use -DisableRemediation | Blazma reports; the user decides (quick/full follow Defender policy, stated in UI) |
 | 2026-09 | Branding: product name "Blazma Cyber" (not all-caps); logo = Blazma family hexagon (#FFB300→#FF3D00 gradient) with a white shield + check (`branding/`, `build/icon.*` via scripts/make-icon.mjs); env vars stay `BLAZMA_*` | Consistent with the sibling apps (Blazma Get, Blazma Boost); env names are an internal contract |
 | 2026-09 | Developer credit = `APP_AUTHOR` ('mr-kateba', src/shared/api.ts): About, language picker, sidebar footer, installer copyright, package author, README. Commits are authored as `mr-kateba <132195893+mr-kateba@users.noreply.github.com>` without AI co-author trailers | Owner's decision: the project is published under the owner's name |
+| 2026-09 | OSINT accounts check = WhatsMyName rules (`src/core/username-sites.json` from scripts/make-username-sites.mjs, pinned commit, CC BY-SA 4.0); found only on the exact exists-signature, missing only on the missing-signature, else "couldn't check" + reason; adult/dating/political/archive categories left out | Honest results (no guessing from status codes alone); a maintained open list instead of hand-written site rules |
+| 2026-09 | No drive-encryption (BitLocker) check in the Device Security Score | Owner decision: prompting people to turn on BitLocker risks data loss when the recovery key isn't saved |

@@ -385,6 +385,17 @@ try {
   await win.waitForTimeout(300);
   await win.screenshot({ path: join(out, '26-osint-offline-ar.png'), fullPage: true });
 
+  // Username: the accounts check (WhatsMyName rules) is offered for social networks and is blocked
+  // as a whole in Offline Mode, like every other source.
+  await win.getByRole('tab', { name: 'اسم مستخدم' }).click();
+  await win.getByRole('button', { name: /مواقع التواصل الاجتماعي \(\d+ موقعًا\)/ }).waitFor();
+  await win.locator('input.input.mono').first().fill('octocat');
+  await win.getByRole('button', { name: 'استعلام', exact: true }).click();
+  await win.getByText('حسابات بهذا الاسم').waitFor({ timeout: 30000 });
+  await win.locator('.card', { hasText: 'حسابات بهذا الاسم' }).getByText('وضع عدم الاتصال', { exact: false }).first().waitFor();
+  await win.waitForTimeout(300);
+  await win.screenshot({ path: join(out, '37-osint-accounts-offline-ar.png') });
+
   // Phase D: phishing email check (local only). A classic phishing sample: spoofed display name,
   // DMARC fail, a link that shows paypal.com but goes to an IP, and a double-extension attachment.
   const phish = [

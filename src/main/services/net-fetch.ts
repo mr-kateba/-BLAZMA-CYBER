@@ -16,6 +16,9 @@ export const systemFetch: FetchLike = (url, init = {}) => {
   return getSession().fetch(url, { ...init, credentials: 'omit', cache: 'no-store', bypassCustomProtocolHandlers: true });
 };
 
+/** The in-memory limit for one response on the manual-redirect path. */
+const MAX_MANUAL_BODY = 16 * 1024 * 1024;
+
 function manualRedirectFetch(url: string, init: RequestInit): Promise<Response> {
   return new Promise((resolve, reject) => {
     if (init.signal?.aborted) return reject(new DOMException('Aborted', 'AbortError'));
@@ -34,7 +37,17 @@ function manualRedirectFetch(url: string, init: RequestInit): Promise<Response> 
     });
     req.on('response', (res) => {
       const chunks: Buffer[] = [];
-      res.on('data', (c) => chunks.push(c));
+      let size = 0;
+      res.on('data', (c) => {
+        size += c.length;
+        if (size > MAX_MANUAL_BODY) {
+          done();
+          req.abort();
+          reject(Object.assign(new Error('response_too_large'), { code: 'response_too_large' }));
+          return;
+        }
+        chunks.push(c);
+      });
       res.on('end', () => {
         done();
         const headers = new Headers();

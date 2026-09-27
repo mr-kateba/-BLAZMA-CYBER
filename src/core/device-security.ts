@@ -7,7 +7,7 @@
 export type CheckStatus = 'pass' | 'warn' | 'fail' | 'unknown';
 
 /** Fixed Windows settings pages a check may open (resolved to URIs in the main process). */
-export type SettingsLink = 'virus' | 'firewall' | 'update' | 'encryption' | 'remote' | 'deviceSecurity';
+export type SettingsLink = 'virus' | 'firewall' | 'update' | 'remote' | 'deviceSecurity';
 
 export interface DeviceCheck {
   id: string;
@@ -43,7 +43,6 @@ export interface RawDeviceFacts {
   smb1Client?: number | null; // mrxsmb10 service Start value; -1 = driver not installed
   rdp?: { deny?: number | null; nla?: number | null } | null;
   secureBoot?: number | null;
-  bitlocker?: number | null; // Shell property System.Volume.BitLockerProtection of the system drive
   lastUpdate?: string | null; // ISO date of the newest successful update
   autoLogon?: string | null;
   guestEnabled?: boolean | null;
@@ -112,10 +111,8 @@ export function evaluateDevice(raw: RawDeviceFacts, now: Date): DeviceSecurityRe
   // Secure Boot (missing key = legacy BIOS / not supported)
   c.push(raw.secureBoot == null ? unknown('secure_boot', 2, null, 'not_supported') : check('secure_boot', 2, null, raw.secureBoot === 1 ? 'pass' : 'fail'));
 
-  // Drive encryption of the system drive. 1/6 on, 3 encrypting, 5 suspended, 2 off; 0/null unavailable.
-  const bl = raw.bitlocker;
-  if (bl == null || bl === 0) c.push(unknown('encryption', 2, 'encryption', 'encryption_unavailable'));
-  else c.push(check('encryption', 2, 'encryption', bl === 1 || bl === 6 ? 'pass' : bl === 3 || bl === 5 ? 'warn' : 'fail'));
+  // Drive encryption (BitLocker) is deliberately not checked: turning it on without keeping the
+  // recovery key safe can lock people out of their own data, so Blazma does not push users to it.
 
   // Automatic sign-in stores a password in the registry.
   c.push(raw.autoLogon == null ? unknown('auto_logon', 1, null) : check('auto_logon', 1, null, raw.autoLogon === '1' ? 'fail' : 'pass'));
@@ -157,7 +154,6 @@ export const SETTINGS_URIS: Record<SettingsLink, string> = {
   virus: 'windowsdefender://threatsettings',
   firewall: 'windowsdefender://network',
   update: 'ms-settings:windowsupdate',
-  encryption: 'ms-settings:deviceencryption',
   remote: 'ms-settings:remotedesktop',
   deviceSecurity: 'windowsdefender://devicesecurity',
 };

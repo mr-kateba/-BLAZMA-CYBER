@@ -1,13 +1,14 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Archive, AtSign, ExternalLink, FileBadge, GitBranch, Globe2, Link2, Mail, Scale, Search, User, UserSearch } from 'lucide-react';
-import type { EvidenceKind, OsintOptions, OsintResult, OsintTargetType } from '../../shared/api';
+import type { EvidenceKind, OsintOptions, OsintResult, OsintTargetType, UsernameGroup } from '../../shared/api';
 import { normalizeOsintTarget } from '../../core/osint';
 import { Badge, Card, DataTable, ErrorState, FilterInput, IconTile, Ltr, Notice, Progress, Tabs, useFilter } from '../components/ui';
 import { KV, OfflineBanner, OptionPills, SourcesTable } from '../components/intel';
 import { AddToCase } from '../components/AddToCase';
 import { useApp } from '../components/AppContext';
 import { useI18n } from '../i18n/I18nProvider';
-import { formatDateTime } from '../format';
+import { formatDateTime, newTaskId } from '../format';
+import { AccountsCard, type AccountsState } from '../components/AccountsCard';
 import { sourceNote } from './IpIntel';
 
 const TYPE_OPTIONS: Record<OsintTargetType, Array<keyof OsintOptions>> = {
@@ -26,11 +27,32 @@ export function Osint() {
   const [value, setValue] = useState('');
   const [opts, setOpts] = useState<OsintOptions>({ ct: true, wayback: true, github: true, emailDns: true });
   const [state, setState] = useState<{ loading?: boolean; result?: OsintResult; error?: string }>({});
+  const [groups, setGroups] = useState<Record<UsernameGroup, boolean>>({ social: true, other: false });
+  const [siteCounts, setSiteCounts] = useState<Record<UsernameGroup, number> | null>(null);
+  const [acc, setAcc] = useState<AccountsState>({});
   const valid = useMemo(() => normalizeOsintTarget(type, value) !== null, [type, value]);
+
+  useEffect(() => void window.blazma.osint.accountSites().then((r) => r.ok && setSiteCounts(r.data)), []);
+
+  const cancelAccounts = () => {
+    if (acc.running) void window.blazma.files.cancel(acc.running.taskId);
+  };
+
+  const runAccounts = async (username: string) => {
+    const chosen = (['social', 'other'] as const).filter((g) => groups[g]);
+    if (chosen.length === 0) return setAcc({});
+    const taskId = newTaskId();
+    setAcc({ running: { taskId } });
+    const r = await window.blazma.osint.accounts(username, chosen, taskId);
+    setAcc((cur) => (cur.running?.taskId !== taskId ? cur : r.ok ? { result: r.data } : { error: r.error }));
+  };
 
   const run = async () => {
     if (!valid) return;
+    cancelAccounts();
+    setAcc({});
     setState({ loading: true });
+    if (type === 'username') void runAccounts(value.trim());
     const r = await window.blazma.osint.lookup(type, value.trim(), opts);
     setState(r.ok ? { result: r.data } : { error: r.error });
   };
@@ -67,7 +89,7 @@ export function Osint() {
         <Card>
           <Tabs<OsintTargetType>
             value={type}
-            onChange={(v) => { setType(v); setState({}); }}
+            onChange={(v) => { cancelAccounts(); setType(v); setState({}); setAcc({}); }}
             items={(['domain', 'email', 'username', 'url'] as const).map((id) => ({ id, label: t(`osint.type.${id}`) }))}
           />
           <form className="lookup-bar" style={{ marginTop: 14 }} onSubmit={(e) => { e.preventDefault(); void run(); }}>
@@ -78,10 +100,21 @@ export function Osint() {
           <div style={{ marginTop: 14 }}>
             <div className="small dim" style={{ marginBottom: 8 }}>{t('intel.options')}</div>
             <OptionPills
-              items={TYPE_OPTIONS[type].map((k) => ({ id: k, label: t(`osint.opt.${k}`), checked: opts[k] }))}
-              onToggle={(id) => setOpts((o) => ({ ...o, [id]: !o[id as keyof OsintOptions] }))}
+              items={[
+                ...TYPE_OPTIONS[type].map((k) => ({ id: k, label: t(`osint.opt.${k}`), checked: opts[k] })),
+                ...(type === 'username' && siteCounts
+                  ? (['social', 'other'] as const).map((g) => ({ id: `acc:${g}`, label: t(`osint.opt.accounts.${g}`, { n: siteCounts[g] }), checked: groups[g] }))
+                  : []),
+              ]}
+              onToggle={(id) => {
+                if (id.startsWith('acc:')) {
+                  const g = id.slice(4) as UsernameGroup;
+                  setGroups((x) => ({ ...x, [g]: !x[g] }));
+                } else setOpts((o) => ({ ...o, [id]: !o[id as keyof OsintOptions] }));
+              }}
             />
           </div>
+          {type === 'username' && (groups.social || groups.other) && <div className="tiny dim" style={{ marginTop: 8 }}>{t('osint.accounts.privacyNote')}</div>}
           <div className="tiny dim" style={{ marginTop: 12 }}>{t('osint.externalNote')}</div>
         </Card>
 
@@ -113,6 +146,8 @@ export function Osint() {
                 }]}
               />
             </div>
+
+            {r.type === 'username' && (acc.running || acc.result || acc.error) && <AccountsCard state={acc} />}
 
             <div className="grid g-2">
               {on('ct') && (

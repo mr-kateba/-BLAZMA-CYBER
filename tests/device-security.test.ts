@@ -12,7 +12,7 @@ const HARDENED: RawDeviceFacts = {
   elevated: false,
   defender: { available: true, rtp: true, age: 1, tamper: true },
   firewall: [{ name: 'Domain', enabled: true }, { name: 'Private', enabled: true }, { name: 'Public', enabled: true }],
-  uac: { lua: 1, consent: 5 }, smb1Client: -1, rdp: { deny: 1, nla: 1 }, secureBoot: 1, bitlocker: 1,
+  uac: { lua: 1, consent: 5 }, smb1Client: -1, rdp: { deny: 1, nla: 1 }, secureBoot: 1,
   lastUpdate: '2026-09-20T00:00:00Z', autoLogon: '0', guestEnabled: false, lsaPpl: 1, vbs: 2, execPolicy: 'RemoteSigned', tpm: null,
 };
 const by = (r: ReturnType<typeof evaluateDevice>, id: string) => r.checks.find((c) => c.id === id)!;
@@ -32,10 +32,10 @@ describe('Device Security Score', () => {
       ...HARDENED,
       defender: { available: true, rtp: false, age: 12, tamper: false },
       firewall: [{ name: 'Domain', enabled: true }, { name: 'Public', enabled: false }],
-      uac: { lua: 0, consent: 5 }, smb1Client: 3, rdp: { deny: 0, nla: 0 }, bitlocker: 2,
+      uac: { lua: 0, consent: 5 }, smb1Client: 3, rdp: { deny: 0, nla: 0 },
       lastUpdate: '2026-05-01T00:00:00Z', autoLogon: '1', guestEnabled: true, execPolicy: 'Unrestricted',
     }, NOW);
-    for (const id of ['defender_realtime', 'defender_signatures', 'firewall', 'uac', 'smb1', 'rdp', 'encryption', 'updates', 'auto_logon', 'guest']) {
+    for (const id of ['defender_realtime', 'defender_signatures', 'firewall', 'uac', 'smb1', 'rdp', 'updates', 'auto_logon', 'guest']) {
       expect(by(r, id).status, id).toBe('fail');
     }
     expect(by(r, 'tamper_protection').status).toBe('warn');

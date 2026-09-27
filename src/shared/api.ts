@@ -21,6 +21,7 @@ import type { CapaSummary } from '../core/capa';
 import type { EmailAnalysis } from '../core/email';
 import type { DieSummary } from '../core/die';
 import type { CtSummary, GithubProfile, OsintPivot, OsintTargetType, WaybackSnapshot } from '../core/osint';
+import type { AccountStatus, AccountUnknownReason, UsernameGroup } from '../core/username-check';
 
 export type Theme = 'dark' | 'midnight';
 export type StartPage = 'dashboard' | 'file-analyzer' | 'hash-lab' | 'privacy';
@@ -503,6 +504,7 @@ export interface DomainLookupResult {
 }
 
 export type { OsintTargetType } from '../core/osint';
+export type { AccountStatus, AccountUnknownReason, UsernameGroup } from '../core/username-check';
 export type { EmailAnalysis, EmailAttachment, EmailLink, EmailSignal, AuthResult } from '../core/email';
 
 /** Pwned Passwords answer. Never contains the password or its hash. */
@@ -544,6 +546,34 @@ export interface EmailDomainInfo {
   dmarc: string | null;
   /** Null MX (RFC 7505) or no MX/A: the domain doesn't accept mail. */
   acceptsMail: boolean;
+}
+
+export interface AccountCheck {
+  id: string;
+  name: string;
+  cat: string;
+  group: UsernameGroup;
+  status: AccountStatus;
+  reason?: AccountUnknownReason;
+  /** Public profile page (display + open); null when the site has no page to open. */
+  url: string | null;
+}
+
+export interface AccountsResult {
+  username: string;
+  groups: UsernameGroup[];
+  /** Sites in the chosen groups. */
+  total: number;
+  /** Sites that answered or failed (less than total when cancelled). */
+  checked: number;
+  found: number;
+  missing: number;
+  unknown: number;
+  accounts: AccountCheck[];
+  cancelled: boolean;
+  durationMs: number;
+  /** Where the site list and detection rules come from (WhatsMyName commit). */
+  source: string;
 }
 
 export interface OsintResult {
@@ -1006,6 +1036,12 @@ export interface BlazmaApi {
     lookup(type: OsintTargetType, value: string, options: OsintOptions): Promise<Result<OsintResult>>;
     /** Opens a pivot link in the default browser (blocked in Offline Mode, recorded in Network Activity). */
     openPivot(type: OsintTargetType, value: string, pivotId: string): Promise<Result<void>>;
+    /** How many sites each group of the accounts check asks. */
+    accountSites(): Promise<Result<Record<UsernameGroup, number>>>;
+    /** Asks public sites whether the username exists (long task: progress + files.cancel). */
+    accounts(username: string, groups: UsernameGroup[], taskId: string): Promise<Result<AccountsResult>>;
+    /** Opens a found profile in the default browser (URL re-derived in main). */
+    openAccount(username: string, siteId: string): Promise<Result<void>>;
   };
   intel: {
     ip(ip: string, options: IpLookupOptions): Promise<Result<IpLookupResult>>;

@@ -22,6 +22,11 @@ asar: true
 extraResources:
   - from: engines/rules
     to: rules
+  # License texts of data compiled into the app (ATT&CK table, WhatsMyName site list).
+  - from: engines/licenses/mitre-attack.txt
+    to: licenses/mitre-attack.txt
+  - from: engines/licenses/whatsmyname.txt
+    to: licenses/whatsmyname.txt
 electronLanguages:
   - en-US
   - ar

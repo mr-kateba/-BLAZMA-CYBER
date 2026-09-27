@@ -11,6 +11,7 @@ import { DefenderError, findMpCmdRun, getThreatHistory, runDefenderScan } from '
 import { YaraError, YaraService } from './services/yara';
 import { IntelError, IntelService } from './services/intel';
 import { OsintService } from './services/osint';
+import { accountProfileUrl, accountSiteCounts, checkUsernameAccounts } from './services/username-accounts';
 import { bundledEngine, bundledRulePack } from './services/bundled';
 import { runCapa, runDie } from './services/static-engines';
 import { analyzeEmailFile, analyzeEmailText, EmailError, extractAttachment } from './services/email';
@@ -503,6 +504,22 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
   });
   handle('osint:openPivot', async (type: unknown, value: unknown, pivotId: unknown) => {
     await osint.openPivot(type, value, pivotId);
+    return { ok: true, data: undefined };
+  });
+  handle('osint:accountSites', () => ({ ok: true, data: accountSiteCounts() }));
+  handle('osint:accounts', (username: unknown, groups: unknown, taskId: unknown) =>
+    runTask(taskId, async (signal) => {
+      const r = await checkUsernameAccounts(gate, username, groups, signal, (done, total) =>
+        progress(taskId as string)({ processedBytes: done, totalBytes: total, stage: 'scanning' }),
+      );
+      history.record({ kind: 'osint_lookup', subject: r.username, summaryKey: 'activity.summary.looked_up' });
+      return r;
+    }),
+  );
+  handle('osint:openAccount', async (username: unknown, siteId: unknown) => {
+    // The URL is re-derived here from (username, site id): the renderer never passes a URL to open.
+    const { url, site } = accountProfileUrl(username, siteId);
+    await gate.run({ module: 'osint', service: `browser:accounts:${site.id}`, host: new URL(url).host, dataKind: 'privacy.data.username' }, () => shell.openExternal(url));
     return { ok: true, data: undefined };
   });
 

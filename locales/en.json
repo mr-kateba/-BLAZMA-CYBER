@@ -721,7 +721,6 @@
     "terminal_unavailable": "Could not open Windows Terminal or PowerShell.",
     "not_readable": "This setting could not be read on this device.",
     "not_supported": "Not supported on this device (for example, legacy BIOS).",
-    "encryption_unavailable": "Drive encryption is not available or could not be read on this device/edition.",
     "needs_admin": "Can only be read with administrator rights.",
     "yara_pack_readonly": "Rule packs shipped with Blazma can be turned off but not deleted.",
     "engine_not_bundled": "Not included in this build (it ships with the Windows installer).",
@@ -1489,7 +1488,11 @@
       "ct": "Certificate Transparency (crt.sh)",
       "wayback": "Wayback Machine snapshots",
       "github": "GitHub public profile",
-      "emailDns": "Mail domain DNS (MX, SPF, DMARC)"
+      "emailDns": "Mail domain DNS (MX, SPF, DMARC)",
+      "accounts": {
+        "social": "Social networks ({{n}} sites)",
+        "other": "Other sites — gaming, coding, shopping… ({{n}})"
+      }
     },
     "externalNote": "Selected sources receive the target when you start the lookup. Pivot links open in your browser only when you click them. Everything is recorded in Network Activity.",
     "ct": {
@@ -1555,7 +1558,65 @@
       "reddit": "Reddit",
       "x": "X",
       "keybase": "Keybase",
-      "hackernews": "Hacker News"
+      "hackernews": "Hacker News",
+      "facebook": "Facebook",
+      "instagram": "Instagram",
+      "tiktok": "TikTok",
+      "youtube": "YouTube",
+      "telegram": "Telegram"
+    },
+    "accounts": {
+      "title": "Accounts with this username",
+      "privacyNote": "Only the username is sent to each selected site, to ask whether that account exists — no login, no cookies. Every site is recorded in Network Activity.",
+      "running": "Checked {{done}} of {{total}} sites…",
+      "sub": "{{checked}} of {{total}} sites checked in {{time}}",
+      "cancelled": "Stopped: {{checked}} of {{total}} sites were checked.",
+      "tab": {
+        "found": "Found",
+        "unknown": "Couldn't check",
+        "missing": "Not found"
+      },
+      "empty": {
+        "found": "No account with this name was confirmed on the checked sites.",
+        "unknown": "Every site gave a clear answer.",
+        "missing": "No site reported this name as missing."
+      },
+      "col": {
+        "site": "Site",
+        "reason": "Why",
+        "page": "Profile page"
+      },
+      "open": "Open",
+      "note": "\"Found\" means the site's own page confirms an account with this exact name. The same name on different sites does not prove it is the same person. \"Couldn't check\" usually means the site blocks automatic checks (Facebook and Instagram often do) — use the links below to look yourself.",
+      "source": "Site list and detection rules: WhatsMyName (CC BY-SA 4.0) —",
+      "reason": {
+        "blocked": "The site blocked the automatic check",
+        "rate_limited": "Too many requests — try again later",
+        "no_match": "The answer matched neither pattern (the site changed or needs a login)",
+        "timeout": "No answer in time",
+        "network_error": "Connection failed",
+        "too_large": "Answer too large",
+        "invalid_for_site": "This name is not valid on this site"
+      },
+      "cat": {
+        "social": "Social network",
+        "video": "Video",
+        "images": "Images",
+        "music": "Music",
+        "blog": "Blog",
+        "news": "News",
+        "art": "Art",
+        "gaming": "Gaming",
+        "coding": "Coding",
+        "tech": "Tech",
+        "hobby": "Hobbies",
+        "finance": "Finance",
+        "business": "Business",
+        "shopping": "Shopping",
+        "health": "Health",
+        "misc": "Other"
+      },
+      "allFailed": "None of the sites could be checked — check your internet connection, proxy or firewall, then try again."
     }
   },
   "terminal": {
@@ -1652,11 +1713,6 @@
         "title": "Secure Boot",
         "why": "Stops malicious code from loading before Windows starts (bootkits).",
         "fix": "Enable Secure Boot in your PC's UEFI/BIOS settings (the manufacturer's manual shows how). Don't change BIOS settings if you're unsure."
-      },
-      "encryption": {
-        "title": "System drive encryption (BitLocker / Device encryption)",
-        "why": "If your laptop is lost or stolen, encryption keeps your files unreadable.",
-        "fix": "Open Settings → Privacy & security → Device encryption (or search “Manage BitLocker”) and turn it on. Save the recovery key somewhere safe."
       },
       "auto_logon": {
         "title": "Automatic sign-in is off",

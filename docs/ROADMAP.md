@@ -67,6 +67,7 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE Cases (CASE-YYYY-NNN), evidence vs. notes, auto timeline; "Add to case" from File Analyzer / IP / Domain intel
 - DONE Threat Hunting: cross-module correlation (cases, quarantine, activity, network log, live processes/connections/services/startup, YARA rules) + persistence review flags
 - DONE Reports: escaped, script-free HTML (strict CSP), JSON export, PDF via offline printToPDF; Arabic RTL / English LTR
+- DONE OSINT accounts check: a username on 301 social networks (+338 other sites) with the WhatsMyName rules (pinned commit, CC BY-SA 4.0, adult/dating/political left out); strict found/missing signatures, everything else "couldn't check" with the reason; cancellable with progress; profile links re-derived in main. The Device Security Score no longer checks drive encryption (owner decision: people could turn BitLocker on without saving the recovery key)
 - DONE OSINT workspace: domain/email/username/URL; Certificate Transparency (crt.sh), Wayback first/last snapshot, GitHub public profile, mail-domain DNS; provenance (endpoint + time) on every source; pivot links re-derived in main, opened only on click, gated. Verified with mocks + offline E2E — live sources were unreachable from the build sandbox
 
 ## Phase A (post-v0.1 plan, see chat report) — DONE
@@ -76,7 +77,7 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - TODO (owner, GitHub settings) Rename the default branch to `main`
 
 ## Phase B — Regular users — DONE
-- DONE B1 Device Security Score: 16 read-only checks (Defender, tamper protection, firewall, updates, UAC, SMBv1, RDP/NLA, Secure Boot, drive encryption, auto sign-in, Guest, LSA protection, memory integrity, PowerShell policy, TPM), unknown ≠ pass, plain-language why/fix, fixed "open Windows setting" links; dashboard hero with score + "Scan a file" / "Check a link"; verified on Windows in CI
+- DONE B1 Device Security Score: 15 read-only checks (Defender, tamper protection, firewall, updates, UAC, SMBv1, RDP/NLA, Secure Boot, auto sign-in, Guest, LSA protection, memory integrity, PowerShell policy, TPM), unknown ≠ pass, plain-language why/fix, fixed "open Windows setting" links; dashboard hero with score + "Scan a file" / "Check a link"; verified on Windows in CI
 - DONE B2 "What does this mean?": 24 plain-language explanations (Arabic + English) on the key cards of File Analyzer, Domain/IP Intelligence, Security Center, YARA, Hash Lab, Forensics, Threat Hunting and Offline Mode
 - DONE B3 Simple/expert mode (chosen at first launch, switchable in the sidebar and Settings; simple = 8 essentials with friendlier labels and a lighter dashboard), drop a file anywhere to scan it, "What should I do?" advice under every file verdict, "Is this site trustworthy?" summary built only from retrieved facts
 
