@@ -637,6 +637,17 @@ try {
   await win.getByRole('button', { name: 'Check for updates' }).click();
   await win.getByText('Blocked: Offline Mode is on', { exact: false }).first().waitFor();
 
+  // Light theme: applied to the whole window at once and remembered.
+  await win.getByRole('tab', { name: 'General' }).click();
+  await win.locator('select.select', { has: win.locator('option[value="light"]') }).selectOption('light');
+  await win.waitForFunction(() => document.documentElement.dataset.theme === 'light');
+  const bg = await win.evaluate(() => getComputedStyle(document.body).getPropertyValue('--bg').trim());
+  assert.equal(bg, '#f3f6fb', 'light palette active');
+  await win.locator('.nav-item', { hasText: 'Dashboard' }).click();
+  await win.waitForFunction(() => !document.querySelector('.toast'), null, { timeout: 20000 }).catch(() => {});
+  await win.waitForTimeout(500);
+  await win.screenshot({ path: join(out, '41-light-theme-en.png') });
+
   assert.deepEqual(errors, [], `renderer errors:\n${errors.join('\n')}`);
   console.log('UI smoke test passed. Screenshots in docs/screenshots/');
 } finally {

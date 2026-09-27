@@ -36,6 +36,17 @@
   --font: 'IBM Plex Sans Arabic', 'Segoe UI', system-ui, sans-serif;
   --mono: 'JetBrains Mono', 'Cascadia Mono', Consolas, monospace;
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --chrome: rgba(6, 11, 26, 0.75);
+  --chrome-2: rgba(6, 11, 26, 0.6);
+  --field: rgba(8, 15, 34, 0.75);
+  --sunken: rgba(10, 18, 40, 0.6);
+  --sunken-hover: rgba(10, 18, 40, 0.8);
+  --btn: rgba(20, 34, 68, 0.7);
+  --btn-hover: rgba(28, 46, 90, 0.85);
+  --scrim: rgba(2, 5, 14, 0.66);
+  --on-tint: #fff;
+  --danger-text: #ffd2da;
+  --brand-grad: linear-gradient(90deg, #fff, #ffc58a);
   color-scheme: dark;
 }
 
@@ -49,6 +60,44 @@
   --panel-solid: #0a0e18;
   --panel-hover: rgba(20, 28, 46, 0.95);
   --border: rgba(120, 140, 180, 0.13);
+}
+
+/* Light theme: same layout, daylight palette. Tones are darkened so text in them keeps AA contrast. */
+:root[data-theme='light'] {
+  --bg: #f3f6fb;
+  --bg-2: #e9eff8;
+  --bg-glow-1: rgba(47, 134, 255, 0.1);
+  --bg-glow-2: rgba(139, 92, 246, 0.06);
+  --panel: rgba(255, 255, 255, 0.92);
+  --panel-2: rgba(248, 250, 254, 0.96);
+  --panel-solid: #ffffff;
+  --panel-hover: rgba(236, 242, 252, 0.98);
+  --border: rgba(30, 60, 120, 0.13);
+  --border-strong: rgba(37, 99, 235, 0.45);
+  --text: #0f1b33;
+  --text-2: #3d4d6b;
+  --text-3: #66758f;
+  --primary: #2563eb;
+  --primary-2: #1d4ed8;
+  --cyan: #0e7490;
+  --purple: #7c3aed;
+  --green: #15803d;
+  --amber: #b45309;
+  --red: #dc2626;
+  --glow-primary: 0 0 0 1px rgba(37, 99, 235, 0.35), 0 6px 18px rgba(37, 99, 235, 0.18);
+  --shadow: 0 6px 20px rgba(15, 30, 60, 0.08);
+  --chrome: rgba(255, 255, 255, 0.85);
+  --chrome-2: rgba(248, 250, 254, 0.9);
+  --field: #ffffff;
+  --sunken: rgba(235, 241, 250, 0.8);
+  --sunken-hover: rgba(225, 235, 250, 0.95);
+  --btn: #ffffff;
+  --btn-hover: #eef3fc;
+  --scrim: rgba(15, 25, 45, 0.45);
+  --on-tint: #1d4ed8;
+  --danger-text: #b91c1c;
+  --brand-grad: linear-gradient(90deg, #1b2440, #d9480f);
+  color-scheme: light;
 }
 
 * {
@@ -209,7 +258,7 @@ table.data time {
   padding-left: max(18px, env(titlebar-area-x, 0px));
   padding-right: max(18px, calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw)));
   border-bottom: 1px solid var(--border);
-  background: rgba(6, 11, 26, 0.75);
+  background: var(--chrome);
   backdrop-filter: blur(14px);
   -webkit-app-region: drag;
   z-index: 5;
@@ -238,7 +287,7 @@ table.data time {
   letter-spacing: 0.01em;
   direction: ltr;
   line-height: 1.1;
-  background: linear-gradient(90deg, #fff, #ffc58a);
+  background: var(--brand-grad);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -261,7 +310,7 @@ table.data time {
   padding-inline: 38px 12px;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: rgba(14, 24, 50, 0.7);
+  background: var(--field);
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -339,7 +388,7 @@ table.data time {
   padding: 3px;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: rgba(14, 24, 50, 0.7);
+  background: var(--field);
 }
 .lang-switch button {
   border: 0;
@@ -393,7 +442,7 @@ table.data time {
   display: flex;
   flex-direction: column;
   border-inline-end: 1px solid var(--border);
-  background: rgba(6, 11, 26, 0.6);
+  background: var(--chrome-2);
   overflow: hidden;
 }
 .sidebar nav {
@@ -641,7 +690,7 @@ table.data time {
   padding-inline: 16px;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: rgba(20, 34, 68, 0.7);
+  background: var(--btn);
   color: var(--text);
   font-weight: 500;
   cursor: pointer;
@@ -650,7 +699,7 @@ table.data time {
 }
 .btn:hover:not(:disabled) {
   border-color: var(--border-strong);
-  background: rgba(28, 46, 90, 0.85);
+  background: var(--btn-hover);
 }
 .btn:active:not(:disabled) {
   transform: translateY(1px);
@@ -670,7 +719,7 @@ table.data time {
   background: linear-gradient(180deg, #4a97ff, var(--primary));
 }
 .btn.danger {
-  color: #ffd2da;
+  color: var(--danger-text);
   border-color: rgba(244, 63, 94, 0.35);
   background: rgba(244, 63, 94, 0.1);
 }
@@ -915,7 +964,7 @@ table.data tbody tr:hover td {
   width: 100%;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: rgba(8, 15, 34, 0.8);
+  background: var(--field);
   padding: 9px 12px;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -998,7 +1047,7 @@ table.data tbody tr:hover td {
   gap: 2px;
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: rgba(8, 15, 34, 0.7);
+  background: var(--field);
   margin-bottom: 18px;
 }
 .tabs button {
@@ -1016,7 +1065,7 @@ table.data tbody tr:hover td {
 }
 .tabs button.active {
   background: rgba(47, 134, 255, 0.2);
-  color: #fff;
+  color: var(--on-tint);
   box-shadow: inset 0 0 0 1px rgba(47, 134, 255, 0.4);
 }
 
@@ -1034,7 +1083,7 @@ table.data tbody tr:hover td {
   border: 1.5px dashed rgba(80, 150, 255, 0.35);
   background:
     radial-gradient(400px 200px at 50% 0%, rgba(47, 134, 255, 0.1), transparent 70%),
-    rgba(10, 18, 40, 0.6);
+    var(--sunken);
   text-align: center;
   transition: border-color 0.2s, background 0.2s, transform 0.2s var(--ease);
 }
@@ -1042,7 +1091,7 @@ table.data tbody tr:hover td {
   border-color: var(--cyan);
   background:
     radial-gradient(400px 200px at 50% 0%, rgba(34, 211, 238, 0.18), transparent 70%),
-    rgba(10, 18, 40, 0.8);
+    var(--sunken-hover);
   transform: scale(1.005);
 }
 .dropzone .drop-icon {
@@ -1135,7 +1184,7 @@ table.data tbody tr:hover td {
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(2, 5, 14, 0.66);
+  background: var(--scrim);
   backdrop-filter: blur(4px);
   display: grid;
   place-items: center;
@@ -1245,7 +1294,7 @@ table.data tbody tr:hover td {
   padding: 22px 16px;
   border-radius: 14px;
   border: 1px solid var(--border);
-  background: rgba(10, 18, 40, 0.7);
+  background: var(--sunken);
   cursor: pointer;
   transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s var(--ease);
 }
@@ -1284,7 +1333,7 @@ table.data tbody tr:hover td {
   gap: 12px;
   padding: 9px 12px;
   border-radius: 10px;
-  background: rgba(8, 15, 34, 0.6);
+  background: var(--sunken);
   border: 1px solid rgba(96, 140, 220, 0.08);
 }
 .hash-row + .hash-row {
@@ -1343,7 +1392,7 @@ table.data tbody tr:hover td {
   padding-inline: 12px;
   border-radius: 999px;
   border: 1px solid var(--border);
-  background: rgba(8, 15, 34, 0.7);
+  background: var(--field);
   color: var(--text-2);
   cursor: pointer;
   font-size: 12.5px;
@@ -1357,7 +1406,7 @@ table.data tbody tr:hover td {
 .opt.single[aria-checked='true'] {
   background: rgba(47, 134, 255, 0.16);
   border-color: rgba(47, 134, 255, 0.55);
-  color: #fff;
+  color: var(--on-tint);
 }
 .opt:disabled {
   opacity: 0.45;
@@ -1671,7 +1720,7 @@ table.data tbody tr:hover td {
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 10px 12px;
-  background: rgba(8, 15, 34, 0.45);
+  background: var(--sunken);
 }
 .tstat-l {
   font-size: 12px;

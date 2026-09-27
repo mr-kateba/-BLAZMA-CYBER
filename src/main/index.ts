@@ -4,6 +4,8 @@ import { pathToFileURL } from 'node:url';
 import { registerIpc } from './ipc';
 import { logger } from './services/logger';
 import { portableDataDir } from './services/paths';
+import { SettingsService } from './services/settings';
+import { followSystemTheme, windowChrome } from './window-theme';
 
 const DEV_URL = process.env.BLAZMA_DEV_URL; // set only by scripts/dev.mjs
 const RENDERER_INDEX = join(__dirname, '..', 'renderer', 'index.html');
@@ -62,17 +64,18 @@ app.on('web-contents-created', (_e, contents) => {
 });
 
 function createWindow() {
+  const chrome = windowChrome(new SettingsService().get().theme);
   win = new BrowserWindow({
     width: 1440,
     height: 900,
     minWidth: 1100,
     minHeight: 700,
-    backgroundColor: '#060b18',
+    backgroundColor: chrome.background,
     title: 'Blazma Cyber',
     show: false,
     titleBarStyle: 'hidden',
     // Same height as the top bar (--topbar-h) so the caption buttons line up with it.
-    titleBarOverlay: { color: '#070d1c', symbolColor: '#8fa6cf', height: 60 },
+    titleBarOverlay: { ...chrome.overlay, height: 60 },
     webPreferences: {
       preload: join(__dirname, '..', 'preload', 'index.cjs'),
       contextIsolation: true,
@@ -102,6 +105,7 @@ app.whenReady().then(() => {
   registerIpc(() => win, isTrustedSender);
   logger.info('app_started', { version: app.getVersion(), platform: process.platform });
   createWindow();
+  followSystemTheme(() => win);
 });
 
 app.on('window-all-closed', () => app.quit());

@@ -22,7 +22,18 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    if (settings) document.documentElement.dataset.theme = settings.theme;
+    if (!settings) return;
+    const root = document.documentElement;
+    if (settings.theme !== 'system') {
+      root.dataset.theme = settings.theme;
+      return;
+    }
+    // Follow the Windows app mode live (main sets nativeTheme.themeSource = 'system').
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const apply = () => (root.dataset.theme = mq.matches ? 'dark' : 'light');
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
   }, [settings?.theme]);
 
   if (!settings) return <div className="app-bg" />;

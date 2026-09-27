@@ -27,7 +27,8 @@ import type { TrafficReport } from '../core/traffic/analyzer';
 import type { SavedProfile, WifiConnection, WifiFinding, WifiNetwork } from '../core/wifi';
 import type { NmapFinding, NmapProfile, NmapRun } from '../core/nmap';
 
-export type Theme = 'dark' | 'midnight';
+/** 'system' follows the Windows light/dark app mode. */
+export type Theme = 'dark' | 'midnight' | 'light' | 'system';
 export type StartPage = 'dashboard' | 'file-analyzer' | 'hash-lab' | 'privacy';
 /** simple = the essentials for everyday users; expert = every module. */
 export type UiMode = 'simple' | 'expert';

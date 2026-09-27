@@ -531,6 +531,8 @@
     "theme": "Theme",
     "themeDark": "Deep navy",
     "themeMidnight": "Midnight black",
+    "themeLight": "Light",
+    "themeSystem": "Match Windows",
     "startPage": "Start page",
     "notifications": "In-app notifications",
     "reportLanguage": "Default report language",

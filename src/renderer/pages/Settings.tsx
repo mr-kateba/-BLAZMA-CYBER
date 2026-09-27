@@ -40,7 +40,7 @@ function General() {
         <Select<Settings['uiMode']> value={settings.uiMode} onChange={(v) => void updateSettings({ uiMode: v })} options={[{ v: 'simple', label: t('mode.simple') }, { v: 'expert', label: t('mode.expert') }]} />
       </Row>
       <Row title={t('settings.theme')}>
-        <Select<Settings['theme']> value={settings.theme} onChange={(v) => void updateSettings({ theme: v })} options={[{ v: 'dark', label: t('settings.themeDark') }, { v: 'midnight', label: t('settings.themeMidnight') }]} />
+        <Select<Settings['theme']> value={settings.theme} onChange={(v) => void updateSettings({ theme: v })} options={[{ v: 'system', label: t('settings.themeSystem') }, { v: 'dark', label: t('settings.themeDark') }, { v: 'midnight', label: t('settings.themeMidnight') }, { v: 'light', label: t('settings.themeLight') }]} />
       </Row>
       <Row title={t('settings.startPage')}>
         <Select<Settings['startPage']>

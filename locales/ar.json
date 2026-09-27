@@ -531,6 +531,8 @@
     "theme": "السمة",
     "themeDark": "كحلي داكن",
     "themeMidnight": "أسود ليلي",
+    "themeLight": "فاتح",
+    "themeSystem": "مثل إعداد Windows",
     "startPage": "صفحة البداية",
     "notifications": "الإشعارات داخل التطبيق",
     "reportLanguage": "لغة التقارير الافتراضية",

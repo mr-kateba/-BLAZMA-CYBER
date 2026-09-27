@@ -47,6 +47,7 @@ import { getWindowsFacts } from './services/windows-security';
 import { HistoryService } from './services/history';
 import { SecretStore, isApiKeyService } from './services/secrets';
 import { SettingsService } from './services/settings';
+import { applyWindowTheme } from './window-theme';
 import { logger, setLogLevel } from './services/logger';
 import { dataDir, portableDataDir, subDir } from './services/paths';
 
@@ -230,6 +231,7 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
     setLogLevel(next.logLevel);
     if (before.offlineMode !== next.offlineMode) logger.security('offline_mode_changed', { offlineMode: next.offlineMode });
     if (before.watchDownloads !== next.watchDownloads) downloads.setEnabled(next.watchDownloads);
+    if (before.theme !== next.theme) applyWindowTheme(getWindow(), next.theme);
     return { ok: true, data: next };
   });
 
