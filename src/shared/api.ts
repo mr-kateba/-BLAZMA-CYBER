@@ -7,6 +7,7 @@ import type { NetworkActivityEntry } from '../core/network-gate';
 import type { HashIdResult } from '../core/hash-id';
 import type { FileTypeInfo } from '../core/filetype';
 import type { PeInfo } from '../core/pe';
+import type { EncryptionInfo } from '../core/encrypted';
 import type { ExtractedIocs } from '../core/ioc';
 import type { Assessment } from '../core/detection';
 
@@ -24,6 +25,8 @@ export interface Settings {
   reportLanguage: Lang;
   /** Absolute path to the YARA-X CLI (yr / yr.exe) chosen by the user; null = look for `yr` on PATH. */
   yaraPath: string | null;
+  johnPath: string | null;
+  hashcatPath: string | null;
   /** Run a Microsoft Defender custom scan as part of File Analyzer (Windows). */
   defenderOnAnalyze: boolean;
   /** Run enabled YARA rules as part of File Analyzer. */
@@ -41,6 +44,8 @@ export const DEFAULT_SETTINGS: Settings = {
   logLevel: 'INFO',
   reportLanguage: 'en',
   yaraPath: null,
+  johnPath: null,
+  hashcatPath: null,
   defenderOnAnalyze: true,
   yaraOnAnalyze: true,
 };
@@ -227,6 +232,7 @@ export interface FileAnalysis {
   created: string | null;
   modified: string | null;
   type: FileTypeInfo;
+  encryption: EncryptionInfo | null;
   hashes: HashResult;
   signature: SignatureInfo;
   defender: EngineRun<{ threats: string[] }>;
@@ -623,6 +629,52 @@ export interface DiscoveryResult {
   durationMs: number;
 }
 
+// ---------------- Password Recovery (Phase 5) ----------------
+
+export type RecoveryEngineKind = 'john' | 'hashcat';
+
+export type RecoveryMode =
+  | { type: 'wordlist'; path: string }
+  | { type: 'candidates'; path: string }
+  | { type: 'mask'; mask: string };
+
+export interface RecoveryEngineInfo {
+  kind: RecoveryEngineKind;
+  available: boolean;
+  path?: string;
+  version?: string;
+  reason?: string;
+}
+
+export interface RecoverySessionInfo {
+  id: string;
+  engine: RecoveryEngineKind;
+  target: string;
+  mode: RecoveryMode['type'];
+  startedAt: string;
+}
+
+export interface RecoveryProgress {
+  id: string;
+  tried: number;
+  total: number | null;
+  rate: number | null;
+  recovered: boolean;
+  elapsedMs: number;
+}
+
+export interface RecoveryStartResult {
+  id: string;
+  info: RecoverySessionInfo;
+}
+
+/** Event pushed to the renderer during a session. `password` is delivered once and never logged. */
+export type RecoveryEventMsg =
+  | { id: string; type: 'progress'; progress: RecoveryProgress }
+  | { id: string; type: 'done'; found: boolean; password: string | null }
+  | { id: string; type: 'error'; error: string }
+  | { id: string; type: 'stopped' };
+
 export type ClearTarget = 'activity' | 'network_activity' | 'logs' | 'temp' | 'intel_cache';
 
 export interface BlazmaApi {
@@ -696,6 +748,17 @@ export interface BlazmaApi {
     events(log: EventLogName, levels: number[], max: number): Promise<Result<ForensicsResult<EventRow>>>;
     signatures(paths: string[], taskId: string): Promise<Result<SignatureRow[]>>;
     powershellHistory(): Promise<Result<{ path: string; lines: string[]; total: number }>>;
+  };
+  recovery: {
+    detect(path: string): Promise<Result<{ encryption: EncryptionInfo; name: string; sizeBytes: number }>>;
+    engine(kind: RecoveryEngineKind): Promise<RecoveryEngineInfo>;
+    pickEngine(kind: RecoveryEngineKind): Promise<Result<RecoveryEngineInfo | null>>;
+    clearEngine(kind: RecoveryEngineKind): Promise<Result<true>>;
+    pickWordlist(): Promise<string | null>;
+    start(kind: RecoveryEngineKind, target: string, mode: RecoveryMode, authorized: boolean): Promise<Result<RecoveryStartResult>>;
+    stop(id: string): Promise<void>;
+    setPaused(id: string, paused: boolean): Promise<boolean>;
+    onEvent(cb: (ev: RecoveryEventMsg) => void): () => void;
   };
   net: {
     ping(target: string, count: number, taskId: string): Promise<Result<PingResult>>;

@@ -12,6 +12,8 @@ import { YaraError, YaraService } from './services/yara';
 import { IntelError, IntelService } from './services/intel';
 import * as forensics from './services/forensics';
 import { NetToolsError, NetToolsService } from './services/nettools';
+import { RecoveryError, RecoveryService, detectFileEncryption } from './services/recovery';
+import type { RecoveryEngineKind } from '../shared/api';
 import type { DefenderScanKind } from '../shared/api';
 import { validateAbsolutePath } from '../core/validation';
 import { basename } from 'node:path';
@@ -31,7 +33,7 @@ function fail(error: string, detail?: string): Result<never> {
 }
 
 function errorCode(e: unknown): string {
-  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError) return e.code;
+  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError || e instanceof RecoveryError) return e.code;
   if (e instanceof OfflineModeError) return 'offline_mode';
   return 'internal_error';
 }
@@ -52,6 +54,8 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
   const quarantine = new QuarantineService();
   const intel = new IntelService({ gate, secret: (svc) => secrets.get(svc) });
   const net = new NetToolsService(gate);
+  const recovery = new RecoveryService((kind) => (kind === 'john' ? settings.get().johnPath : settings.get().hashcatPath));
+  const engineKind = (v: unknown): RecoveryEngineKind => { if (v !== 'john' && v !== 'hashcat') throw new RecoveryError('invalid_input'); return v; };
   const yara = new YaraService(() => settings.get().yaraPath);
 
   /** Engines used by File Analyzer, according to settings and platform. */
@@ -401,6 +405,48 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
       return r;
     }),
   );
+
+  // ---- Password Recovery (authorized, local; results never logged) ----
+  handle('recovery:detect', async (path: unknown) => ({ ok: true, data: await detectFileEncryption(path) }));
+  handle('recovery:engine', (kind: unknown) => recovery.engine(engineKind(kind)));
+  handle('recovery:pickEngine', async (kind: unknown) => {
+    const k = engineKind(kind);
+    const win = getWindow();
+    const opts = { properties: ['openFile' as const] };
+    const pick = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts);
+    if (pick.canceled || !pick.filePaths[0]) return { ok: true, data: null };
+    const prev = k === 'john' ? settings.get().johnPath : settings.get().hashcatPath;
+    settings.update(k === 'john' ? { johnPath: pick.filePaths[0] } : { hashcatPath: pick.filePaths[0] });
+    const info = await recovery.engine(k);
+    if (!info.available) {
+      settings.update(k === 'john' ? { johnPath: prev } : { hashcatPath: prev });
+      return fail('engine_check_failed');
+    }
+    logger.security('recovery_engine_configured', { engine: k, version: info.version });
+    return { ok: true, data: info };
+  });
+  handle('recovery:clearEngine', (kind: unknown) => {
+    const k = engineKind(kind);
+    settings.update(k === 'john' ? { johnPath: null } : { hashcatPath: null });
+    return { ok: true, data: true };
+  });
+  handle('recovery:pickWordlist', async () => {
+    const win = getWindow();
+    const opts = { properties: ['openFile' as const] };
+    const pick = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts);
+    return pick.canceled ? null : (pick.filePaths[0] ?? null);
+  });
+  handle('recovery:start', async (kind: unknown, target: unknown, mode: unknown, authorized: unknown) => {
+    const info = await recovery.start(engineKind(kind), target, mode, authorized === true, (id, ev) => {
+      // Progress/done events go to the window only. The recovered password is NOT logged here.
+      getWindow()?.webContents.send('recovery:event', { id, ...ev });
+    });
+    // Log only that a session started, its engine and mode — never the target contents or any result.
+    logger.security('recovery_started', { id: info.id, engine: kind, mode: (mode as { type?: string })?.type });
+    return { ok: true, data: info };
+  });
+  handle('recovery:stop', (id: unknown) => recovery.stop(id));
+  handle('recovery:setPaused', (id: unknown, paused: unknown) => recovery.setPaused(id, paused === true));
 
   handle('secrets:status', () => secrets.status());
   handle('secrets:set', (service: unknown, value: unknown) => {

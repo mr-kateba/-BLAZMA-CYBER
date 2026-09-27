@@ -30,6 +30,10 @@ malware samples or third-party data in reports.
   after a SHA-256 integrity check. Nothing is ever deleted automatically because of a heuristic.
 - **External engines** — YARA-X and Microsoft Defender are invoked as separate processes by path with
   argument arrays. File and folder Defender scans are report-only (`-DisableRemediation`).
+- **Password recovery** — for files the user owns or is authorized to recover. Requires an explicit
+  authorization confirmation. BLAZMA runs a user-installed engine (John the Ripper / hashcat) with
+  argument arrays; masks are charset-restricted and paths validated. Recovered passwords are shown
+  once in the UI and never written to logs, history or disk. Nothing leaves the machine.
 - **Resource limits** — streaming I/O, 32 MB static-analysis window, capped IOC/string/import
   counts, subprocess timeouts and output caps.
 - **Windows security controls are never weakened** — BLAZMA CYBER does not disable Defender,

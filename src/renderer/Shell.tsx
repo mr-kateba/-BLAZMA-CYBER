@@ -17,6 +17,7 @@ import { DomainIntel } from './pages/DomainIntel';
 import { ReputationCenter } from './pages/ReputationCenter';
 import { WindowsForensics } from './pages/WindowsForensics';
 import { NetworkToolkit } from './pages/NetworkToolkit';
+import { PasswordRecovery } from './pages/PasswordRecovery';
 
 function Page({ id }: { id: PageId }) {
   switch (id) {
@@ -42,6 +43,8 @@ function Page({ id }: { id: PageId }) {
       return <WindowsForensics />;
     case 'network-toolkit':
       return <NetworkToolkit />;
+    case 'password-recovery':
+      return <PasswordRecovery />;
     case 'settings-api':
       return <SettingsPage tab="apiKeys" />;
     case 'settings-engines':

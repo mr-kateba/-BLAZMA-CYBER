@@ -148,7 +148,7 @@ const TOOLS: Tool[] = [
   { id: 'hashLab', icon: Hash, tone: 'purple', to: 'hash-lab' },
   { id: 'ipLookup', icon: Earth, tone: 'blue', to: 'ip-intel' },
   { id: 'domainLookup', icon: Link2, tone: 'blue', to: 'domain-intel' },
-  { id: 'passwordRecovery', icon: KeyRound, tone: 'amber', to: 'password-recovery', phase: 5 },
+  { id: 'passwordRecovery', icon: KeyRound, tone: 'amber', to: 'password-recovery' },
   { id: 'networkTools', icon: Network, tone: 'green', to: 'network-toolkit' },
   { id: 'privacy', icon: ShieldCheck, tone: 'cyan', to: 'privacy' },
   { id: 'newCase', icon: FolderPlus, tone: 'purple', to: 'cases', phase: 6 },

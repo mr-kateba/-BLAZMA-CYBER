@@ -50,7 +50,7 @@ export const NAV: NavSection[] = [
   },
   {
     titleKey: 'nav.section.recovery',
-    items: [{ id: 'password-recovery', labelKey: 'nav.passwordRecovery', icon: KeyRound, planned: p(5, 'passwordRecovery') }],
+    items: [{ id: 'password-recovery', labelKey: 'nav.passwordRecovery', icon: KeyRound }],
   },
   {
     titleKey: 'nav.section.forensics',

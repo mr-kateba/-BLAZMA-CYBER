@@ -54,9 +54,13 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - IN PROGRESS Per-function elevation: functions needing admin explain why (Security log, full process paths); an elevated helper process is not implemented yet
 - Note: ping/traceroute use locale-independent PowerShell cmdlets on Windows (Test-Connection / Test-NetConnection); on Linux they require ping/traceroute to be installed (reported honestly when missing)
 
-## Phase 5 — Recovery
-- TODO Password Recovery workspace (hashcat / John adapters, wordlist/mask/candidate modes, pause/resume/stop, never log results)
-- TODO Hash Lab: wordlist management, authorized audit workflows
+## Phase 5 — Recovery — DONE (engine runs need verification with a real John/hashcat install)
+- DONE Encrypted-file detection (ZIP ZipCrypto/AES, 7z, RAR4/5, PDF RC4/AES-128/AES-256, Office OLE) — tested against a real ZipCrypto archive; also shown in File Analyzer
+- DONE Password Recovery workspace for files the user owns: bring-your-own engine (John the Ripper / hashcat, user-selected executable, validated), wordlist / mask / candidate-list modes, explicit authorization checkbox, progress + rate + elapsed, stop, pause/resume (POSIX; reported as unavailable on Windows)
+- DONE Recovered passwords are shown once in the UI and never written to logs or history (redaction covers `recovered`)
+- DONE Session orchestration verified end-to-end with a stand-in engine fixture
+- TODO Automatic hash extraction (`*2john`) inside BLAZMA; today the engine must accept the target directly or the user supplies the extracted hash
+- TODO Hash Lab wordlist management
 
 ## Phase 6 — Investigation
 - TODO Cases (CASE-YYYY-NNN), evidence vs. notes, timeline

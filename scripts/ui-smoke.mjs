@@ -212,6 +212,25 @@ try {
   await win.screenshot({ path: join(out, '20-port-check-ar.png') });
   srv.close();
 
+  // 5e) Phase 5: Password Recovery — detect a real encrypted archive; engine required + authorization
+  await win.getByRole('button', { name: 'English' }).click();
+  await win.locator('.nav-item', { hasText: 'Password Recovery' }).click();
+  await win.getByText('BLAZMA CYBER does not include a recovery engine', { exact: false }).waitFor();
+  const zc = process.env.BLAZMA_TEST_ZIP;
+  if (zc && existsSync(zc)) {
+    await stubOpen(zc);
+    await win.getByRole('button', { name: 'Browse…' }).click();
+    await win.getByText('zip-zipcrypto').waitFor({ timeout: 15000 });
+    // No engine configured in the test environment, so the workspace says so honestly.
+    await win.getByText('No recovery engine is configured', { exact: false }).first().waitFor();
+    await win.screenshot({ path: join(out, '21-password-recovery-en.png'), fullPage: true });
+    await win.getByRole('button', { name: 'العربية' }).click();
+    await win.waitForTimeout(300);
+    await win.screenshot({ path: join(out, '22-password-recovery-ar.png'), fullPage: true });
+  } else {
+    await win.getByRole('button', { name: 'العربية' }).click();
+  }
+
   // 6) Hash Lab identify (Arabic)
   await win.locator('.nav-item', { hasText: 'مختبر الهاشات' }).click();
   await win.getByRole('tab', { name: 'تعرّف' }).click();
@@ -227,7 +246,7 @@ try {
   await win.screenshot({ path: join(out, '08-privacy-ar.png') });
 
   // 8) A planned module is labeled honestly
-  await win.locator('.nav-item', { hasText: 'استعادة كلمات المرور' }).click();
+  await win.locator('.nav-item', { hasText: 'صيد التهديدات' }).click();
   await win.getByText('هذه الوحدة غير متاحة بعد').waitFor();
   await win.screenshot({ path: join(out, '09-planned-module-ar.png') });
 

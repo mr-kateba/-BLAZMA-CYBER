@@ -79,6 +79,21 @@ const api: BlazmaApi = {
     signatures: (paths, taskId) => invoke('forensics:signatures', paths, taskId),
     powershellHistory: () => invoke('forensics:psHistory'),
   },
+  recovery: {
+    detect: (path) => invoke('recovery:detect', path),
+    engine: (kind) => invoke('recovery:engine', kind),
+    pickEngine: (kind) => invoke('recovery:pickEngine', kind),
+    clearEngine: (kind) => invoke('recovery:clearEngine', kind),
+    pickWordlist: () => invoke('recovery:pickWordlist'),
+    start: (kind, target, mode, authorized) => invoke('recovery:start', kind, target, mode, authorized),
+    stop: (id) => invoke('recovery:stop', id),
+    setPaused: (id, paused) => invoke('recovery:setPaused', id, paused),
+    onEvent: (cb) => {
+      const listener = (_e: unknown, ev: import('../shared/api').RecoveryEventMsg) => cb(ev);
+      ipcRenderer.on('recovery:event', listener);
+      return () => ipcRenderer.removeListener('recovery:event', listener);
+    },
+  },
   net: {
     ping: (target, count, taskId) => invoke('net:ping', target, count, taskId),
     traceroute: (target, taskId) => invoke('net:traceroute', target, taskId),

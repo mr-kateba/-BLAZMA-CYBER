@@ -5,6 +5,7 @@ import { basename } from 'node:path';
 import type { EngineRun, FileAnalysis, HashResult, SignatureInfo, TaskProgress, YaraMatch } from '../../shared/api';
 import { validateAbsolutePath } from '../../core/validation';
 import { detectFileType } from '../../core/filetype';
+import { detectEncryption } from '../../core/encrypted';
 import { entropyLabel } from '../../core/entropy';
 import { extractAsciiStrings, extractIocs } from '../../core/ioc';
 import { parsePe } from '../../core/pe';
@@ -217,6 +218,8 @@ export async function analyzeFile(
   const s = await streamFile(path, st.size, signal, onProgress);
 
   const type = detectFileType(s.window.subarray(0, 4096));
+  const enc = detectEncryption(s.window.subarray(0, 64), s.window);
+  const encryption = enc.encrypted ? enc : null;
   const entropy = entropyFromHistogram(s.histogram, s.totalBytes);
   const peRes = type.id === 'pe' ? parsePe(s.window) : null;
   const strings = extractAsciiStrings(s.window, 5);
@@ -267,6 +270,7 @@ export async function analyzeFile(
     created: st.birthtime ? st.birthtime.toISOString() : null,
     modified: st.mtime.toISOString(),
     type,
+    encryption,
     hashes: s.hashes,
     signature,
     defender,

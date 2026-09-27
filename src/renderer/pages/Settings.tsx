@@ -175,10 +175,38 @@ function Engines() {
       <Row title={t('settings.yaraOnAnalyze')} desc={t('settings.yaraOnAnalyzeDesc')}>
         <Toggle checked={settings.yaraOnAnalyze} label={t('settings.yaraOnAnalyze')} onChange={(v) => void updateSettings({ yaraOnAnalyze: v })} />
       </Row>
-      <Row title={t('nav.passwordRecovery')} desc={t('planned.modules.passwordRecovery')}>
-        <Badge tone="purple">{t('settings.engineStatus.planned')} · {t('common.phase', { phase: 5 })}</Badge>
-      </Row>
+      <RecoveryEngines />
     </Card>
+  );
+}
+
+function RecoveryEngines() {
+  const { t } = useI18n();
+  const { navigate } = useApp();
+  const [engines, setEngines] = useState<Record<'john' | 'hashcat', { available: boolean; version?: string; path?: string } | null>>({ john: null, hashcat: null });
+  useEffect(() => {
+    void window.blazma.recovery.engine('john').then((john) => setEngines((e) => ({ ...e, john })));
+    void window.blazma.recovery.engine('hashcat').then((hashcat) => setEngines((e) => ({ ...e, hashcat })));
+  }, []);
+  return (
+    <>
+      <div className="setting-row" style={{ borderTop: '1px solid var(--border)' }}>
+        <div className="setting-text">
+          <div style={{ fontWeight: 500 }}>{t('settings.recoveryEngines')}</div>
+          <div className="small dim">{t('settings.recoveryEnginesDesc')}</div>
+        </div>
+      </div>
+      {(['john', 'hashcat'] as const).map((k) => {
+        const e = engines[k];
+        const name = k === 'john' ? 'John the Ripper' : 'hashcat';
+        return (
+          <Row key={k} title={name} desc={e?.available ? e.path : undefined}>
+            {e && <Badge tone={e.available ? 'green' : 'gray'}>{e.available ? t('recovery.engineReady', { engine: name, version: e.version ?? '' }) : t('recovery.engineMissing')}</Badge>}
+            <button className="btn sm" onClick={() => navigate('password-recovery')}>{t('settings.configure')}</button>
+          </Row>
+        );
+      })}
+    </>
   );
 }
 
