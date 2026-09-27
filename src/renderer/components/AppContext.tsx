@@ -3,6 +3,7 @@ import { AlertTriangle, CircleCheck, CircleX, Info } from 'lucide-react';
 import type { Settings } from '../../shared/api';
 import type { PageId } from '../nav';
 import { useI18n } from '../i18n/I18nProvider';
+import { useEscape } from './useEscape';
 
 type ToastTone = 'green' | 'red' | 'amber' | 'blue';
 
@@ -82,6 +83,7 @@ export function AppProvider({ settings, setSettings, initialPage, children }: {
     dialog?.resolve(v);
     setDialog(null);
   };
+  useEscape(!!dialog, () => close(false));
 
   return (
     <Ctx.Provider value={{ settings, updateSettings, page, navigate: setPage, toast, confirm, analyzeFile, takePendingFile }}>
@@ -99,9 +101,9 @@ export function AppProvider({ settings, setSettings, initialPage, children }: {
       </div>
       {dialog && (
         <div className="overlay" onClick={() => close(false)}>
-          <div className="dialog" role="alertdialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
-            <h3>{dialog.title}</h3>
-            <p className="muted" style={{ margin: 0 }}>{dialog.body}</p>
+          <div className="dialog" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-body" onClick={(e) => e.stopPropagation()}>
+            <h3 id="confirm-title">{dialog.title}</h3>
+            <p id="confirm-body" className="muted" style={{ margin: 0 }}>{dialog.body}</p>
             {dialog.requireCheck && (
               <label className="row" style={{ marginTop: 14, alignItems: 'flex-start', cursor: 'pointer' }}>
                 <input type="checkbox" checked={checked} onChange={(e) => setChecked(e.target.checked)} style={{ marginTop: 4 }} />

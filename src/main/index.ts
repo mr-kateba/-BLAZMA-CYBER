@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, session, shell, type IpcMainInvokeEvent } from 'electron';
+import { app, BrowserWindow, Menu, session, type IpcMainInvokeEvent } from 'electron';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { registerIpc } from './ipc';
@@ -41,8 +41,15 @@ app.on('web-contents-created', (_e, contents) => {
     }
   });
   contents.setWindowOpenHandler(({ url }) => {
-    // External links open in the user's browser only for https, never inside Blazma.
-    if (url.startsWith('https://')) void shell.openExternal(url);
+    // No new windows, ever. External pages open only via the app:openLink IPC, which validates the
+    // host, honours Offline Mode and records the request in Network Activity.
+    let host = '';
+    try {
+      host = new URL(url).host;
+    } catch {
+      /* unparsable */
+    }
+    logger.security('window_open_blocked', { host });
     return { action: 'deny' };
   });
   contents.on('will-attach-webview', (ev) => ev.preventDefault());

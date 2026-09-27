@@ -438,7 +438,8 @@
       "none": "Nothing identifying (public reference data)",
       "email": "Email address",
       "username": "Username",
-      "url": "URL"
+      "url": "URL",
+      "indicator": "The indicator in the link (IP, domain or hash)"
     },
     "module": {
       "dashboard": "Dashboard",

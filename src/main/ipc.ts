@@ -11,6 +11,7 @@ import { DefenderError, findMpCmdRun, getThreatHistory, runDefenderScan } from '
 import { YaraError, YaraService } from './services/yara';
 import { IntelError, IntelService } from './services/intel';
 import { OsintService } from './services/osint';
+import { externalLinkHost } from '../core/intel';
 import * as forensics from './services/forensics';
 import { NetToolsError, NetToolsService } from './services/nettools';
 import { RecoveryError, RecoveryService, detectFileEncryption } from './services/recovery';
@@ -132,6 +133,12 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
     electron: process.versions.electron,
     secureStorageAvailable: safeStorage.isEncryptionAvailable(),
   }));
+  handle('app:openLink', async (url: unknown) => {
+    const host = externalLinkHost(url);
+    if (!host) return fail('invalid_input');
+    await gate.run({ module: 'reputation', service: 'browser:link', host, dataKind: 'privacy.data.indicator' }, () => shell.openExternal(url as string));
+    return { ok: true, data: true };
+  });
   handle('app:openDataFolder', async () => {
     const err = await shell.openPath(dataDir());
     return err ? fail('open_failed') : { ok: true, data: true };

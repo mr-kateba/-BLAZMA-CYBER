@@ -74,8 +74,9 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE Packaged-app smoke test (scripts/package-smoke.mjs via CDP) — verified on Linux; `electron-builder --win --dir` also succeeds on Linux
 - IN PROGRESS Windows installer: `npm run dist:win` must run on Windows (the NSIS uninstaller step needs Wine elsewhere) — not yet built/verified
 - TODO Code signing (certificate via CSC_LINK / CSC_KEY_PASSWORD env vars only; never committed)
-- TODO Accessibility audit, keyboard navigation review
-- TODO Performance profiling, security review, docs with screenshots from Windows
+- DONE Keyboard review: Escape closes dialogs (E2E-tested), dialogs labelled (aria-labelledby/-describedby), focus moves into dialogs, visible focus ring; full screen-reader audit still TODO
+- DONE Final security review (see docs/AUDIT-REPORT.md §8): external links now gated + allowlisted, window.open fully denied, report paths contained, npm audit 0, no secrets in repo
+- TODO Performance profiling; docs with screenshots from real Windows
 
 ## Proposed additions (from docs/AUDIT-REPORT.md §7) — TODO, not yet scheduled
 - TODO Device Security Score (BitLocker, UAC, Secure Boot, TPM, SMBv1, RDP, updates) — read-only, Arabic explanations
