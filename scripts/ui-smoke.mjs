@@ -9,6 +9,22 @@ import { existsSync, mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, 
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import assert from 'node:assert/strict';
+
+// The top-bar controls must stay inside the title-bar area left free by the native caption buttons
+// (Window Controls Overlay). Only checked where the overlay is active (Windows).
+async function assertClearOfCaptionButtons(win, label) {
+  const r = await win.evaluate(() => {
+    const o = navigator.windowControlsOverlay;
+    if (!o || !o.visible) return null;
+    const area = o.getTitlebarAreaRect();
+    const els = [...document.querySelectorAll('.topbar .brand, .topbar-actions')].map((e) => e.getBoundingClientRect());
+    return { area: { x: area.x, w: area.width }, els: els.map((b) => ({ l: b.left, r: b.right })) };
+  });
+  if (!r) return;
+  for (const b of r.els) {
+    assert.ok(b.l >= r.area.x - 1 && b.r <= r.area.x + r.area.w + 1, `${label}: top-bar content [${b.l}, ${b.r}] overlaps the caption buttons (free area x=${r.area.x} w=${r.area.w})`);
+  }
+}
 import { createServer } from 'node:net';
 import { createRequire } from 'node:module';
 
@@ -65,6 +81,7 @@ try {
   const sb = await win.locator('.sidebar').boundingBox();
   assert.ok(sb && sb.x > 700, `sidebar should be on the right in RTL (x=${sb?.x})`);
   await win.waitForTimeout(7000); // let CPU samples accumulate (real data)
+  await assertClearOfCaptionButtons(win, 'ar');
   await win.screenshot({ path: join(out, '02-dashboard-ar.png') });
 
   // Device Security Score: the dashboard hero and the page. Real score on Windows; elsewhere the
@@ -107,6 +124,7 @@ try {
   const sb2 = await win.locator('.sidebar').boundingBox();
   assert.ok(sb2 && sb2.x < 10, 'sidebar should be on the left in LTR');
   await win.waitForTimeout(3500);
+  await assertClearOfCaptionButtons(win, 'en');
   await win.screenshot({ path: join(out, '03-dashboard-en.png') });
 
   // 4) Offline Mode blocks the external public-IP lookup (default is Local Only)

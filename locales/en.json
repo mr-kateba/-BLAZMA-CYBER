@@ -1594,8 +1594,8 @@
     "checksSub": "Tap an item to see why it matters and how to fix it.",
     "status": {
       "pass": "OK",
-      "warn": "Review",
-      "fail": "Fix",
+      "warn": "Needs review",
+      "fail": "Needs fixing",
       "unknown": "Unknown"
     },
     "why": "Why it matters:",

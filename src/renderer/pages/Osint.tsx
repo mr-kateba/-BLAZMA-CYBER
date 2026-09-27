@@ -153,11 +153,11 @@ export function Osint() {
                   {!r.github ? <div className="muted small">{r.sources.find((s) => s.id === 'osint:github')?.ok ? t('osint.github.none') : sourceNote(r, 'osint:github', t)}</div> : (
                     <dl className="kv">
                       <KV label={t('osint.github.login')}><Ltr mono>{r.github.login}</Ltr></KV>
-                      <KV label={t('osint.github.name')}>{r.github.name ?? '—'}</KV>
-                      <KV label={t('osint.github.company')}>{r.github.company ?? '—'}</KV>
-                      <KV label={t('osint.github.location')}>{r.github.location ?? '—'}</KV>
-                      <KV label={t('osint.github.blog')}>{r.github.blog ? <Ltr mono breakAll>{r.github.blog}</Ltr> : '—'}</KV>
-                      <KV label={t('osint.github.bio')}>{r.github.bio ?? '—'}</KV>
+                      {r.github.name && <KV label={t('osint.github.name')}>{r.github.name}</KV>}
+                      {r.github.company && <KV label={t('osint.github.company')}>{r.github.company}</KV>}
+                      {r.github.location && <KV label={t('osint.github.location')}>{r.github.location}</KV>}
+                      {r.github.blog && <KV label={t('osint.github.blog')}><Ltr mono breakAll>{r.github.blog}</Ltr></KV>}
+                      {r.github.bio && <KV label={t('osint.github.bio')}>{r.github.bio}</KV>}
                       <KV label={t('osint.github.repos')}><Ltr>{r.github.publicRepos ?? '—'}</Ltr></KV>
                       <KV label={t('osint.github.followers')}><Ltr>{r.github.followers ?? '—'}</Ltr></KV>
                       <KV label={t('osint.github.created')}>{formatDateTime(locale, r.github.createdAt)}</KV>

@@ -203,9 +203,11 @@ table.data time {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding-inline: 18px;
-  /* Native Windows caption buttons are always physically on the right. */
-  padding-right: 150px;
+  /* Keep clear of the native caption buttons (Window Controls Overlay). Their side depends on the
+     window's direction (they move to the left on RTL layouts), so use the titlebar-area insets the
+     browser reports; without an overlay they fall back to a plain 18px gutter. */
+  padding-left: max(18px, env(titlebar-area-x, 0px));
+  padding-right: max(18px, calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw)));
   border-bottom: 1px solid var(--border);
   background: rgba(6, 11, 26, 0.75);
   backdrop-filter: blur(14px);
@@ -515,6 +517,11 @@ table.data time {
 }
 .g-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+/* A single card in a multi-column grid takes the full row instead of leaving half of it empty. */
+.g-2 > :only-child,
+.g-3 > :only-child {
+  grid-column: 1 / -1;
 }
 .span-2 {
   grid-column: span 2;
@@ -1414,10 +1421,22 @@ table.data tbody tr:hover td {
 
 /* Device Security checks */
 .devsec-row {
+  position: relative;
   border: 1px solid var(--border);
-  border-inline-start: 3px solid var(--tone, var(--border));
   border-radius: 10px;
-  padding: 8px 12px;
+  padding-block: 8px;
+  padding-inline: 15px 12px;
+}
+/* Status accent: a short straight bar on the inline-start edge (a thick border would curve around
+   the rounded corners). */
+.devsec-row::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block: 10px;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--tone, var(--border));
 }
 .devsec-row.tone-red { --tone: var(--red); }
 .devsec-row.tone-amber { --tone: var(--amber); }

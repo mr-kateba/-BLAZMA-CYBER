@@ -71,7 +71,8 @@ function createWindow() {
     title: 'Blazma Cyber',
     show: false,
     titleBarStyle: 'hidden',
-    titleBarOverlay: { color: '#070d1c', symbolColor: '#8fa6cf', height: 48 },
+    // Same height as the top bar (--topbar-h) so the caption buttons line up with it.
+    titleBarOverlay: { color: '#070d1c', symbolColor: '#8fa6cf', height: 60 },
     webPreferences: {
       preload: join(__dirname, '..', 'preload', 'index.cjs'),
       contextIsolation: true,
