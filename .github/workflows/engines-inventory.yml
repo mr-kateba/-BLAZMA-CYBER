@@ -1,0 +1,25 @@
+# Manual helper: lists the official release assets (name, size, GitHub-computed SHA-256 digest) of the
+# engines BLAZMA bundles, so engines.lock.json can be pinned to exact files. Read-only; publishes nothing.
+name: Engines inventory
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: List release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for spec in "VirusTotal/yara-x v1.20.0" "mandiant/capa v9.4.0" "horsicq/DIE-engine 3.21"; do
+            set -- $spec
+            echo "=== $1 $2"
+            gh api "repos/$1/releases/tags/$2" --jq '.assets[] | "\(.name)\t\(.size)\t\(.digest)\t\(.browser_download_url)"'
+          done
