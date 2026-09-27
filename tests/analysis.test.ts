@@ -3,7 +3,7 @@ import { shannonEntropy, entropyLabel } from '../src/core/entropy';
 import { extractAsciiStrings, extractIocs } from '../src/core/ioc';
 import { detectFileType } from '../src/core/filetype';
 import { parsePe } from '../src/core/pe';
-import { assess } from '../src/core/detection';
+import { assess, vtSignal } from '../src/core/detection';
 
 describe('entropy', () => {
   it('is 0 for uniform data and 8 for all byte values', () => {
@@ -149,5 +149,19 @@ describe('detection model', () => {
   it('Defender detection is malicious', () => {
     const r = assess([{ source: 'defender', weight: 'malicious', reasonKey: 'def' }], { availableSources: new Set(all) });
     expect(r.verdict).toBe('malicious');
+  });
+});
+
+describe('VirusTotal hash evidence', () => {
+  it('maps detection counts conservatively', () => {
+    expect(vtSignal({ found: false }).weight).toBe('neutral');
+    expect(vtSignal({ found: true, malicious: 0, suspicious: 0 }).weight).toBe('clean');
+    expect(vtSignal({ found: true, malicious: 0, suspicious: 2 }).weight).toBe('weak');
+    expect(vtSignal({ found: true, malicious: 2 }).weight).toBe('strong');
+    expect(vtSignal({ found: true, malicious: 40 })).toEqual({ source: 'hash_reputation', weight: 'malicious', reasonKey: 'assessment.reason.vt_malicious', reasonArgs: { count: 40 } });
+  });
+  it('a single VT detection plus nothing else is suspicious, not malicious', () => {
+    const r = assess([vtSignal({ found: true, malicious: 1 })], { availableSources: new Set(['hash_reputation', 'defender', 'yara', 'signature']) });
+    expect(r.verdict).toBe('suspicious');
   });
 });

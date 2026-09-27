@@ -23,6 +23,16 @@ export interface GateRequest {
   dataKind: string;
   init?: RequestInit;
   timeoutMs?: number;
+  /** 'error' (default) refuses redirects; 'manual' returns 3xx responses so the caller can follow them through the gate. */
+  redirect?: 'error' | 'manual';
+}
+
+/** Describes a non-HTTP network operation (DNS query, TLS handshake…) for the gate. */
+export interface GateOperation {
+  module: string;
+  service: string;
+  host: string;
+  dataKind: string;
 }
 
 export class OfflineModeError extends Error {
@@ -62,7 +72,7 @@ export class NetworkGate {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), req.timeoutMs ?? 15000);
     try {
-      const res = await this.fetchImpl(url.toString(), { ...req.init, signal: controller.signal, redirect: 'error' });
+      const res = await this.fetchImpl(url.toString(), { ...req.init, signal: controller.signal, redirect: req.redirect ?? 'error' });
       this.record({ ...base, outcome: 'allowed' });
       return res;
     } catch (err) {
@@ -70,6 +80,33 @@ export class NetworkGate {
       throw err;
     } finally {
       clearTimeout(timer);
+    }
+  }
+
+  /**
+   * Runs any other kind of external network operation (DNS, TLS…) under the same rules:
+   * blocked in Offline Mode and recorded in Network Activity.
+   */
+  async run<T>(op: GateOperation, fn: () => Promise<T>): Promise<T> {
+    const base = {
+      id: `${this.now().getTime()}-${Math.random().toString(36).slice(2, 8)}`,
+      timestamp: this.now().toISOString(),
+      module: op.module,
+      service: op.service,
+      host: op.host,
+      dataKind: op.dataKind,
+    };
+    if (this.isOffline()) {
+      this.record({ ...base, outcome: 'blocked_offline' });
+      throw new OfflineModeError();
+    }
+    try {
+      const r = await fn();
+      this.record({ ...base, outcome: 'allowed' });
+      return r;
+    } catch (err) {
+      this.record({ ...base, outcome: 'error' });
+      throw err;
     }
   }
 }

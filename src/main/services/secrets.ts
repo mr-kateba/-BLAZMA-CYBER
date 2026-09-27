@@ -4,7 +4,7 @@ import type { ApiKeyService } from '../../shared/api';
 import { readJson, writeJson } from './json-store';
 import { subDir } from './paths';
 
-export const API_KEY_SERVICES: readonly ApiKeyService[] = ['virustotal', 'abuseipdb', 'shodan', 'censys'];
+export const API_KEY_SERVICES: readonly ApiKeyService[] = ['virustotal', 'abuseipdb', 'shodan', 'censys', 'ipinfo'];
 
 export function isApiKeyService(v: unknown): v is ApiKeyService {
   return typeof v === 'string' && (API_KEY_SERVICES as readonly string[]).includes(v);

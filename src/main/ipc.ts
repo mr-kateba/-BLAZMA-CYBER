@@ -9,6 +9,7 @@ import { verifySignature } from './services/windows-security';
 import { QuarantineError, QuarantineService } from './services/quarantine';
 import { DefenderError, findMpCmdRun, getThreatHistory, runDefenderScan } from './services/defender';
 import { YaraError, YaraService } from './services/yara';
+import { IntelError, IntelService } from './services/intel';
 import type { DefenderScanKind } from '../shared/api';
 import { validateAbsolutePath } from '../core/validation';
 import { basename } from 'node:path';
@@ -28,7 +29,7 @@ function fail(error: string, detail?: string): Result<never> {
 }
 
 function errorCode(e: unknown): string {
-  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError) return e.code;
+  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError) return e.code;
   if (e instanceof OfflineModeError) return 'offline_mode';
   return 'internal_error';
 }
@@ -47,6 +48,7 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
   );
   const tasks = new Map<string, AbortController>();
   const quarantine = new QuarantineService();
+  const intel = new IntelService({ gate, secret: (svc) => secrets.get(svc) });
   const yara = new YaraService(() => settings.get().yaraPath);
 
   /** Engines used by File Analyzer, according to settings and platform. */
@@ -189,6 +191,9 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
         mkdirSync(dir, { recursive: true, mode: 0o700 });
         break;
       }
+      case 'intel_cache':
+        intel.clearCache();
+        break;
       case 'temp': {
         const dir = subDir('temp');
         rmSync(dir, { recursive: true, force: true });
@@ -322,6 +327,31 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
       logger.info('yara_scan', { files: r.files.length, matched: r.matchedFiles, rules: r.rulesUsed });
       return r;
     });
+  });
+
+  // ---- Intelligence ----
+  handle('intel:ip', async (ip: unknown, options: unknown) => {
+    const o = (options ?? {}) as Record<string, unknown>;
+    const r = await intel.ip(ip, {
+      reverseDns: o.reverseDns === true, rdap: o.rdap === true, asn: o.asn === true, geo: o.geo === true, tor: o.tor === true,
+      reputation: Array.isArray(o.reputation) ? o.reputation.filter((x) => x === 'virustotal' || x === 'abuseipdb' || x === 'shodan') : [],
+    });
+    history.record({ kind: 'ip_lookup', subject: r.ip, summaryKey: 'activity.summary.looked_up' });
+    return { ok: true, data: r };
+  });
+  handle('intel:domain', async (domain: unknown, options: unknown) => {
+    const o = (options ?? {}) as Record<string, unknown>;
+    const r = await intel.domain(domain, {
+      dns: o.dns === true, rdap: o.rdap === true, tls: o.tls === true, infrastructure: o.infrastructure === true,
+      reputation: Array.isArray(o.reputation) ? o.reputation.filter((x) => x === 'virustotal') : [],
+    });
+    history.record({ kind: 'domain_lookup', subject: r.domain, summaryKey: 'activity.summary.looked_up' });
+    return { ok: true, data: r };
+  });
+  handle('intel:reputation', async (kind: unknown, value: unknown, services: unknown) => {
+    const r = await intel.reputation(kind, value, services);
+    history.record({ kind: 'reputation_lookup', subject: String(value).trim().slice(0, 80), summaryKey: 'activity.summary.looked_up' });
+    return { ok: true, data: r };
   });
 
   handle('secrets:status', () => secrets.status());

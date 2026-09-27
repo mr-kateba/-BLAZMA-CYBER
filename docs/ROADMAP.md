@@ -35,10 +35,14 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - IN PROGRESS Security Center: Defender quick/full/file/folder scans (MpCmdRun, report-only for file/folder), threat history, quarantine UI — implemented; Defender paths need verification on real Windows
 - DONE Folder scanning (YARA-X; Defender folder scan on Windows)
 
-## Phase 3 — Intelligence
-- TODO IP Intelligence (RDAP, reverse DNS, optional geolocation/reputation adapters, "approximate" notice)
-- TODO Domain Intelligence (DNS records, RDAP, TLS certificate, infrastructure)
-- TODO Reputation adapters (VirusTotal, AbuseIPDB, Shodan, Censys) with hash-first policy
+## Phase 3 — Intelligence — DONE (with noted verification gaps)
+- DONE IP Intelligence: scope classification, reverse DNS, RDAP (IANA bootstrap, gated redirects), ASN (Team Cymru via DNS), approximate geolocation (ipinfo.io), Tor exit check, reputation, per-source provenance; private IPs never leave the machine; "approximate location" notice
+- DONE Domain Intelligence: DNS (A/AAAA/CNAME/MX/NS/TXT/CAA/SOA), SPF/DMARC, RDAP registration, TLS certificate (handshake only), hosting ASN; IDN/URL input normalization; young-domain warning
+- DONE Reputation Center + adapters: VirusTotal (IP/domain/hash), AbuseIPDB, Shodan; hash-only file reputation in File Analyzer, folded into the assessment
+- DONE All sources go through NetworkGate (HTTP, DNS, TLS) → Offline Mode + Network Activity
+- Verification: DNS/ASN/TLS verified live; RDAP, ipinfo, Tor list and reputation APIs verified with fixtures/mocks only (HTTPS to those hosts is blocked in the build environment)
+- TODO Censys adapter (API changed to Platform tokens; not implemented — a stored key is unused, stated in UI)
+- TODO Use Electron `net.fetch` for system-proxy support (after verifying redirect: 'manual' semantics)
 
 ## Phase 4 — Forensics
 - TODO Processes (path, user, signature, hash, connections), services, drivers, startup, scheduled tasks

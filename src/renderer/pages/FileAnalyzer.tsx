@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 import {
-  AlertOctagon, Binary, CircleCheck, CircleHelp, FileSearch, Fingerprint, Link2, ListTree, RotateCcw, ScanSearch, ShieldAlert,
+  AlertOctagon, Binary, CircleCheck, CircleHelp, FileSearch, Fingerprint, Globe, Link2, ListTree, RotateCcw, ScanSearch, ShieldAlert,
   ShieldCheck, ShieldHalf, TriangleAlert, X, type LucideIcon,
 } from 'lucide-react';
-import type { FileAnalysis, TaskProgress } from '../../shared/api';
-import type { Verdict } from '../../core/detection';
+import type { FileAnalysis, ReputationResult, TaskProgress } from '../../shared/api';
+import { assess, vtSignal, type SignalSource, type Verdict } from '../../core/detection';
 import { entropyLabel } from '../../core/entropy';
 import { Badge, Card, CopyButton, DataTable, ErrorState, FileDrop, IconTile, Ltr, Notice, Progress, type Tone } from '../components/ui';
 import { useI18n } from '../i18n/I18nProvider';
 import { useApp } from '../components/AppContext';
+import { ReputationCard, useKeyStatus } from '../components/intel';
 import { formatBytes, formatDateTime, formatDuration, newTaskId } from '../format';
 
 const VERDICT: Record<Verdict, { tone: Tone; icon: LucideIcon }> = {
@@ -41,17 +42,34 @@ export function HashRows({ hashes, highlight }: { hashes: Record<string, string>
 
 export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAnalysis; onReset: () => void; inQuarantine?: boolean }) {
   const { t, locale } = useI18n();
-  const { confirm, toast } = useApp();
+  const { confirm, toast, settings } = useApp();
+  const keys = useKeyStatus();
   const [quarantined, setQuarantined] = useState(false);
+  const [assessment, setAssessment] = useState(r.assessment);
+  const [rep, setRep] = useState<{ loading?: boolean; result?: ReputationResult; error?: string }>({});
+  const checkHash = async () => {
+    setRep({ loading: true });
+    const x = await window.blazma.intel.reputation('hash', r.hashes.sha256, ['virustotal']);
+    if (!x.ok) return setRep({ error: x.error });
+    const res = x.data.results[0];
+    if (!res) return setRep({ error: x.data.sources[0]?.error ?? 'unknown' });
+    setRep({ result: res });
+    const available = new Set<SignalSource>(['entropy', 'static', 'hash_reputation']);
+    if (r.defender.ran) available.add('defender');
+    if (r.yara.ran) available.add('yara');
+    if (r.signature.checked) available.add('signature');
+    setAssessment(assess([...r.assessment.signals.filter((s) => s.source !== 'hash_reputation'), vtSignal(res)], { availableSources: available }));
+    toast('blue', t('file.reassessed'));
+  };
   const moveToQuarantine = async () => {
     if (!(await confirm({ title: t('file.quarantineTitle'), body: t('file.quarantineBody', { name: r.name }), confirmLabel: t('file.quarantineThis'), danger: true }))) return;
-    const q = await window.blazma.quarantine.add(r.path, `verdict:${r.assessment.verdict}`);
+    const q = await window.blazma.quarantine.add(r.path, `verdict:${assessment.verdict}`);
     if (q.ok) {
       setQuarantined(true);
       toast('green', t('file.quarantined'));
     } else toast('red', t(`errors.${q.error}`));
   };
-  const v = VERDICT[r.assessment.verdict];
+  const v = VERDICT[assessment.verdict];
   const VIcon = v.icon;
   const sig = r.signature;
   const sigTone: Tone = !sig.checked ? 'gray' : sig.status === 'valid' ? 'green' : sig.status === 'not_signed' ? 'amber' : 'red';
@@ -64,8 +82,8 @@ export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAn
         <IconTile icon={VIcon} tone={v.tone} />
         <div style={{ flex: 1 }}>
           <div className="small dim">{t('file.assessment')}</div>
-          <div className="v-title">{t(`verdict.${r.assessment.verdict}`)}</div>
-          <div className="muted small">{t(`verdict.desc.${r.assessment.verdict}`)}</div>
+          <div className="v-title">{t(`verdict.${assessment.verdict}`)}</div>
+          <div className="muted small">{t(`verdict.desc.${assessment.verdict}`)}</div>
         </div>
         <div className="row-wrap" style={{ justifyContent: 'flex-end' }}>
           {inQuarantine ? (
@@ -121,19 +139,36 @@ export function AnalysisResult({ r, onReset, inQuarantine = false }: { r: FileAn
         </div>
       </Card>
 
+      {rep.result ? (
+        <ReputationCard r={rep.result} />
+      ) : (
+        <Card title={t('file.hashRep')} icon={Globe} tone="purple">
+          <div className="row-wrap" style={{ alignItems: 'center' }}>
+            <button className="btn" disabled={!keys?.virustotal || settings.offlineMode || rep.loading} onClick={() => void checkHash()}>
+              <Globe size={15} /> {t('file.hashRepCheck')}
+            </button>
+            <span className="small dim">
+              {settings.offlineMode ? t('file.hashRepOffline') : keys && !keys.virustotal ? t('file.hashRepNeedsKey') : t('file.hashRepNote')}
+            </span>
+          </div>
+          {rep.loading && <div style={{ marginTop: 10 }}><Progress indeterminate /></div>}
+          {rep.error && <div style={{ marginTop: 10 }}><Notice tone="amber">{t(`errors.${rep.error}`)}</Notice></div>}
+        </Card>
+      )}
+
       <div className="grid g-2">
         <Card title={t('file.reasons')} icon={ShieldAlert} tone={v.tone}>
-          {r.assessment.reasons.length === 0 ? (
+          {assessment.reasons.length === 0 ? (
             <div className="muted small">{t('file.noReasons')}</div>
           ) : (
             <ul style={{ margin: 0, paddingInlineStart: 18, display: 'grid', gap: 6 }}>
-              {r.assessment.reasons.map((x, i) => <li key={i}>{t(x.key, x.args)}</li>)}
+              {assessment.reasons.map((x, i) => <li key={i}>{t(x.key, x.args)}</li>)}
             </ul>
           )}
-          {r.assessment.incomplete && <div style={{ marginTop: 12 }}><Notice tone="amber" icon={TriangleAlert}>{t('file.incompleteNote')}</Notice></div>}
+          {assessment.incomplete && <div style={{ marginTop: 12 }}><Notice tone="amber" icon={TriangleAlert}>{t('file.incompleteNote')}</Notice></div>}
           <div className="small dim" style={{ marginTop: 12 }}>{t('file.enginesMissing')}:</div>
           <div className="col" style={{ gap: 4, marginTop: 6 }}>
-            {r.unavailableEngines.map((e) => (
+            {r.unavailableEngines.filter((e) => !(e.engine === 'hash_reputation' && rep.result)).map((e) => (
               <div key={e.engine} className="row small">
                 <Badge tone="gray">{t(`file.engine.${e.engine}`)}</Badge>
                 <span className="dim">{t(`errors.${e.reason}`)}</span>

@@ -33,10 +33,10 @@ export const NAV: NavSection[] = [
   {
     titleKey: 'nav.section.intelligence',
     items: [
-      { id: 'ip-intel', labelKey: 'nav.ipIntel', icon: Earth, planned: p(3, 'ipIntel') },
-      { id: 'domain-intel', labelKey: 'nav.domainIntel', icon: Link2, planned: p(3, 'domainIntel') },
+      { id: 'ip-intel', labelKey: 'nav.ipIntel', icon: Earth },
+      { id: 'domain-intel', labelKey: 'nav.domainIntel', icon: Link2 },
       { id: 'osint', labelKey: 'nav.osint', icon: UserSearch, planned: p(6, 'osint') },
-      { id: 'reputation', labelKey: 'nav.reputation', icon: Scale, planned: p(3, 'reputation') },
+      { id: 'reputation', labelKey: 'nav.reputation', icon: Scale },
     ],
   },
   {

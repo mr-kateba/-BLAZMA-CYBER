@@ -248,7 +248,8 @@ export interface ActivityEntry {
   timestamp: string;
   kind:
     | 'file_analysis' | 'hash_file' | 'hash_text' | 'hash_identify' | 'hash_compare'
-    | 'defender_scan' | 'yara_scan' | 'quarantine' | 'restore';
+    | 'defender_scan' | 'yara_scan' | 'quarantine' | 'restore'
+    | 'ip_lookup' | 'domain_lookup' | 'reputation_lookup';
   /** Displayable subject, e.g. a filename. Never a secret. */
   subject: string;
   summaryKey: string;
@@ -269,9 +270,168 @@ export interface AppInfo {
   secureStorageAvailable: boolean;
 }
 
-export type ApiKeyService = 'virustotal' | 'abuseipdb' | 'shodan' | 'censys';
+export type ApiKeyService = 'virustotal' | 'abuseipdb' | 'shodan' | 'censys' | 'ipinfo';
 
-export type ClearTarget = 'activity' | 'network_activity' | 'logs' | 'temp';
+// ---------------- Intelligence (Phase 3) ----------------
+
+/** Provenance of each piece of intelligence: where it came from, when, and whether it left the machine. */
+export interface LookupSource {
+  id: string;
+  external: boolean;
+  ok: boolean;
+  /** i18n error code when !ok (e.g. offline_mode, api_key_missing, not_public_ip). */
+  error?: string;
+  queriedAt: string;
+}
+
+export interface IpRdap {
+  handle: string | null;
+  name: string | null;
+  type: string | null;
+  country: string | null;
+  startAddress: string | null;
+  endAddress: string | null;
+  cidrs: string[];
+  registrant: string | null;
+  abuseEmail: string | null;
+  registered: string | null;
+  lastChanged: string | null;
+  source: string | null;
+}
+
+export interface AsnInfo {
+  asn: number;
+  prefix: string | null;
+  country: string | null;
+  registry: string | null;
+  allocated: string | null;
+  name: string | null;
+}
+
+export interface GeoInfo {
+  provider: string;
+  city: string | null;
+  region: string | null;
+  country: string | null;
+  loc: string | null;
+  timezone: string | null;
+  org: string | null;
+}
+
+export type ReputationService = 'virustotal' | 'abuseipdb' | 'shodan';
+
+export interface ReputationResult {
+  service: ReputationService;
+  found: boolean;
+  malicious?: number;
+  suspicious?: number;
+  harmless?: number;
+  undetected?: number;
+  reputation?: number | null;
+  abuseScore?: number;
+  totalReports?: number;
+  lastReported?: string | null;
+  usageType?: string | null;
+  isp?: string | null;
+  isTor?: boolean | null;
+  ports?: number[];
+  hostnames?: string[];
+  vulns?: string[];
+  tags?: string[];
+  names?: string[];
+  typeDescription?: string | null;
+  lastAnalysis?: string | null;
+  link?: string;
+}
+
+export interface IpLookupOptions {
+  reverseDns: boolean;
+  rdap: boolean;
+  asn: boolean;
+  geo: boolean;
+  tor: boolean;
+  reputation: ReputationService[];
+}
+
+export interface IpLookupResult {
+  ip: string;
+  version: 4 | 6;
+  scope: 'private' | 'loopback' | 'link-local' | 'multicast' | 'reserved' | 'cgnat' | 'public';
+  reverseDns: string[] | null;
+  rdap: IpRdap | null;
+  asn: AsnInfo | null;
+  geo: GeoInfo | null;
+  tor: boolean | null;
+  reputation: ReputationResult[];
+  sources: LookupSource[];
+}
+
+export interface DnsRecords {
+  a: string[];
+  aaaa: string[];
+  mx: Array<{ exchange: string; priority: number }>;
+  txt: string[];
+  ns: string[];
+  cname: string[];
+  soa: { nsname: string; hostmaster: string; serial: number } | null;
+  caa: string[];
+  spf: string | null;
+  dmarc: string | null;
+}
+
+export interface DomainRdap {
+  ldhName: string | null;
+  handle: string | null;
+  registrar: string | null;
+  registrarIanaId: string | null;
+  created: string | null;
+  expires: string | null;
+  updated: string | null;
+  status: string[];
+  nameservers: string[];
+  dnssec: boolean | null;
+  abuseEmail: string | null;
+  source: string | null;
+}
+
+export interface TlsInfo {
+  host: string;
+  port: number;
+  protocol: string | null;
+  authorized: boolean;
+  authorizationError: string | null;
+  subject: string | null;
+  issuer: string | null;
+  validFrom: string | null;
+  validTo: string | null;
+  daysRemaining: number | null;
+  sans: string[];
+  fingerprint256: string | null;
+  serialNumber: string | null;
+}
+
+export interface DomainLookupOptions {
+  dns: boolean;
+  rdap: boolean;
+  tls: boolean;
+  infrastructure: boolean;
+  reputation: ReputationService[];
+}
+
+export interface DomainLookupResult {
+  input: string;
+  domain: string;
+  dns: DnsRecords | null;
+  rdap: DomainRdap | null;
+  tls: TlsInfo | null;
+  infrastructure: Array<{ ip: string; asn: AsnInfo | null }>;
+  reputation: ReputationResult[];
+  sources: LookupSource[];
+}
+
+export type IndicatorKind = 'ip' | 'domain' | 'hash';
+
+export type ClearTarget = 'activity' | 'network_activity' | 'logs' | 'temp' | 'intel_cache';
 
 export interface BlazmaApi {
   app: {
@@ -333,6 +493,11 @@ export interface BlazmaApi {
     importFile(): Promise<Result<YaraRuleFile | null>>;
     remove(id: string): Promise<Result<YaraRuleFile[]>>;
     scan(target: string, recursive: boolean, taskId: string): Promise<Result<YaraScanResult>>;
+  };
+  intel: {
+    ip(ip: string, options: IpLookupOptions): Promise<Result<IpLookupResult>>;
+    domain(domain: string, options: DomainLookupOptions): Promise<Result<DomainLookupResult>>;
+    reputation(kind: IndicatorKind, value: string, services: ReputationService[]): Promise<Result<{ results: ReputationResult[]; sources: LookupSource[] }>>;
   };
   secrets: {
     status(): Promise<Record<ApiKeyService, boolean>>;

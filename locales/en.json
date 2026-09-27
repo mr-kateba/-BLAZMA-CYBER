@@ -327,7 +327,13 @@
     "quarantineBody": "“{{name}}” will be removed from its location and stored neutralized in quarantine. You can restore it later.",
     "quarantined": "Moved to quarantine",
     "inQuarantine": "This file is in quarantine",
-    "scanning": "Running detection engines"
+    "scanning": "Running detection engines",
+    "hashRep": "Hash reputation",
+    "hashRepCheck": "Check SHA-256 on VirusTotal",
+    "hashRepNote": "External lookup: only the SHA-256 hash is sent. The file is never uploaded.",
+    "hashRepNeedsKey": "Add a VirusTotal API key in Settings to enable this.",
+    "hashRepOffline": "Blocked by Offline Mode",
+    "reassessed": "Assessment updated with hash reputation"
   },
   "verdict": {
     "no_detections": "No detections",
@@ -352,7 +358,11 @@
       "interesting_strings": "{{count}} strings reference script hosts or persistence locations",
       "defender_clean": "Microsoft Defender found no threats",
       "defender_detection": "Microsoft Defender detected: {{name}}",
-      "yara_match": "YARA rule matched: {{rule}}"
+      "yara_match": "YARA rule matched: {{rule}}",
+      "vt_malicious": "VirusTotal: {{count}} engines flag this file as malicious",
+      "vt_suspicious": "VirusTotal: {{count}} engines flag this file as suspicious",
+      "vt_clean": "VirusTotal: known file, no engine flags it",
+      "vt_unknown": "VirusTotal: hash not known"
     }
   },
   "hashlab": {
@@ -422,10 +432,15 @@
       "connection_only": "Connection only (your IP is visible to the service)",
       "ip_address": "IP address",
       "domain": "Domain name",
-      "file_hash": "File hash"
+      "file_hash": "File hash",
+      "none": "Nothing identifying (public reference data)"
     },
     "module": {
-      "dashboard": "Dashboard"
+      "dashboard": "Dashboard",
+      "ipIntel": "IP Intelligence",
+      "domainIntel": "Domain Intelligence",
+      "reputation": "Reputation Center",
+      "fileAnalyzer": "File Analyzer"
     },
     "clearTitle": "Clear local data",
     "clearSub": "Permanently removes data stored by BLAZMA CYBER on this machine.",
@@ -433,7 +448,8 @@
       "activity": "Clear activity history",
       "network_activity": "Clear network activity log",
       "logs": "Delete application logs",
-      "temp": "Delete temporary files"
+      "temp": "Delete temporary files",
+      "intel_cache": "Clear cached intelligence"
     },
     "confirmTitle": "Confirm deletion",
     "confirmBody": "“{{what}}” will be permanently deleted. This cannot be undone.",
@@ -474,7 +490,8 @@
       "virustotal": "VirusTotal",
       "abuseipdb": "AbuseIPDB",
       "shodan": "Shodan",
-      "censys": "Censys"
+      "censys": "Censys",
+      "ipinfo": "ipinfo.io (optional token)"
     },
     "enginesDesc": "Detection and analysis engines used by BLAZMA CYBER.",
     "engineStatus": {
@@ -494,7 +511,9 @@
     "defenderOnAnalyzeDesc": "Report-only scan of the analyzed file (Windows).",
     "yaraOnAnalyze": "Run YARA rules during file analysis",
     "yaraOnAnalyzeDesc": "Uses the enabled rules in the YARA Scanner.",
-    "configure": "Configure"
+    "configure": "Configure",
+    "censysNote": "Censys lookups are not implemented yet; a stored key is not used.",
+    "ipinfoNote": "Works without a token at low volume; a token raises limits."
   },
   "activity": {
     "kind": {
@@ -506,14 +525,18 @@
       "defender_scan": "Defender scan",
       "yara_scan": "YARA scan",
       "quarantine": "Quarantined",
-      "restore": "Restored"
+      "restore": "Restored",
+      "ip_lookup": "IP lookup",
+      "domain_lookup": "Domain lookup",
+      "reputation_lookup": "Reputation lookup"
     },
     "summary": {
       "hashed": "Hashes calculated",
       "hashed_text": "Hashes calculated",
       "quarantined": "Moved to quarantine",
       "restored": "Restored from quarantine",
-      "yara_scanned": "YARA scan completed"
+      "yara_scanned": "YARA scan completed",
+      "looked_up": "Lookup completed"
     }
   },
   "errors": {
@@ -564,7 +587,25 @@
     "yara_bad_extension": "Choose a .yar or .yara file.",
     "yara_invalid_engine": "That file is not a working YARA-X executable.",
     "engine_disabled": "Disabled in settings",
-    "engine_failed": "The engine failed to run"
+    "engine_failed": "The engine failed to run",
+    "invalid_ip": "That is not a valid IPv4 or IPv6 address.",
+    "invalid_domain": "That is not a valid domain name.",
+    "invalid_hash": "Enter an MD5, SHA-1 or SHA-256 hash.",
+    "not_public_ip": "Skipped: private/reserved addresses are never sent to external services.",
+    "api_key_missing": "No API key configured for this service.",
+    "api_key_invalid": "The service rejected the API key.",
+    "remote_forbidden": "The service refused the request (it may be blocked on your network).",
+    "rate_limited": "Rate limit reached. Try again later.",
+    "rdap_unavailable": "No RDAP server is available for this resource.",
+    "insecure_redirect": "Refused an insecure (non-HTTPS) redirect.",
+    "too_many_redirects": "Too many redirects.",
+    "response_too_large": "The response was too large.",
+    "dns_error": "The DNS server failed to answer.",
+    "dns_not_found": "The name does not resolve.",
+    "tls_failed": "The TLS connection failed.",
+    "unsupported_indicator": "This service does not support this indicator type.",
+    "no_service_selected": "Select at least one applicable service.",
+    "insecure_protocol": "Refused a non-HTTPS request."
   },
   "defender": {
     "status": {
@@ -698,5 +739,172 @@
       "savedUnchecked": "Rule saved (not validated — engine not installed)",
       "empty": "No rules"
     }
+  },
+  "intel": {
+    "lookup": "Look up",
+    "looking": "Looking up…",
+    "sources": "Sources",
+    "sourcesSub": "Where each result came from and when.",
+    "col": {
+      "source": "Source",
+      "status": "Status",
+      "time": "Queried",
+      "where": "Type"
+    },
+    "ok": "OK",
+    "failed": "Failed",
+    "src": {
+      "reverse_dns": "Reverse DNS",
+      "rdap": "RDAP registry",
+      "asn": "ASN (Team Cymru)",
+      "geo": "Geolocation (ipinfo.io)",
+      "tor": "Tor exit list (Tor Project)",
+      "dns": "DNS records",
+      "tls": "TLS certificate",
+      "infrastructure": "Infrastructure (ASN)",
+      "reputation:virustotal": "VirusTotal",
+      "reputation:abuseipdb": "AbuseIPDB",
+      "reputation:shodan": "Shodan"
+    },
+    "options": "Sources to query",
+    "needsKey": "needs API key",
+    "offlineBanner": "Offline Mode is on: all external sources are blocked. Only local classification is shown.",
+    "openPrivacy": "Open Privacy Center",
+    "externalNote": "These lookups contact external services. The queried value is sent to each selected source; every request is listed in Network Activity.",
+    "notFound": "No record found",
+    "none": "None",
+    "rep": {
+      "title": "Reputation",
+      "notFound": "Not known to this service",
+      "detections": "{{malicious}} malicious · {{suspicious}} suspicious · {{harmless}} harmless · {{undetected}} undetected",
+      "abuseScore": "Abuse confidence",
+      "reports": "{{count}} report(s) in 90 days",
+      "lastReported": "Last reported",
+      "usage": "Usage type",
+      "isp": "ISP",
+      "ports": "Open ports seen",
+      "vulns": "Known vulnerabilities (CVE)",
+      "hostnames": "Hostnames",
+      "tags": "Tags",
+      "reputationScore": "Community score",
+      "lastAnalysis": "Last analysis",
+      "names": "Known file names",
+      "open": "Open in browser"
+    }
+  },
+  "ipintel": {
+    "title": "IP Intelligence",
+    "subtitle": "Registry, network, ASN, approximate location and reputation for an IP address.",
+    "placeholder": "e.g. 8.8.8.8 or 2001:4860:4860::8888",
+    "geoNotice": "IP geolocation is approximate and does not reveal an exact residential address.",
+    "scope": {
+      "public": "Public",
+      "private": "Private network",
+      "loopback": "Loopback",
+      "link-local": "Link-local",
+      "multicast": "Multicast",
+      "reserved": "Reserved",
+      "cgnat": "Carrier-grade NAT"
+    },
+    "scopeNote": "This is not a public Internet address, so external sources are skipped.",
+    "version": "IPv{{v}}",
+    "opt": {
+      "reverseDns": "Reverse DNS",
+      "rdap": "RDAP",
+      "asn": "ASN",
+      "geo": "Approx. location",
+      "tor": "Tor check"
+    },
+    "network": "Network (RDAP)",
+    "netName": "Network name",
+    "range": "Range",
+    "cidr": "CIDR",
+    "org": "Organization",
+    "country": "Country",
+    "abuse": "Abuse contact",
+    "registered": "Registered",
+    "updated": "Last changed",
+    "handle": "Handle",
+    "registry": "Registry",
+    "asnTitle": "Autonomous System",
+    "asnName": "AS name",
+    "prefix": "Announced prefix",
+    "allocated": "Allocated",
+    "location": "Approximate location",
+    "city": "City",
+    "region": "Region",
+    "timezone": "Time zone",
+    "coords": "Approx. coordinates",
+    "orgIsp": "Organization / ISP",
+    "reverse": "Reverse DNS",
+    "noPtr": "No PTR record",
+    "tor": "Tor",
+    "torYes": "Listed as a Tor exit node",
+    "torNo": "Not in the current Tor exit list",
+    "indicators": "Indicators",
+    "hostingHint": "Hosting / data center (per AbuseIPDB usage type)"
+  },
+  "domainintel": {
+    "title": "Domain Intelligence",
+    "subtitle": "DNS, registration (RDAP), TLS certificate and hosting for a domain.",
+    "placeholder": "e.g. example.com",
+    "opt": {
+      "dns": "DNS records",
+      "rdap": "RDAP / WHOIS",
+      "tls": "TLS certificate",
+      "infrastructure": "Hosting ASN"
+    },
+    "dns": "DNS records",
+    "type": "Type",
+    "value": "Value",
+    "noRecords": "No records returned",
+    "email": "Email security",
+    "spf": "SPF",
+    "dmarc": "DMARC",
+    "present": "Present",
+    "missing": "Missing",
+    "spfMissing": "No SPF record: anyone can more easily spoof mail from this domain.",
+    "dmarcMissing": "No DMARC policy: receivers have no instruction for spoofed mail.",
+    "registration": "Registration (RDAP)",
+    "registrar": "Registrar",
+    "created": "Created",
+    "expires": "Expires",
+    "updated": "Updated",
+    "status": "Status",
+    "nameservers": "Name servers",
+    "dnssec": "DNSSEC",
+    "signed": "Signed",
+    "unsigned": "Not signed",
+    "youngDomain": "Registered less than 30 days ago — new domains are common in phishing.",
+    "tls": "TLS certificate",
+    "subject": "Subject",
+    "issuer": "Issuer",
+    "validFrom": "Valid from",
+    "validTo": "Valid until",
+    "daysLeft": "{{days}} day(s) left",
+    "expired": "Expired",
+    "trusted": "Trusted by this system",
+    "untrusted": "NOT trusted: {{error}}",
+    "protocol": "Protocol",
+    "sans": "Alternative names (SAN)",
+    "fingerprint": "SHA-256 fingerprint",
+    "infrastructure": "Hosting infrastructure",
+    "ip": "IP address",
+    "asn": "ASN",
+    "network": "Network"
+  },
+  "reputation": {
+    "title": "Reputation Center",
+    "subtitle": "Check an IP, domain or file hash against optional reputation services using your own API keys.",
+    "kind": {
+      "ip": "IP address",
+      "domain": "Domain",
+      "hash": "File hash"
+    },
+    "value": "Indicator",
+    "services": "Services",
+    "noKeys": "No reputation API key is configured yet.",
+    "configureKeys": "Add API keys",
+    "hashOnly": "Only the hash is sent — files are never uploaded."
   }
 }

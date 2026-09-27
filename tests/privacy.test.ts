@@ -37,6 +37,33 @@ describe('Offline Mode network gate', () => {
   });
 });
 
+describe('Gate for non-HTTP operations (DNS, TLS)', () => {
+  it('blocks in offline mode without running the operation', async () => {
+    const op = vi.fn(async () => 'x');
+    const log: NetworkActivityEntry[] = [];
+    const gate = new NetworkGate(() => true, (e) => log.push(e));
+    await expect(gate.run({ module: 'ipIntel', service: 'dns', host: '8.8.8.8', dataKind: 'privacy.data.ip_address' }, op)).rejects.toBeInstanceOf(OfflineModeError);
+    expect(op).not.toHaveBeenCalled();
+    expect(log[0]).toMatchObject({ outcome: 'blocked_offline', service: 'dns', host: '8.8.8.8' });
+  });
+  it('runs and records when online, records failures', async () => {
+    const log: NetworkActivityEntry[] = [];
+    const gate = new NetworkGate(() => false, (e) => log.push(e));
+    expect(await gate.run({ module: 'm', service: 'tls', host: 'example.com:443', dataKind: 'k' }, async () => 42)).toBe(42);
+    await expect(gate.run({ module: 'm', service: 'tls', host: 'h', dataKind: 'k' }, async () => { throw new Error('nope'); })).rejects.toThrow('nope');
+    expect(log.map((e) => e.outcome)).toEqual(['allowed', 'error']);
+  });
+  it('can hand back redirects for manual, gated following', async () => {
+    const fetchMock = vi.fn(async (_u: string, init?: RequestInit) => {
+      expect(init?.redirect).toBe('manual');
+      return new Response(null, { status: 302, headers: { location: 'https://rdap.example/next' } });
+    });
+    const gate = new NetworkGate(() => false, () => {}, fetchMock);
+    const res = await gate.request({ module: 'm', service: 's', url: 'https://a.example/x', dataKind: 'k', redirect: 'manual' });
+    expect(res.status).toBe(302);
+  });
+});
+
 describe('log redaction', () => {
   it('redacts sensitive keys recursively', () => {
     const out = redact({ apiKey: 'abc', nested: { password: 'p', ok: 'v', list: [{ token: 't' }] }, Authorization: 'Bearer x' }) as any;

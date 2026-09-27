@@ -327,7 +327,13 @@
     "quarantineBody": "سيُزال «{{name}}» من مكانه ويُخزّن بشكل آمن في الحجر. يمكنك استعادته لاحقًا.",
     "quarantined": "نُقل الملف إلى الحجر",
     "inQuarantine": "هذا الملف موجود في الحجر",
-    "scanning": "تشغيل محركات الكشف"
+    "scanning": "تشغيل محركات الكشف",
+    "hashRep": "سمعة الهاش",
+    "hashRepCheck": "افحص SHA-256 على VirusTotal",
+    "hashRepNote": "استعلام خارجي: يُرسل هاش SHA-256 فقط. لا يُرفع الملف أبدًا.",
+    "hashRepNeedsKey": "أضف مفتاح VirusTotal في الإعدادات لتفعيل ذلك.",
+    "hashRepOffline": "محجوب بسبب وضع عدم الاتصال",
+    "reassessed": "حُدّث التقييم بنتيجة سمعة الهاش"
   },
   "verdict": {
     "no_detections": "لا توجد اكتشافات",
@@ -352,7 +358,11 @@
       "interesting_strings": "{{count}} نصوص تشير إلى مضيفات سكربتات أو مواقع استمرارية",
       "defender_clean": "لم يجد Microsoft Defender أي تهديد",
       "defender_detection": "رصد Microsoft Defender: {{name}}",
-      "yara_match": "تطابقت قاعدة YARA: {{rule}}"
+      "yara_match": "تطابقت قاعدة YARA: {{rule}}",
+      "vt_malicious": "VirusTotal: ‏{{count}} محركًا يصنّف الملف ضارًا",
+      "vt_suspicious": "VirusTotal: ‏{{count}} محركًا يصنّف الملف مشبوهًا",
+      "vt_clean": "VirusTotal: ملف معروف ولا يصنّفه أي محرك كتهديد",
+      "vt_unknown": "VirusTotal: الهاش غير معروف"
     }
   },
   "hashlab": {
@@ -422,10 +432,15 @@
       "connection_only": "الاتصال فقط (عنوان IP الخاص بك يظهر للخدمة)",
       "ip_address": "عنوان IP",
       "domain": "اسم نطاق",
-      "file_hash": "هاش ملف"
+      "file_hash": "هاش ملف",
+      "none": "لا شيء يعرّف بك (بيانات مرجعية عامة)"
     },
     "module": {
-      "dashboard": "لوحة التحكم"
+      "dashboard": "لوحة التحكم",
+      "ipIntel": "معلومات عنوان IP",
+      "domainIntel": "معلومات النطاقات",
+      "reputation": "مركز السمعة",
+      "fileAnalyzer": "محلل الملفات"
     },
     "clearTitle": "مسح البيانات المحلية",
     "clearSub": "يحذف نهائيًا البيانات التي خزّنها BLAZMA CYBER على هذا الجهاز.",
@@ -433,7 +448,8 @@
       "activity": "مسح سجل النشاط",
       "network_activity": "مسح سجل نشاط الشبكة",
       "logs": "حذف سجلات التطبيق",
-      "temp": "حذف الملفات المؤقتة"
+      "temp": "حذف الملفات المؤقتة",
+      "intel_cache": "مسح المعلومات المخزّنة مؤقتًا"
     },
     "confirmTitle": "تأكيد الحذف",
     "confirmBody": "سيُحذف «{{what}}» نهائيًا. لا يمكن التراجع عن ذلك.",
@@ -474,7 +490,8 @@
       "virustotal": "VirusTotal",
       "abuseipdb": "AbuseIPDB",
       "shodan": "Shodan",
-      "censys": "Censys"
+      "censys": "Censys",
+      "ipinfo": "ipinfo.io (رمز اختياري)"
     },
     "enginesDesc": "محركات الكشف والتحليل التي يستخدمها BLAZMA CYBER.",
     "engineStatus": {
@@ -494,7 +511,9 @@
     "defenderOnAnalyzeDesc": "فحص للتقرير فقط للملف المحلَّل (Windows).",
     "yaraOnAnalyze": "تشغيل قواعد YARA أثناء تحليل الملفات",
     "yaraOnAnalyzeDesc": "يستخدم القواعد المفعّلة في فاحص YARA.",
-    "configure": "إعداد"
+    "configure": "إعداد",
+    "censysNote": "استعلامات Censys غير مطبّقة بعد؛ المفتاح المحفوظ لا يُستخدم.",
+    "ipinfoNote": "يعمل بدون رمز لعدد قليل من الاستعلامات؛ الرمز يرفع الحد."
   },
   "activity": {
     "kind": {
@@ -506,14 +525,18 @@
       "defender_scan": "فحص Defender",
       "yara_scan": "فحص YARA",
       "quarantine": "نقل إلى الحجر",
-      "restore": "استعادة من الحجر"
+      "restore": "استعادة من الحجر",
+      "ip_lookup": "فحص IP",
+      "domain_lookup": "فحص نطاق",
+      "reputation_lookup": "فحص السمعة"
     },
     "summary": {
       "hashed": "حُسبت الهاشات",
       "hashed_text": "حُسبت الهاشات",
       "quarantined": "نُقل إلى الحجر",
       "restored": "استُعيد من الحجر",
-      "yara_scanned": "اكتمل فحص YARA"
+      "yara_scanned": "اكتمل فحص YARA",
+      "looked_up": "اكتمل الاستعلام"
     }
   },
   "errors": {
@@ -564,7 +587,25 @@
     "yara_bad_extension": "اختر ملفًا بامتداد ‎.yar أو ‎.yara.",
     "yara_invalid_engine": "هذا الملف ليس محرك YARA-X صالحًا للعمل.",
     "engine_disabled": "معطّل من الإعدادات",
-    "engine_failed": "فشل تشغيل المحرك"
+    "engine_failed": "فشل تشغيل المحرك",
+    "invalid_ip": "هذا ليس عنوان IPv4 أو IPv6 صالحًا.",
+    "invalid_domain": "هذا ليس اسم نطاق صالحًا.",
+    "invalid_hash": "أدخل هاش MD5 أو SHA-1 أو SHA-256.",
+    "not_public_ip": "تم التخطي: العناوين الخاصة/المحجوزة لا تُرسل أبدًا إلى خدمات خارجية.",
+    "api_key_missing": "لا يوجد مفتاح API مُعدّ لهذه الخدمة.",
+    "api_key_invalid": "رفضت الخدمة مفتاح API.",
+    "remote_forbidden": "رفضت الخدمة الطلب (قد يكون محجوبًا في شبكتك).",
+    "rate_limited": "تم بلوغ حد الطلبات. حاول لاحقًا.",
+    "rdap_unavailable": "لا يتوفر خادم RDAP لهذا المورد.",
+    "insecure_redirect": "رُفضت إعادة توجيه غير آمنة (غير HTTPS).",
+    "too_many_redirects": "عدد كبير جدًا من عمليات إعادة التوجيه.",
+    "response_too_large": "الرد كبير جدًا.",
+    "dns_error": "فشل خادم DNS في الرد.",
+    "dns_not_found": "الاسم لا يُحلّ إلى عنوان.",
+    "tls_failed": "فشل اتصال TLS.",
+    "unsupported_indicator": "هذه الخدمة لا تدعم هذا النوع من المؤشرات.",
+    "no_service_selected": "اختر خدمة واحدة مناسبة على الأقل.",
+    "insecure_protocol": "رُفض طلب غير HTTPS."
   },
   "defender": {
     "status": {
@@ -698,5 +739,172 @@
       "savedUnchecked": "حُفظت القاعدة (دون تحقق — المحرك غير مثبّت)",
       "empty": "لا توجد قواعد"
     }
+  },
+  "intel": {
+    "lookup": "استعلام",
+    "looking": "جارٍ الاستعلام…",
+    "sources": "المصادر",
+    "sourcesSub": "من أين جاءت كل نتيجة ومتى.",
+    "col": {
+      "source": "المصدر",
+      "status": "الحالة",
+      "time": "وقت الاستعلام",
+      "where": "النوع"
+    },
+    "ok": "تم",
+    "failed": "فشل",
+    "src": {
+      "reverse_dns": "DNS العكسي",
+      "rdap": "سجل RDAP",
+      "asn": "ASN ‏(Team Cymru)",
+      "geo": "الموقع الجغرافي (ipinfo.io)",
+      "tor": "قائمة مخارج Tor ‏(Tor Project)",
+      "dns": "سجلات DNS",
+      "tls": "شهادة TLS",
+      "infrastructure": "البنية التحتية (ASN)",
+      "reputation:virustotal": "VirusTotal",
+      "reputation:abuseipdb": "AbuseIPDB",
+      "reputation:shodan": "Shodan"
+    },
+    "options": "المصادر المطلوب الاستعلام منها",
+    "needsKey": "يحتاج مفتاح API",
+    "offlineBanner": "وضع عدم الاتصال مفعّل: كل المصادر الخارجية محجوبة. تُعرض التصنيفات المحلية فقط.",
+    "openPrivacy": "افتح مركز الخصوصية",
+    "externalNote": "هذه الاستعلامات تتصل بخدمات خارجية. تُرسل القيمة المطلوبة إلى كل مصدر مختار، وكل طلب مسجّل في نشاط الشبكة.",
+    "notFound": "لا يوجد سجل",
+    "none": "لا يوجد",
+    "rep": {
+      "title": "السمعة",
+      "notFound": "غير معروف لهذه الخدمة",
+      "detections": "{{malicious}} ضار · {{suspicious}} مشبوه · {{harmless}} سليم · {{undetected}} غير مكتشف",
+      "abuseScore": "درجة الثقة بالإساءة",
+      "reports": "{{count}} بلاغ خلال 90 يومًا",
+      "lastReported": "آخر بلاغ",
+      "usage": "نوع الاستخدام",
+      "isp": "مزود الخدمة",
+      "ports": "منافذ مفتوحة مرصودة",
+      "vulns": "ثغرات معروفة (CVE)",
+      "hostnames": "أسماء المضيف",
+      "tags": "الوسوم",
+      "reputationScore": "تقييم المجتمع",
+      "lastAnalysis": "آخر تحليل",
+      "names": "أسماء ملفات معروفة",
+      "open": "افتح في المتصفح"
+    }
+  },
+  "ipintel": {
+    "title": "معلومات عنوان IP",
+    "subtitle": "السجل والشبكة و ASN والموقع التقريبي والسمعة لعنوان IP.",
+    "placeholder": "مثال: 8.8.8.8 أو 2001:4860:4860::8888",
+    "geoNotice": "تحديد الموقع عبر IP تقريبي ولا يكشف عنوان سكن دقيقًا.",
+    "scope": {
+      "public": "عام",
+      "private": "شبكة خاصة",
+      "loopback": "العنوان المحلي",
+      "link-local": "ربط محلي",
+      "multicast": "بث متعدد",
+      "reserved": "محجوز",
+      "cgnat": "NAT لمزوّد الخدمة"
+    },
+    "scopeNote": "هذا ليس عنوانًا عامًا على الإنترنت، لذلك تم تخطي المصادر الخارجية.",
+    "version": "IPv{{v}}",
+    "opt": {
+      "reverseDns": "DNS العكسي",
+      "rdap": "RDAP",
+      "asn": "ASN",
+      "geo": "موقع تقريبي",
+      "tor": "فحص Tor"
+    },
+    "network": "الشبكة (RDAP)",
+    "netName": "اسم الشبكة",
+    "range": "النطاق",
+    "cidr": "CIDR",
+    "org": "المنظمة",
+    "country": "الدولة",
+    "abuse": "جهة الإبلاغ عن الإساءة",
+    "registered": "تاريخ التسجيل",
+    "updated": "آخر تغيير",
+    "handle": "المعرّف",
+    "registry": "السجل",
+    "asnTitle": "النظام المستقل (ASN)",
+    "asnName": "اسم النظام",
+    "prefix": "البادئة المعلنة",
+    "allocated": "تاريخ التخصيص",
+    "location": "الموقع التقريبي",
+    "city": "المدينة",
+    "region": "المنطقة",
+    "timezone": "المنطقة الزمنية",
+    "coords": "إحداثيات تقريبية",
+    "orgIsp": "المنظمة / مزود الخدمة",
+    "reverse": "DNS العكسي",
+    "noPtr": "لا يوجد سجل PTR",
+    "tor": "Tor",
+    "torYes": "مُدرج كنقطة خروج لشبكة Tor",
+    "torNo": "غير موجود في قائمة مخارج Tor الحالية",
+    "indicators": "المؤشرات",
+    "hostingHint": "استضافة / مركز بيانات (حسب نوع الاستخدام في AbuseIPDB)"
+  },
+  "domainintel": {
+    "title": "معلومات النطاقات",
+    "subtitle": "سجلات DNS والتسجيل (RDAP) وشهادة TLS والاستضافة لنطاق.",
+    "placeholder": "مثال: example.com",
+    "opt": {
+      "dns": "سجلات DNS",
+      "rdap": "RDAP / WHOIS",
+      "tls": "شهادة TLS",
+      "infrastructure": "ASN الاستضافة"
+    },
+    "dns": "سجلات DNS",
+    "type": "النوع",
+    "value": "القيمة",
+    "noRecords": "لم تُرجع أي سجلات",
+    "email": "أمان البريد",
+    "spf": "SPF",
+    "dmarc": "DMARC",
+    "present": "موجود",
+    "missing": "غير موجود",
+    "spfMissing": "لا يوجد سجل SPF: يسهل على أي شخص انتحال بريد من هذا النطاق.",
+    "dmarcMissing": "لا توجد سياسة DMARC: لا توجد تعليمات للمستقبلين بشأن البريد المنتحل.",
+    "registration": "التسجيل (RDAP)",
+    "registrar": "المسجّل",
+    "created": "تاريخ الإنشاء",
+    "expires": "تاريخ الانتهاء",
+    "updated": "آخر تحديث",
+    "status": "الحالة",
+    "nameservers": "خوادم الأسماء",
+    "dnssec": "DNSSEC",
+    "signed": "موقّع",
+    "unsigned": "غير موقّع",
+    "youngDomain": "سُجّل قبل أقل من 30 يومًا — النطاقات الجديدة شائعة في التصيّد.",
+    "tls": "شهادة TLS",
+    "subject": "صاحب الشهادة",
+    "issuer": "جهة الإصدار",
+    "validFrom": "صالحة من",
+    "validTo": "صالحة حتى",
+    "daysLeft": "متبقٍ {{days}} يوم",
+    "expired": "منتهية",
+    "trusted": "موثوقة على هذا النظام",
+    "untrusted": "غير موثوقة: {{error}}",
+    "protocol": "البروتوكول",
+    "sans": "الأسماء البديلة (SAN)",
+    "fingerprint": "بصمة SHA-256",
+    "infrastructure": "البنية التحتية للاستضافة",
+    "ip": "عنوان IP",
+    "asn": "ASN",
+    "network": "الشبكة"
+  },
+  "reputation": {
+    "title": "مركز السمعة",
+    "subtitle": "افحص عنوان IP أو نطاقًا أو هاش ملف لدى خدمات سمعة اختيارية بمفاتيحك الخاصة.",
+    "kind": {
+      "ip": "عنوان IP",
+      "domain": "نطاق",
+      "hash": "هاش ملف"
+    },
+    "value": "المؤشر",
+    "services": "الخدمات",
+    "noKeys": "لم يُعدّ أي مفتاح API لخدمات السمعة بعد.",
+    "configureKeys": "إضافة مفاتيح API",
+    "hashOnly": "يُرسل الهاش فقط — لا تُرفع الملفات أبدًا."
   }
 }
