@@ -22,6 +22,12 @@ export interface Settings {
   notifications: boolean;
   logLevel: 'INFO' | 'DEBUG';
   reportLanguage: Lang;
+  /** Absolute path to the YARA-X CLI (yr / yr.exe) chosen by the user; null = look for `yr` on PATH. */
+  yaraPath: string | null;
+  /** Run a Microsoft Defender custom scan as part of File Analyzer (Windows). */
+  defenderOnAnalyze: boolean;
+  /** Run enabled YARA rules as part of File Analyzer. */
+  yaraOnAnalyze: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -34,6 +40,9 @@ export const DEFAULT_SETTINGS: Settings = {
   notifications: true,
   logLevel: 'INFO',
   reportLanguage: 'en',
+  yaraPath: null,
+  defenderOnAnalyze: true,
+  yaraOnAnalyze: true,
 };
 
 /** Result wrapper: modules never throw across IPC; they return a translatable error code. */
@@ -136,6 +145,81 @@ export interface SignatureInfo {
   thumbprint?: string | null;
 }
 
+/** Result of an optional engine inside an analysis: either it ran, or why it did not. */
+export type EngineRun<T> = ({ ran: true } & T) | { ran: false; reason: string };
+
+export interface YaraMatch {
+  rule: string;
+  namespace: string;
+  tags: string[];
+  meta: Record<string, string | number | boolean>;
+}
+
+export interface YaraFileResult {
+  path: string;
+  matches: YaraMatch[];
+}
+
+export interface YaraScanResult {
+  target: string;
+  files: YaraFileResult[];
+  matchedFiles: number;
+  rulesUsed: number;
+  durationMs: number;
+}
+
+export interface YaraRuleFile {
+  id: string;
+  name: string;
+  enabled: boolean;
+  origin: 'builtin' | 'custom' | 'imported';
+  createdAt: string;
+  sizeBytes: number;
+  /** null = never validated (engine missing when saved). */
+  valid: boolean | null;
+  error?: string;
+}
+
+export interface YaraEngineInfo {
+  available: boolean;
+  path?: string;
+  version?: string;
+  reason?: string;
+}
+
+export type DefenderScanKind = 'quick' | 'full' | 'path';
+
+export interface DefenderScanResult {
+  kind: DefenderScanKind;
+  target: string | null;
+  status: 'no_threats' | 'threats_found';
+  threats: string[];
+  exitCode: number;
+  durationMs: number;
+}
+
+export interface DefenderThreat {
+  id: string;
+  name: string | null;
+  severity: number | null;
+  detected: string | null;
+  resources: string[];
+  actionSuccess: boolean;
+}
+
+export interface QuarantineEntry {
+  id: string;
+  originalPath: string;
+  originalName: string;
+  sizeBytes: number;
+  sha256: string;
+  typeId: string;
+  typeDescription: string;
+  quarantinedAt: string;
+  /** i18n key or short free text describing why the item was quarantined. */
+  reason: string;
+}
+
 export interface FileAnalysis {
   path: string;
   name: string;
@@ -145,6 +229,8 @@ export interface FileAnalysis {
   type: FileTypeInfo;
   hashes: HashResult;
   signature: SignatureInfo;
+  defender: EngineRun<{ threats: string[] }>;
+  yara: EngineRun<{ matches: YaraMatch[]; rulesUsed: number }>;
   entropy: number;
   pe: PeInfo | null;
   peError: string | null;
@@ -160,7 +246,9 @@ export interface FileAnalysis {
 export interface ActivityEntry {
   id: string;
   timestamp: string;
-  kind: 'file_analysis' | 'hash_file' | 'hash_text' | 'hash_identify' | 'hash_compare';
+  kind:
+    | 'file_analysis' | 'hash_file' | 'hash_text' | 'hash_identify' | 'hash_compare'
+    | 'defender_scan' | 'yara_scan' | 'quarantine' | 'restore';
   /** Displayable subject, e.g. a filename. Never a secret. */
   subject: string;
   summaryKey: string;
@@ -170,7 +258,7 @@ export interface TaskProgress {
   taskId: string;
   processedBytes: number;
   totalBytes: number;
-  stage: 'hashing' | 'analyzing' | 'done';
+  stage: 'hashing' | 'analyzing' | 'scanning' | 'done';
 }
 
 export interface AppInfo {
@@ -201,6 +289,7 @@ export interface BlazmaApi {
   files: {
     pathForFile(file: File): string;
     pickFile(): Promise<string | null>;
+    pickFolder(): Promise<string | null>;
     analyze(path: string, taskId: string): Promise<Result<FileAnalysis>>;
     hash(path: string, taskId: string): Promise<Result<HashResult & { sizeBytes: number }>>;
     cancel(taskId: string): Promise<void>;
@@ -217,6 +306,33 @@ export interface BlazmaApi {
   };
   activity: {
     recent(limit: number): Promise<ActivityEntry[]>;
+  };
+  quarantine: {
+    list(): Promise<Result<QuarantineEntry[]>>;
+    add(path: string, reason: string): Promise<Result<QuarantineEntry>>;
+    restore(id: string): Promise<Result<{ path: string }>>;
+    /** Asks where to restore (save dialog). Resolves null data if the user cancels. */
+    restoreTo(id: string): Promise<Result<{ path: string } | null>>;
+    remove(id: string): Promise<Result<true>>;
+    rescan(id: string, taskId: string): Promise<Result<FileAnalysis>>;
+  };
+  defender: {
+    scan(kind: DefenderScanKind, target: string | null, taskId: string): Promise<Result<DefenderScanResult>>;
+    history(): Promise<Result<DefenderThreat[]>>;
+  };
+  yara: {
+    engine(): Promise<YaraEngineInfo>;
+    /** Lets the user pick the yr executable; validates it before saving the path. */
+    pickEngine(): Promise<Result<YaraEngineInfo | null>>;
+    clearEngine(): Promise<Result<YaraEngineInfo>>;
+    rules(): Promise<Result<YaraRuleFile[]>>;
+    validate(): Promise<Result<YaraRuleFile[]>>;
+    setEnabled(id: string, enabled: boolean): Promise<Result<YaraRuleFile[]>>;
+    source(id: string): Promise<Result<string>>;
+    save(name: string, source: string): Promise<Result<YaraRuleFile>>;
+    importFile(): Promise<Result<YaraRuleFile | null>>;
+    remove(id: string): Promise<Result<YaraRuleFile[]>>;
+    scan(target: string, recursive: boolean, taskId: string): Promise<Result<YaraScanResult>>;
   };
   secrets: {
     status(): Promise<Record<ApiKeyService, boolean>>;

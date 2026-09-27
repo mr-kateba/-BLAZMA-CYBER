@@ -42,9 +42,9 @@ export const NAV: NavSection[] = [
   {
     titleKey: 'nav.section.analysis',
     items: [
-      { id: 'security-center', labelKey: 'nav.securityCenter', icon: ShieldHalf, planned: p(2, 'securityCenter') },
+      { id: 'security-center', labelKey: 'nav.securityCenter', icon: ShieldHalf },
       { id: 'file-analyzer', labelKey: 'nav.fileAnalyzer', icon: FileSearch },
-      { id: 'yara', labelKey: 'nav.yara', icon: ScanSearch, planned: p(2, 'yara') },
+      { id: 'yara', labelKey: 'nav.yara', icon: ScanSearch },
       { id: 'hash-lab', labelKey: 'nav.hashLab', icon: Hash },
     ],
   },

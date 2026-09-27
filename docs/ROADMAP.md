@@ -30,10 +30,10 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE Combined detection model with reasons and "incomplete" handling
 - IN PROGRESS Digital signature verification (implemented via Get-AuthenticodeSignature; needs Windows verification)
 - DONE Hash Lab: text/file hashing, integrity verification, hash identification (ranked candidates), comparison
-- TODO Security Center: Defender quick/full/file/folder scans (MpCmdRun), threat history
-- TODO YARA-X integration, rule manager, rule packs, custom rules
-- TODO Quarantine (move + ACL lock + metadata + restore/delete/rescan)
-- TODO Folder analysis
+- DONE Quarantine: neutralized storage (XOR + .blazmaq + 0600), metadata, verified restore (SHA-256), restore-to, delete, rescan; tested end-to-end
+- DONE YARA-X integration (official `yr` CLI adapter, tested against real YARA-X 1.20.0): engine detection/selection, rule manager, builtin starter pack, custom rules with `yr check` validation, local import, enable/disable, file & folder scans (recursive), results in File Analyzer and combined assessment
+- IN PROGRESS Security Center: Defender quick/full/file/folder scans (MpCmdRun, report-only for file/folder), threat history, quarantine UI — implemented; Defender paths need verification on real Windows
+- DONE Folder scanning (YARA-X; Defender folder scan on Windows)
 
 ## Phase 3 — Intelligence
 - TODO IP Intelligence (RDAP, reverse DNS, optional geolocation/reputation adapters, "approximate" notice)

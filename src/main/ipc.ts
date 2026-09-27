@@ -4,8 +4,14 @@ import type { ClearTarget, Result } from '../shared/api';
 import { identifyHash } from '../core/hash-id';
 import { NetworkGate, OfflineModeError } from '../core/network-gate';
 import { isIP } from '../core/validation';
-import { AnalysisError, analyzeFile, hashFile, hashText } from './services/file-analysis';
+import { AnalysisError, analyzeFile, hashFile, hashText, type AnalysisEngines } from './services/file-analysis';
 import { verifySignature } from './services/windows-security';
+import { QuarantineError, QuarantineService } from './services/quarantine';
+import { DefenderError, findMpCmdRun, getThreatHistory, runDefenderScan } from './services/defender';
+import { YaraError, YaraService } from './services/yara';
+import type { DefenderScanKind } from '../shared/api';
+import { validateAbsolutePath } from '../core/validation';
+import { basename } from 'node:path';
 import { getSystemSnapshot } from './services/system-info';
 import { getWindowsFacts } from './services/windows-security';
 import { HistoryService } from './services/history';
@@ -22,7 +28,7 @@ function fail(error: string, detail?: string): Result<never> {
 }
 
 function errorCode(e: unknown): string {
-  if (e instanceof AnalysisError) return e.code;
+  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError) return e.code;
   if (e instanceof OfflineModeError) return 'offline_mode';
   return 'internal_error';
 }
@@ -40,6 +46,34 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
     },
   );
   const tasks = new Map<string, AbortController>();
+  const quarantine = new QuarantineService();
+  const yara = new YaraService(() => settings.get().yaraPath);
+
+  /** Engines used by File Analyzer, according to settings and platform. */
+  const analysisEngines = (): AnalysisEngines => {
+    const cfg = settings.get();
+    return {
+      verifySignature,
+      defender: cfg.defenderOnAnalyze
+        ? async (path, signal) => {
+            if (process.platform !== 'win32') return { ran: false, reason: 'unsupported_platform' };
+            if (!findMpCmdRun()) return { ran: false, reason: 'defender_unavailable' };
+            const r = await runDefenderScan('path', path, signal);
+            return { ran: true, threats: r.threats };
+          }
+        : undefined,
+      yara: cfg.yaraOnAnalyze
+        ? async (path, signal) => {
+            const r = await yara.scan(path, { recursive: false, signal, timeoutMs: 5 * 60_000 });
+            return { ran: true, matches: r.files.flatMap((f) => f.matches), rulesUsed: r.rulesUsed };
+          }
+        : undefined,
+    };
+  };
+  const idArg = (v: unknown): string => {
+    if (typeof v !== 'string' || !/^[a-z0-9-]{1,64}$/.test(v)) throw new QuarantineError('invalid_input');
+    return v;
+  };
 
   /** Wraps every handler: rejects untrusted senders and never lets an exception cross IPC. */
   const handle = (channel: string, fn: (...args: any[]) => unknown) => {
@@ -105,7 +139,7 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
   });
   handle('files:analyze', (path: unknown, taskId: unknown) =>
     runTask(taskId, async (signal) => {
-      const res = await analyzeFile(path, signal, progress(taskId as string), verifySignature);
+      const res = await analyzeFile(path, signal, progress(taskId as string), analysisEngines());
       history.record({ kind: 'file_analysis', subject: res.name, summaryKey: `verdict.${res.assessment.verdict}` });
       logger.info('file_analyzed', { type: res.type.id, size: res.sizeBytes, verdict: res.assessment.verdict });
       return res;
@@ -118,6 +152,12 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
       return res;
     }),
   );
+  handle('files:pickFolder', async () => {
+    const win = getWindow();
+    const opts = { properties: ['openDirectory' as const] };
+    const r = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts);
+    return r.canceled ? null : (r.filePaths[0] ?? null);
+  });
   handle('files:cancel', (taskId: unknown) => {
     if (typeof taskId === 'string') tasks.get(taskId)?.abort();
   });
@@ -177,6 +217,112 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
   });
 
   handle('activity:recent', (limit: unknown) => history.activity.list(typeof limit === 'number' ? Math.min(Math.max(1, limit), 200) : 20));
+
+  // ---- Quarantine ----
+  handle('quarantine:list', () => ({ ok: true, data: quarantine.list() }));
+  handle('quarantine:add', async (path: unknown, reason: unknown) => {
+    const why = typeof reason === 'string' ? reason.slice(0, 200) : 'manual';
+    const entry = await quarantine.quarantine(path, why);
+    history.record({ kind: 'quarantine', subject: entry.originalName, summaryKey: 'activity.summary.quarantined' });
+    logger.security('file_quarantined', { id: entry.id, sha256: entry.sha256, type: entry.typeId });
+    return { ok: true, data: entry };
+  });
+  handle('quarantine:restore', async (id: unknown) => {
+    const r = await quarantine.restore(idArg(id));
+    history.record({ kind: 'restore', subject: basename(r.path), summaryKey: 'activity.summary.restored' });
+    logger.security('file_restored', { id });
+    return { ok: true, data: r };
+  });
+  handle('quarantine:restoreTo', async (id: unknown) => {
+    const entry = quarantine.get(idArg(id));
+    if (!entry) return fail('quarantine_not_found');
+    const win = getWindow();
+    const opts = { defaultPath: entry.originalName };
+    const pick = win ? await dialog.showSaveDialog(win, opts) : await dialog.showSaveDialog(opts);
+    if (pick.canceled || !pick.filePath) return { ok: true, data: null };
+    const r = await quarantine.restore(entry.id, pick.filePath);
+    history.record({ kind: 'restore', subject: basename(r.path), summaryKey: 'activity.summary.restored' });
+    logger.security('file_restored', { id: entry.id, customTarget: true });
+    return { ok: true, data: r };
+  });
+  handle('quarantine:remove', async (id: unknown) => {
+    await quarantine.remove(idArg(id));
+    logger.security('quarantine_deleted', { id });
+    return { ok: true, data: true };
+  });
+  handle('quarantine:rescan', (id: unknown, taskId: unknown) =>
+    runTask(taskId, (signal) =>
+      quarantine.withDecoded(idArg(id), async (tmp) => {
+        const res = await analyzeFile(tmp, signal, progress(taskId as string), analysisEngines());
+        const entry = quarantine.get(id as string);
+        // Present the result under the item's original identity, not the temp path.
+        return { ...res, path: entry?.originalPath ?? res.path, name: entry?.originalName ?? res.name };
+      }),
+    ),
+  );
+
+  // ---- Microsoft Defender ----
+  handle('defender:scan', (kind: unknown, target: unknown, taskId: unknown) => {
+    if (kind !== 'quick' && kind !== 'full' && kind !== 'path') return fail('invalid_input');
+    let path: string | null = null;
+    if (kind === 'path') {
+      const v = validateAbsolutePath(target);
+      if (!v.ok) return fail(v.reason);
+      path = v.path;
+    }
+    return runTask(taskId, async (signal) => {
+      const r = await runDefenderScan(kind as DefenderScanKind, path, signal);
+      history.record({ kind: 'defender_scan', subject: path ? basename(path) : kind, summaryKey: `defender.status.${r.status}` });
+      logger.info('defender_scan', { kind, status: r.status, threats: r.threats.length });
+      return r;
+    });
+  });
+  handle('defender:history', async () => ({ ok: true, data: await getThreatHistory() }));
+
+  // ---- YARA-X ----
+  handle('yara:engine', () => yara.engine());
+  handle('yara:pickEngine', async () => {
+    const win = getWindow();
+    const opts = { properties: ['openFile' as const], filters: process.platform === 'win32' ? [{ name: 'yr.exe', extensions: ['exe'] }] : [] };
+    const pick = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts);
+    if (pick.canceled || !pick.filePaths[0]) return { ok: true, data: null };
+    const previous = settings.get().yaraPath;
+    settings.update({ yaraPath: pick.filePaths[0] });
+    const info = await yara.engine();
+    if (!info.available) {
+      settings.update({ yaraPath: previous });
+      return fail('yara_invalid_engine');
+    }
+    logger.security('yara_engine_configured', { version: info.version });
+    return { ok: true, data: info };
+  });
+  handle('yara:clearEngine', async () => {
+    settings.update({ yaraPath: null });
+    return { ok: true, data: await yara.engine() };
+  });
+  handle('yara:rules', async () => ({ ok: true, data: await yara.listRules() }));
+  handle('yara:validate', async () => ({ ok: true, data: await yara.validateAll() }));
+  handle('yara:setEnabled', async (id: unknown, enabled: unknown) => ({ ok: true, data: await yara.setEnabled(id, enabled) }));
+  handle('yara:source', async (id: unknown) => ({ ok: true, data: await yara.getSource(id) }));
+  handle('yara:save', async (name: unknown, source: unknown) => ({ ok: true, data: await yara.saveCustom(name, source) }));
+  handle('yara:importFile', async () => {
+    const win = getWindow();
+    const opts = { properties: ['openFile' as const], filters: [{ name: 'YARA', extensions: ['yar', 'yara'] }] };
+    const pick = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts);
+    if (pick.canceled || !pick.filePaths[0]) return { ok: true, data: null };
+    return { ok: true, data: await yara.importFile(pick.filePaths[0]) };
+  });
+  handle('yara:remove', async (id: unknown) => ({ ok: true, data: await yara.remove(id) }));
+  handle('yara:scan', (target: unknown, recursive: unknown, taskId: unknown) => {
+    const v = validateAbsolutePath(target);
+    if (!v.ok) return fail(v.reason);
+    return runTask(taskId, async (signal) => {
+      const r = await yara.scan(v.path, { recursive: recursive === true, signal });
+      history.record({ kind: 'yara_scan', subject: basename(v.path), summaryKey: 'activity.summary.yara_scanned' });
+      logger.info('yara_scan', { files: r.files.length, matched: r.matchedFiles, rules: r.rulesUsed });
+      return r;
+    });
+  });
 
   handle('secrets:status', () => secrets.status());
   handle('secrets:set', (service: unknown, value: unknown) => {

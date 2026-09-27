@@ -6,13 +6,13 @@ import { join } from 'node:path';
 
 vi.mock('electron', () => ({ app: { getPath: () => tmpdir() }, safeStorage: {} }));
 
-import { analyzeFile, hashFile, hashText, buildSignals, pickInterestingStrings } from '../src/main/services/file-analysis';
+import { analyzeFile, hashFile, hashText, buildSignals, pickInterestingStrings, yaraWeight } from '../src/main/services/file-analysis';
 
 let dir: string;
 beforeAll(() => { dir = mkdtempSync(join(tmpdir(), 'blazma-test-')); });
 afterAll(() => rmSync(dir, { recursive: true, force: true }));
 
-const noSig = async () => ({ checked: false, reason: 'unsupported_platform' });
+const noSig = { verifySignature: async () => ({ checked: false as const, reason: 'unsupported_platform' }) };
 
 describe('file hashing', () => {
   it('matches Node crypto for all algorithms', async () => {
@@ -57,6 +57,28 @@ describe('file analysis', () => {
     expect(r.assessment.verdict).toBe('unknown');
     expect(r.assessment.incomplete).toBe(true);
     expect(r.unavailableEngines.map((e) => e.engine)).toContain('defender');
+  });
+  it('includes engine results and explains unavailable engines', async () => {
+    const f = join(dir, 'eng.txt');
+    writeFileSync(f, 'plain');
+    const r = await analyzeFile(f, new AbortController().signal, () => {}, {
+      ...noSig,
+      defender: async () => ({ ran: true, threats: ['Virus:DOS/EICAR_Test_File'] }),
+      yara: async () => { throw Object.assign(new Error('x'), { code: 'yara_not_installed' }); },
+    });
+    expect(r.defender).toEqual({ ran: true, threats: ['Virus:DOS/EICAR_Test_File'] });
+    expect(r.yara).toEqual({ ran: false, reason: 'yara_not_installed' });
+    expect(r.assessment.verdict).toBe('malicious');
+    expect(r.unavailableEngines.map((e) => e.engine)).toEqual(['yara', 'signature', 'hash_reputation']);
+  });
+  it('maps YARA severity meta to evidence weight', () => {
+    expect(yaraWeight({ severity: 'malicious' })).toBe('malicious');
+    expect(yaraWeight({ severity: 'info' })).toBe('weak');
+    expect(yaraWeight({})).toBe('strong');
+    const r = buildSignals({ typeId: 'text', entropy: 1, packerHints: [], signature: { checked: false }, interestingCount: 0,
+      yara: { ran: true, rulesUsed: 3, matches: [{ rule: 'R', namespace: 'n', tags: [], meta: { severity: 'suspicious' } }] } });
+    expect(r.signals).toEqual([{ source: 'yara', weight: 'strong', reasonKey: 'assessment.reason.yara_match', reasonArgs: { rule: 'R' } }]);
+    expect(r.available.has('yara')).toBe(true);
   });
   it('builds signals conservatively', () => {
     const base = { typeId: 'pe', entropy: 7.9, packerHints: ['upx0'], interestingCount: 0 };

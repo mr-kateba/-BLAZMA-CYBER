@@ -5,7 +5,7 @@
 // Usage: node scripts/ui-smoke.mjs [samplePath]
 // On Linux CI run under xvfb-run. --no-sandbox is used ONLY by this test harness (root in containers).
 import { _electron as electron } from 'playwright';
-import { mkdtempSync, mkdirSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import assert from 'node:assert/strict';
@@ -15,6 +15,8 @@ const out = join(root, 'docs', 'screenshots');
 mkdirSync(out, { recursive: true });
 const dataDir = mkdtempSync(join(tmpdir(), 'blazma-smoke-'));
 const sample = process.argv[2];
+const yr = process.env.BLAZMA_TEST_YR; // optional: real YARA-X CLI for the Phase 2 flow
+const stubOpen = (p) => app.evaluate(({ dialog }, x) => { dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [x] }); }, p);
 
 const app = await electron.launch({
   executablePath: join(root, 'node_modules', 'electron', 'dist', process.platform === 'win32' ? 'electron.exe' : 'electron'),
@@ -88,6 +90,63 @@ try {
     await win.locator('.main').evaluate((m) => m.scrollTo(0, 700));
     await win.waitForTimeout(300);
     await win.screenshot({ path: join(out, '06-file-analyzer-pe-ar.png') });
+  }
+
+  // 5b) Phase 2: YARA-X engine + EICAR analysis + quarantine round-trip (English UI)
+  if (yr && existsSync(yr)) {
+    await win.getByRole('button', { name: 'English' }).click();
+    await win.locator('.nav-item', { hasText: 'YARA Scanner' }).click();
+    await win.getByRole('tab', { name: 'Engine' }).click();
+    await stubOpen(yr);
+    await win.getByRole('button', { name: 'Choose yr executable…' }).click();
+    await win.getByText(/YARA-X \d+\.\d+\.\d+ is ready/).first().waitFor();
+    await win.getByRole('tab', { name: 'Rules' }).click();
+    await win.getByRole('button', { name: 'Validate all' }).click();
+    await win.getByText('Valid').first().waitFor();
+    await win.screenshot({ path: join(out, '12-yara-rules-en.png') });
+
+    // EICAR test file assembled at runtime (never stored contiguously in source)
+    const work = mkdtempSync(join(tmpdir(), 'blazma-smoke-eicar-'));
+    const eicar = join(work, 'eicar-test.com');
+    const eicarBody = 'X5O!P%@AP[4\\PZX54(P^)7CC)7}$' + 'EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*';
+    writeFileSync(eicar, eicarBody);
+
+    await win.locator('.nav-item', { hasText: 'File Analyzer' }).click();
+    await stubOpen(eicar);
+    await win.getByRole('button', { name: 'Browse…' }).click();
+    await win.getByText('YARA rule matched: Blazma_EICAR_Test_File').waitFor({ timeout: 30000 });
+    assert.ok(await win.getByText('Suspicious', { exact: true }).isVisible(), 'EICAR should be assessed Suspicious by YARA alone');
+    await win.screenshot({ path: join(out, '13-file-analyzer-yara-en.png') });
+
+    // Quarantine it
+    await win.getByRole('button', { name: 'Quarantine this file' }).first().click();
+    await win.locator('.dialog').getByRole('button', { name: 'Quarantine this file' }).click();
+    await win.getByText('Moved to quarantine').first().waitFor();
+    assert.equal(existsSync(eicar), false, 'original must be removed after quarantine');
+
+    // Security Center -> Quarantine tab lists it
+    await win.locator('.nav-item', { hasText: 'Security Center' }).click();
+    await win.getByRole('tab', { name: 'Quarantine' }).click();
+    await win.getByText('eicar-test.com').first().waitFor();
+    await win.screenshot({ path: join(out, '14-quarantine-en.png') });
+
+    // Re-scan from quarantine
+    await win.getByRole('button', { name: 'Re-scan' }).click();
+    await win.getByText('Re-scan result').waitFor({ timeout: 30000 });
+    await win.getByText('This file is in quarantine').waitFor();
+
+    // Restore to original path, verify exact bytes
+    await win.getByRole('button', { name: 'Restore', exact: true }).click();
+    await win.locator('.dialog').getByRole('button', { name: 'Restore' }).click();
+    await win.getByText('Quarantine is empty').waitFor();
+    assert.equal(readFileSync(eicar, 'utf8'), eicarBody, 'restored bytes must match the original');
+    rmSync(work, { recursive: true, force: true });
+
+    // Arabic Security Center
+    await win.getByRole('button', { name: 'العربية' }).click();
+    await win.getByRole('tab', { name: 'نظرة عامة' }).click();
+    await win.waitForTimeout(400);
+    await win.screenshot({ path: join(out, '15-security-center-ar.png') });
   }
 
   // 6) Hash Lab identify (Arabic)

@@ -25,6 +25,11 @@ malware samples or third-party data in reports.
   authorization headers. Recovered passwords and file contents are never logged.
 - **Network** — every external request passes one gate: HTTPS only, no redirects, timeouts,
   blocked in Offline Mode, recorded in Network Activity.
+- **Quarantine** — quarantined files are moved into a protected folder, stored byte-neutralized with
+  a non-executable extension and owner-only permissions, and restored only on explicit user action
+  after a SHA-256 integrity check. Nothing is ever deleted automatically because of a heuristic.
+- **External engines** — YARA-X and Microsoft Defender are invoked as separate processes by path with
+  argument arrays. File and folder Defender scans are report-only (`-DisableRemediation`).
 - **Resource limits** — streaming I/O, 32 MB static-analysis window, capped IOC/string/import
   counts, subprocess timeouts and output caps.
 - **Windows security controls are never weakened** — BLAZMA CYBER does not disable Defender,

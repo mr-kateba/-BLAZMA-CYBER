@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   Activity, ChevronRight, Cpu, Earth, FileSearch, FolderPlus, Globe, HardDrive, Hash, KeyRound, Link2, MemoryStick,
-  Monitor, MonitorCog, Network, RefreshCw, Router, ShieldCheck, Wifi, type LucideIcon,
+  Monitor, MonitorCog, Network, RefreshCw, Router, ScanSearch, ShieldCheck, Wifi, type LucideIcon,
 } from 'lucide-react';
 import type { ActivityEntry, SecurityStatus, SystemSnapshot } from '../../shared/api';
 import { Card, Dot, EmptyState, ErrorState, Gauge, IconTile, Ltr, Progress, Skeleton, Sparkline, usePoll, Badge, type Tone } from '../components/ui';
@@ -38,7 +38,7 @@ function StatCard({ icon, tone, label, value, meta, bar, loading }: {
   );
 }
 
-function SecurityList({ sec, snap }: { sec: SecurityStatus | null; snap: SystemSnapshot | null }) {
+function SecurityList({ sec, snap, qCount }: { sec: SecurityStatus | null; snap: SystemSnapshot | null; qCount: number | null }) {
   const { t, locale } = useI18n();
   const { settings } = useApp();
   if (!sec || !snap) {
@@ -82,6 +82,7 @@ function SecurityList({ sec, snap }: { sec: SecurityStatus | null; snap: SystemS
     }
     if (d.available) items.push({ tone: 'blue', text: t('status.lastQuickScan', { time: d.lastQuickScan ? formatDateTime(locale, d.lastQuickScan) : t('status.never') }) });
   }
+  if (qCount !== null) items.push({ tone: qCount > 0 ? 'amber' : 'green', text: t('dashboard.quarantineCount', { count: qCount }) });
   items.push(settings.offlineMode ? { tone: 'cyan', text: t('status.offlineOn') } : { tone: 'green', text: t('status.offlineOff') });
 
   return (
@@ -141,18 +142,21 @@ function PublicIp() {
 
 interface Tool { id: string; icon: LucideIcon; tone: Tone; to: PageId; phase?: number }
 const TOOLS: Tool[] = [
+  { id: 'quickScan', icon: ShieldCheck, tone: 'green', to: 'security-center' },
   { id: 'scanFile', icon: FileSearch, tone: 'purple', to: 'file-analyzer' },
+  { id: 'yara', icon: ScanSearch, tone: 'purple', to: 'yara' },
   { id: 'hashLab', icon: Hash, tone: 'purple', to: 'hash-lab' },
-  { id: 'privacy', icon: ShieldCheck, tone: 'cyan', to: 'privacy' },
   { id: 'ipLookup', icon: Earth, tone: 'blue', to: 'ip-intel', phase: 3 },
   { id: 'domainLookup', icon: Link2, tone: 'blue', to: 'domain-intel', phase: 3 },
   { id: 'passwordRecovery', icon: KeyRound, tone: 'amber', to: 'password-recovery', phase: 5 },
   { id: 'networkTools', icon: Network, tone: 'green', to: 'network-toolkit', phase: 4 },
+  { id: 'privacy', icon: ShieldCheck, tone: 'cyan', to: 'privacy' },
   { id: 'newCase', icon: FolderPlus, tone: 'purple', to: 'cases', phase: 6 },
 ];
 
 const ACTIVITY_ICON: Record<ActivityEntry['kind'], LucideIcon> = {
   file_analysis: FileSearch, hash_file: Hash, hash_text: Hash, hash_identify: Hash, hash_compare: Hash,
+  defender_scan: ShieldCheck, yara_scan: FileSearch, quarantine: ShieldCheck, restore: RefreshCw,
 };
 
 export function Dashboard() {
@@ -169,6 +173,10 @@ export function Dashboard() {
     return r.data;
   }, 60000);
   const activity = usePoll(() => window.blazma.activity.recent(6), 10000);
+  const qCount = usePoll(async () => {
+    const r = await window.blazma.quarantine.list();
+    return r.ok ? r.data.length : null;
+  }, 15000);
 
   const [cpuHist, setCpuHist] = useState<number[]>([]);
   const lastSnap = useRef<SystemSnapshot | null>(null);
@@ -256,7 +264,7 @@ export function Dashboard() {
             title={t('dashboard.systemStatus')} icon={ShieldCheck} tone="green"
             actions={<button className="icon-btn" style={{ width: 30, height: 30 }} title={t('common.refresh')} aria-label={t('common.refresh')} onClick={sec.reload}><RefreshCw size={14} /></button>}
           >
-            <SecurityList sec={sec.data} snap={s} />
+            <SecurityList sec={sec.data} snap={s} qCount={qCount.data ?? null} />
           </Card>
         </div>
       )}
