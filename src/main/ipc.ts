@@ -20,6 +20,7 @@ import { checkPwnedPassword, PwnedError } from './services/pwned';
 import { deviceSecurity, DeviceSecurityError, openSettingsPage } from './services/device-security';
 import { tamperChecks } from './services/tamper';
 import { auditExtensions } from './services/extensions';
+import { EventHuntError, parseOptions, parseSource, runEventHunt } from './services/event-hunt';
 import { DownloadsWatcher } from './services/downloads-watch';
 import { createTranslator, type Dict } from '../core/i18n';
 import enDict from '../../locales/en.json';
@@ -51,7 +52,7 @@ function fail(error: string, detail?: string): Result<never> {
 }
 
 function errorCode(e: unknown): string {
-  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError || e instanceof RecoveryError || e instanceof CaseError || e instanceof ReportError || e instanceof TerminalError || e instanceof DeviceSecurityError || e instanceof EmailError || e instanceof PwnedError) return e.code;
+  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError || e instanceof RecoveryError || e instanceof CaseError || e instanceof ReportError || e instanceof TerminalError || e instanceof DeviceSecurityError || e instanceof EmailError || e instanceof PwnedError || e instanceof EventHuntError) return e.code;
   if (e instanceof OfflineModeError) return 'offline_mode';
   return 'internal_error';
 }
@@ -193,7 +194,7 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
     return { ok: true, data: true };
   });
   handle('app:bundledEngines', () =>
-    (['yara-x', 'capa', 'die'] as const).flatMap((id) => {
+    (['yara-x', 'capa', 'die', 'hayabusa'] as const).flatMap((id) => {
       const e = bundledEngine(id);
       return e ? [{ id, name: e.name, version: e.version, license: e.license }] : [];
     }),
@@ -583,6 +584,30 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
 
   handle('hunt:search', (query: unknown, taskId: unknown) => runTask(taskId, () => hunt.search(query)));
   handle('hunt:persistence', async () => ({ ok: true, data: await hunt.persistence() }));
+  handle('hunt:eventEngine', () => {
+    const e = bundledEngine('hayabusa');
+    return { available: !!e, version: e?.version ?? null };
+  });
+  handle('hunt:pickEvents', async (kind: unknown) => {
+    const win = getWindow();
+    const opts = kind === 'dir'
+      ? { properties: ['openDirectory' as const] }
+      : { properties: ['openFile' as const], filters: [{ name: 'Windows event log', extensions: ['evtx'] }] };
+    const r = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts);
+    return r.canceled ? null : (r.filePaths[0] ?? null);
+  });
+  handle('hunt:events', async (source: unknown, options: unknown, taskId: unknown) => {
+    const exe = bundledEngine('hayabusa')?.path;
+    if (!exe) return fail('engine_not_bundled');
+    const src = await parseSource(source);
+    const opts = parseOptions(options);
+    return runTask(taskId, async (signal) => {
+      const r = await runEventHunt(exe, src, opts, signal);
+      history.record({ kind: 'event_hunt', subject: src.kind === 'live' ? 'Windows' : basename(src.path), summaryKey: 'activity.summary.event_hunt' });
+      logger.info('event_hunt', { source: src.kind, total: r.total, critical: r.byLevel.critical, high: r.byLevel.high, ms: r.durationMs });
+      return r;
+    });
+  });
 
   // ---- Password Recovery (authorized, local; results never logged) ----
   handle('recovery:detect', async (path: unknown) => ({ ok: true, data: await detectFileEncryption(path) }));

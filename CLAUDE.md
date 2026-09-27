@@ -32,7 +32,7 @@ of re-implementing them. No account, no activation, no telemetry.
    passwords, API keys or file contents.
 8. **Never execute analyzed files.** Static analysis reads bytes only.
 9. **Least privilege.** The app runs unelevated. Elevation must be requested per-function with an
-   explanation (not implemented yet — no current feature needs it).
+   explanation (only user today: Hayabusa live event-log scan via Start-Process -Verb RunAs after an in-app confirmation).
 10. **Never weaken Windows security.** No disabling Defender, no firewall changes, no silent installs.
 11. **The renderer is untrusted.** Every IPC argument is re-validated in `src/main/ipc.ts`.
 
@@ -174,4 +174,5 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
 | 2026-09 | NetworkGate HTTP transport = Chromium net stack (in-memory session, credentials omitted); `redirect:'manual'` goes through `net.request` | Honours Windows proxy/PAC and certificate store like a browser; Electron's fetch cancels manual redirects |
 | 2026-09 | Tamper checks are separate from the Device Security Score and never say "infected" | Ad-blockers, corporate proxies and debugging tools make similar changes; each finding shows its evidence and why it matters |
 | 2026-09 | Extension "needs attention" = provenance (sideloaded/external/unsigned) or debugger; broad permissions alone = "broad access" | Ad-blockers and password managers legitimately need all-sites access; how an extension was installed is the stronger malware signal |
+| 2026-09 | Hayabusa 4.1.0 bundled (AGPL-3.0 separate program + DRL-1.1 rules, source link in its LICENSE.txt); runs `dfir-timeline -t jsonl -p super-verbose` so each match keeps its rule author (DRL) | Sigma-based event-log hunting without extra tools; aggregation with a separate AGPL program is compatible with GPL-3.0 |
 | 2026-09 | File/folder Defender scans use -DisableRemediation | Blazma reports; the user decides (quick/full follow Defender policy, stated in UI) |

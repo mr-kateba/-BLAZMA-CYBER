@@ -139,6 +139,9 @@ const api: BlazmaApi = {
   hunt: {
     search: (query, taskId) => invoke('hunt:search', query, taskId),
     persistence: () => invoke('hunt:persistence'),
+    eventEngine: () => invoke('hunt:eventEngine'),
+    pickEvents: (kind) => invoke('hunt:pickEvents', kind),
+    events: (source, options, taskId) => invoke('hunt:events', source, options, taskId),
   },
   recovery: {
     detect: (path) => invoke('recovery:detect', path),

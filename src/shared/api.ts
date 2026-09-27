@@ -14,6 +14,7 @@ import type { DeviceSecurityReport, SettingsLink } from '../core/device-security
 import type { TamperReport } from '../core/tamper';
 import type { ExtensionAudit } from '../core/extensions';
 import type { DownloadEvent, DownloadsWatchState } from '../core/downloads';
+import type { EventDetection, EventHuntSummary } from '../core/hayabusa';
 import type { CapaSummary } from '../core/capa';
 import type { EmailAnalysis } from '../core/email';
 import type { DieSummary } from '../core/die';
@@ -285,7 +286,7 @@ export interface ActivityEntry {
   kind:
     | 'file_analysis' | 'hash_file' | 'hash_text' | 'hash_identify' | 'hash_compare'
     | 'defender_scan' | 'yara_scan' | 'quarantine' | 'restore'
-    | 'ip_lookup' | 'domain_lookup' | 'reputation_lookup' | 'osint_lookup' | 'email_check'
+    | 'ip_lookup' | 'domain_lookup' | 'reputation_lookup' | 'osint_lookup' | 'email_check' | 'event_hunt'
     | 'forensics' | 'port_check' | 'discovery';
   /** Displayable subject, e.g. a filename. Never a secret. */
   subject: string;
@@ -508,6 +509,10 @@ export type { DieDetection, DieSummary } from '../core/die';
 export type { DeviceCheck, DeviceSecurityReport, SettingsLink } from '../core/device-security';
 export type { TamperFinding, TamperItem, TamperReport } from '../core/tamper';
 export type { DownloadEvent, DownloadsWatchState } from '../core/downloads';
+export type { EventDetection, EventHuntSummary, EventLevel } from '../core/hayabusa';
+export type EventHuntSource = { kind: 'file' | 'dir'; path: string } | { kind: 'live' };
+export interface EventHuntOptions { minLevel: 'low' | 'medium' | 'high' | 'critical'; days: 1 | 7 | 30 | 90 | null }
+export interface EventHuntResult extends EventHuntSummary { rows: EventDetection[]; source: { kind: EventHuntSource['kind']; path: string | null }; durationMs: number }
 export type { BrowserExtension, BrowserId, ExtensionAudit, ExtensionFlag, ExtensionRisk } from '../core/extensions';
 
 export interface OsintOptions {
@@ -1014,6 +1019,12 @@ export interface BlazmaApi {
   hunt: {
     search(query: string, taskId: string): Promise<Result<HuntResult>>;
     persistence(): Promise<Result<PersistenceItem[]>>;
+    /** Bundled Hayabusa engine, if this build ships it. */
+    eventEngine(): Promise<{ available: boolean; version: string | null }>;
+    /** Lets the user choose an .evtx file or a folder of logs; returns its path or null. */
+    pickEvents(kind: 'file' | 'dir'): Promise<string | null>;
+    /** Hayabusa over event logs. `live` = this computer (asks Windows for administrator rights). */
+    events(source: EventHuntSource, options: EventHuntOptions, taskId: string): Promise<Result<EventHuntResult>>;
   };
   recovery: {
     detect(path: string): Promise<Result<{ encryption: EncryptionInfo; name: string; sizeBytes: number }>>;

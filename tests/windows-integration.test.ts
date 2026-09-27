@@ -14,6 +14,8 @@ import { deviceSecurity } from '../src/main/services/device-security';
 import { tamperChecks } from '../src/main/services/tamper';
 import { auditExtensions } from '../src/main/services/extensions';
 import { runCapa, runDie } from '../src/main/services/static-engines';
+import { runEventHunt } from '../src/main/services/event-hunt';
+import { execFileSync } from 'node:child_process';
 import { YaraService } from '../src/main/services/yara';
 import { readdirSync, readFileSync, copyFileSync } from 'node:fs';
 
@@ -182,5 +184,25 @@ describe.runIf(WIN && manifest)('Bundled engines on real Windows programs', () =
     console.log(`RL pack on ${res.files.length} System32 files: ${hits.length} matches`, hits);
     expect(hits).toEqual([]);
     rmSync(dir, { recursive: true, force: true });
+  }, 900_000);
+});
+
+describe.runIf(WIN && manifest?.hayabusa)('Hayabusa on real Windows event logs', () => {
+  beforeAll(() => {
+    process.env.BLAZMA_DATA_DIR ??= mkdtempSync(join(tmpdir(), 'blazma-hb-'));
+  });
+
+  it('analyzes an exported .evtx file (unelevated path)', async () => {
+    const out = join(mkdtempSync(join(tmpdir(), 'blazma-evtx-')), 'System.evtx');
+    execFileSync(join(process.env.SystemRoot ?? 'C:\\Windows', 'System32', 'wevtutil.exe'), ['epl', 'System', out]);
+    const r = await runEventHunt(exe('hayabusa')!, { kind: 'file', path: out }, { minLevel: 'low', days: null }, new AbortController().signal);
+    console.log('Hayabusa (exported System log):', JSON.stringify({ total: r.total, byLevel: r.byLevel, rules: r.topRules.slice(0, 8).map((x) => `${x.level}:${x.rule}`), ms: r.durationMs }));
+    expect(r.source.kind).toBe('file');
+  }, 600_000);
+
+  it('scans this computer through the elevated path (the runner is already an administrator)', async () => {
+    const r = await runEventHunt(exe('hayabusa')!, { kind: 'live' }, { minLevel: 'medium', days: 1 }, new AbortController().signal);
+    console.log('Hayabusa (live, last day):', JSON.stringify({ total: r.total, byLevel: r.byLevel, rules: r.topRules.slice(0, 8).map((x) => `${x.level}:${x.rule}`), ms: r.durationMs }));
+    expect(r.source.kind).toBe('live');
   }, 900_000);
 });

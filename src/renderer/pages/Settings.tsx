@@ -190,6 +190,10 @@ function Engines() {
           </Row>
         );
       })}
+      <Row title={t('nav.eventLogs')} desc={has('hayabusa') ? `${has('hayabusa')!.name} ${has('hayabusa')!.version} · ${has('hayabusa')!.license}` : t('errors.engine_not_bundled')}>
+        <Badge tone={has('hayabusa') ? 'green' : 'gray'}>{t(has('hayabusa') ? 'settings.engineStatus.bundled' : 'settings.engineStatus.unavailable')}</Badge>
+        <button className="btn sm" onClick={() => navigate('event-logs')}>{t('settings.configure')}</button>
+      </Row>
       <RecoveryEngines />
       <p className="tiny dim" style={{ marginBottom: 0 }}>{t('settings.bundledNote')}</p>
     </Card>

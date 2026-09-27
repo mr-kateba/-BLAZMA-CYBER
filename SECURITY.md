@@ -10,7 +10,9 @@ malware samples or third-party data in reports.
 
 ## Design principles
 - **Least privilege** — runs as a normal user. Administrator rights will only ever be requested for
-  a specific function, with an explanation. No current feature requires elevation.
+  a specific function, with an explanation. Today exactly one feature does: scanning this computer's
+  event logs with Hayabusa (Windows lets only administrators read them). BLAZMA explains why, then
+  Windows shows its own UAC prompt; only that one engine run is elevated and it only reads the logs.
 - **No execution of analyzed files** — analysis is static: files are read, never run or loaded.
 - **No command injection** — no shell is ever used. Subprocesses use argument arrays. PowerShell
   scripts are fixed constants; user data is passed as environment variables and consumed with

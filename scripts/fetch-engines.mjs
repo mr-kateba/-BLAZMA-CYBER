@@ -70,11 +70,14 @@ for (const e of lock.engines) {
     }
     extract(zip, dir);
     rmSync(zip, { force: true });
+    // Parts of an archive that are not needed at runtime (e.g. a git checkout's .git folder).
+    for (const p of e.prune ?? []) rmSync(join(dir, ...p.split('/')), { recursive: true, force: true });
     writeFileSync(marker, e.sha256);
   }
   const exe = findFile(dir, e.exe);
   if (!exe) throw new Error(`${e.id}: ${e.exe} not found in the archive`);
   copyFileSync(join(root, 'engines', 'licenses', `${e.id}.txt`), join(dir, 'LICENSE.txt'));
+  for (const [sub, file] of Object.entries(e.extraLicenses ?? {})) copyFileSync(join(root, 'engines', 'licenses', file), join(dir, ...sub.split('/'), 'LICENSE.txt'));
   manifest.engines[e.id] = { name: e.name, version: e.version, license: e.license, homepage: e.homepage, sha256: e.sha256, exe: relative(dir, exe).replace(/\\/g, '/') };
   console.log(`  ✓ ${e.name} ${e.version} verified (${e.sha256.slice(0, 16)}…) → ${manifest.engines[e.id].exe}`);
 }

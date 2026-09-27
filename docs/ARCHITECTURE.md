@@ -135,6 +135,7 @@ Writes are atomic (temp file + rename). Corrupt JSON is set aside, never crashes
 | RDAP | IANA bootstrap + registry RDAP (HTTPS) | via NetworkGate | public data | Replaces port-43 WHOIS |
 | TLS | Node `tls.connect` + `getPeerCertificate` | built-in | — | Through NetworkGate |
 | Reputation | VirusTotal, AbuseIPDB, Shodan, abuse.ch (MalwareBazaar, URLhaus, ThreatFox) | HTTPS adapters via NetworkGate, user's own keys (one abuse.ch Auth-Key for all three; POST APIs) | service ToS | Hash lookups only; file upload is not implemented. Censys not implemented |
+| Event-log hunting | Hayabusa 4.1.0 (Yamato Security) + Sigma/Hayabusa rules | bundled separate program (`dfir-timeline`, JSONL), `.evtx` files unelevated, this computer via UAC | AGPL-3.0 / DRL-1.1 | Rule authors shown with every match |
 | Leaked passwords | Have I Been Pwned — Pwned Passwords | k-anonymity range API via NetworkGate (5-char SHA-1 prefix, padding) | service ToS (no key) | Matching is local; the password is never logged |
 | OSINT | crt.sh, Wayback availability API, GitHub REST API, mail-domain DNS | HTTPS/DNS via NetworkGate | service ToS / public data | Public, unauthenticated sources only |
 | Reports | Electron `printToPDF` | built-in | — | HTML report → PDF in a hidden sandboxed window, JavaScript disabled |
@@ -149,7 +150,7 @@ Writes are atomic (temp file + rename). Corrupt JSON is set aside, never crashes
 | Secret leakage via logs | Structural redaction of keys/tokens/passwords + inline patterns; tested |
 | Silent data exfiltration | Single NetworkGate, Offline Mode, Network Activity log, renderer has no network |
 | Supply-chain | Minimal deps, lockfile, license review, no postinstall downloads beyond Electron's official binary |
-| Privilege misuse | Runs unelevated; per-feature elevation with explanation (future) |
+| Privilege misuse | Runs unelevated; per-feature elevation with explanation — only the Hayabusa live event-log scan (UAC prompt, engine only, read-only) |
 | Evidence text (file names, malware strings) turns a report into an attack | Every value HTML-escaped, no scripts, `default-src 'none'` CSP in the report |
 | Compromised renderer opens arbitrary URLs/protocols | No `window.open`; `app:openLink` host allowlist; OSINT pivots re-derived in main |
 | Tampered packaged app / binary reused as a Node runtime | Electron fuses + asar integrity validation (§11) |

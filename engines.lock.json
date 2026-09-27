@@ -33,6 +33,24 @@
       "size": 25197854,
       "sha256": "078f2934f267392247f9c7b759a1c2457a48bc2000b25b80c2f129955ee4a3b9",
       "exe": "diec.exe"
+    },
+    {
+      "id": "hayabusa",
+      "name": "Hayabusa (Yamato Security)",
+      "version": "4.1.0",
+      "license": "AGPL-3.0 (engine) + DRL-1.1 (Sigma/Hayabusa rules)",
+      "homepage": "https://github.com/Yamato-Security/hayabusa",
+      "source": "https://github.com/Yamato-Security/hayabusa/tree/v4.1.0",
+      "url": "https://github.com/Yamato-Security/hayabusa/releases/download/v4.1.0/hayabusa-4.1.0-win-x64.zip",
+      "size": 44765237,
+      "sha256": "4d304cc5baaa750ed08cc24b7b89c58ea058740c7e344502d7b82554637543a8",
+      "exe": "hayabusa-4.1.0-win-x64.exe",
+      "prune": [
+        "rules/.git"
+      ],
+      "extraLicenses": {
+        "rules": "hayabusa-rules.txt"
+      }
     }
   ],
   "rules": [

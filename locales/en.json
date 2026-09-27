@@ -56,7 +56,8 @@
     },
     "emailCheck": "Check an email",
     "passwordCheck": "Was my password leaked?",
-    "extensions": "Browser extensions"
+    "extensions": "Browser extensions",
+    "eventLogs": "Event log hunting"
   },
   "topbar": {
     "search": "Search tools…",
@@ -594,7 +595,8 @@
       "port_check": "Port check",
       "discovery": "Device discovery",
       "osint_lookup": "OSINT lookup",
-      "email_check": "Email check"
+      "email_check": "Email check",
+      "event_hunt": "Event log hunting"
     },
     "summary": {
       "hashed": "Hashes calculated",
@@ -605,7 +607,8 @@
       "looked_up": "Lookup completed",
       "collected": "Data collected",
       "port_checked": "Ports checked",
-      "discovered": "Network discovered"
+      "discovered": "Network discovered",
+      "event_hunt": "event logs analyzed"
     }
   },
   "errors": {
@@ -708,7 +711,10 @@
     "email_too_large": "The email is larger than 25 MB.",
     "not_an_email": "This doesn't look like an email (no From/Subject/Received headers).",
     "email_expired": "This email is no longer in memory — check it again.",
-    "watch_failed": "The Downloads folder could not be watched."
+    "watch_failed": "The Downloads folder could not be watched.",
+    "evtx_expected": "Choose a Windows event log file (.evtx).",
+    "not_a_folder": "This is not a folder.",
+    "elevation_cancelled": "Administrator permission was not given, so this computer’s logs were not scanned."
   },
   "defender": {
     "status": {
@@ -1778,6 +1784,10 @@
     "downloads_watch": {
       "title": "What does watching downloads do?",
       "text": "When a download finishes, BLAZMA checks it the same way as \"Scan a file\": it reads the file without opening or running it. You get a notification only if something looks suspicious. It works only while BLAZMA is open and never moves or deletes files."
+    },
+    "event_logs": {
+      "title": "What are event logs?",
+      "text": "Windows records what happens on the computer — sign-ins, new services, scripts, security changes — in event logs. Attackers leave traces there. Hayabusa checks those records against more than 4,000 community detection rules (Sigma) and lists matches. A match is a lead to investigate, not proof of an attack."
     }
   },
   "mode": {
@@ -2146,6 +2156,71 @@
       "suspicious": "Suspicious download",
       "malicious": "Dangerous download",
       "body": "{{name}} — click to see why. Do not open it."
+    }
+  },
+  "evlog": {
+    "title": "Event log hunting",
+    "subtitle": "Look for signs of attacks in Windows event logs with Hayabusa and Sigma rules.",
+    "readOnly": "Event logs are only read — never changed or deleted. Nothing is uploaded.",
+    "notBundledHint": "Hayabusa is included in the Windows installer.",
+    "sourceTitle": "What should be checked?",
+    "engine": "Hayabusa {{version}} · Sigma + Hayabusa rules (DRL 1.1)",
+    "live": "This computer’s logs (needs administrator)",
+    "pickFile": "Choose an .evtx file",
+    "pickDir": "Choose a folder of logs",
+    "liveWindowsOnly": "Scanning this computer’s logs is available on Windows only; you can still analyze .evtx files.",
+    "liveTitle": "Allow administrator access?",
+    "liveBody": "Windows lets only administrators read the security event logs. Windows will now ask for permission to run Hayabusa (bundled with BLAZMA) as administrator. It only reads the logs, and only this scan runs with those rights. The scan cannot be stopped once it has started; it usually takes 1–5 minutes.",
+    "liveConfirm": "Continue",
+    "minLevel": "Show matches from this level up",
+    "period": "Time period",
+    "lastDays": "Last {{n}} days",
+    "allTime": "Everything",
+    "running": "Scanning event logs…",
+    "runningLive": "Scanning this computer’s event logs as administrator… (this can take a few minutes)",
+    "resultTitle": "Result",
+    "again": "New scan",
+    "noneFound": "No matches at the chosen level.",
+    "summary": "{{total}} match(es) from {{rules}} rule(s).",
+    "scanned": "Scanned: {{source}}",
+    "thisComputer": "this computer",
+    "disclaimer": "Rules match patterns that attacks often leave; administrators and software updates can trigger some of them too. Investigate high and critical matches first.",
+    "rulesTitle": "Rules that matched",
+    "rulesSub": "Most severe first. Rule authors are credited as the Detection Rule License requires.",
+    "detectionsTitle": "Matches",
+    "detectionsSub": "Showing {{shown}} of {{total}} (most severe first).",
+    "allLevels": "All",
+    "by": "Rule by {{author}}",
+    "col": {
+      "time": "Time",
+      "level": "Level",
+      "rule": "Rule",
+      "count": "Matches",
+      "details": "Details"
+    },
+    "level": {
+      "critical": "Critical",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "informational": "Info"
+    },
+    "tactic": {
+      "reconnaissance": "Reconnaissance",
+      "resource_development": "Resource development",
+      "initial_access": "Initial access",
+      "execution": "Execution",
+      "persistence": "Persistence",
+      "privilege_escalation": "Privilege escalation",
+      "stealth": "Stealth / defense evasion",
+      "defense_impairment": "Defense impairment",
+      "credential_access": "Credential access",
+      "discovery": "Discovery",
+      "lateral_movement": "Lateral movement",
+      "collection": "Collection",
+      "command_and_control": "Command and control",
+      "exfiltration": "Exfiltration",
+      "impact": "Impact"
     }
   }
 }

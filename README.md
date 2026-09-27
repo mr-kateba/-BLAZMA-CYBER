@@ -48,6 +48,10 @@ adapters rather than re-implementing them.
   ThreatFox — one free key) with your own keys (hashes, never uploads).
 - **Check an email** — local phishing analysis of a saved .eml or pasted source: sender spoofing,
   SPF/DKIM/DMARC, deceptive links, dangerous attachments (handed to File Analyzer, never opened).
+- **Event log hunting** — bundled Hayabusa with 4,000+ Sigma/Hayabusa rules over .evtx files or this
+  computer's logs (administrator rights requested only for that scan, with an explanation).
+- **Browser extensions & signs of tampering** — what add-ons may do and how they were installed;
+  hosts file, proxy, DNS and added root certificates. Opt-in **Downloads watcher**.
 - **Was my password leaked?** — Have I Been Pwned via k-anonymity: only 5 characters of the
   password's SHA-1 hash leave the computer.
 - **OSINT Workspace** — domain, email, username or URL: Certificate Transparency (crt.sh), Wayback

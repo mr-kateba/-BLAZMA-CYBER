@@ -450,6 +450,29 @@ try {
     await win.locator('.page .card').first().waitFor({ timeout: 30000 });
   }
 
+  // Phase E5: event-log hunting with the bundled Hayabusa (file path; the elevated path is covered by
+  // tests/windows-integration.test.ts). Windows: a freshly exported System log. Elsewhere: BLAZMA_TEST_EVTX.
+  await win.locator('.nav-item', { hasText: 'تحليل سجلات الأحداث' }).click();
+  const hbAvailable = await win.getByRole('button', { name: /evtx/ }).waitFor({ timeout: 15000 }).then(() => true, () => false);
+  let evtx = process.env.BLAZMA_TEST_EVTX ?? null;
+  if (process.platform === 'win32' && hbAvailable) {
+    const { execFileSync } = await import('node:child_process');
+    evtx = join(mkdtempSync(join(tmpdir(), 'blazma-smoke-evtx-')), 'System.evtx');
+    execFileSync(join(process.env.SystemRoot ?? 'C:\\Windows', 'System32', 'wevtutil.exe'), ['epl', 'System', evtx]);
+  }
+  if (hbAvailable && evtx) {
+    await win.getByText('كل شيء', { exact: true }).click();
+    await win.getByText('منخفض', { exact: true }).click();
+    await stubOpen(evtx);
+    await win.getByRole('button', { name: /evtx/ }).click();
+    await win.getByText('النتيجة', { exact: true }).waitFor({ timeout: 300000 });
+    await win.waitForTimeout(300);
+    await win.screenshot({ path: join(out, '36-event-logs-ar.png'), fullPage: true });
+  } else {
+    assert.ok(!hbAvailable || !evtx, 'Hayabusa page should load');
+    if (!hbAvailable) await win.getByText('Hayabusa مضمَّن في مثبّت Windows.').waitFor();
+  }
+
   // 6) Hash Lab identify (Arabic)
   await win.locator('.nav-item', { hasText: 'مختبر الهاشات' }).click();
   await win.getByRole('tab', { name: 'تعرّف' }).click();
