@@ -42,6 +42,7 @@ try {
   await page.screenshot({ path: join(root, 'docs', 'screenshots', '27-packaged-first-launch.png') });
   // Pages are code-split: open one to prove lazy chunks load from app.asar.
   await page.getByText('العربية').first().click();
+  await page.getByRole('radio', { name: /احترافي/ }).click();
   await page.getByRole('button', { name: 'متابعة' }).click();
   await page.locator('.nav-item', { hasText: 'محلل الملفات' }).click();
   await page.locator('.page-title', { hasText: 'محلل الملفات' }).waitFor({ timeout: 15000 });
