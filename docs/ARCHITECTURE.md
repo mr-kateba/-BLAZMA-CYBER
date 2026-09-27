@@ -41,11 +41,13 @@ TypeScript and the IPC contract (`src/shared/api.ts`) is explicit, which keeps s
 │ ipc.ts: trusted-sender check · argument validation · Result<T> · task/cancel  │
 │                                                                               │
 │  Services                       Engines/adapters             Local state      │
-│  ─ system-info                  ─ PowerShell runner          ─ settings.json  │
-│  ─ windows-security             ─ (Defender, YARA-X,         ─ activity.json  │
-│  ─ file-analysis                   hashcat… planned)         ─ network-activity│
-│  ─ history / logger / secrets                                ─ logs/*.jsonl   │
-│                                                              ─ secrets (DPAPI)│
+│  ─ system-info · windows-sec.   ─ PowerShell runner          ─ settings.json  │
+│  ─ file-analysis · quarantine   ─ Defender (MpCmdRun)        ─ activity.json  │
+│  ─ defender · yara              ─ YARA-X `yr` CLI            ─ network-activity│
+│  ─ intel · osint · nettools     ─ John / hashcat (user's)    ─ quarantine/    │
+│  ─ forensics · recovery         ─ Node dns / tls             ─ yara/ cases/   │
+│  ─ cases · reports · hunt                                    ─ reports/ logs/ │
+│  ─ history / logger / secrets                                ─ secrets (DPAPI)│
 │  NetworkGate ── the ONLY path to the internet (Offline Mode, HTTPS, logging)   │
 └───────────────────────────────────────────────────────────────────────────────┘
          src/core: pure logic shared by all layers (validation, PE, IOC, detection, i18n)
@@ -61,8 +63,8 @@ Each module is a main-process service plus a renderer page, communicating only t
 - `contextIsolation: true`, `sandbox: true`, `nodeIntegration: false`, `webSecurity: true`.
 - Strict CSP: `script-src 'self'`, `connect-src 'self'` (dev server websocket only in dev),
   `object-src 'none'`, `frame-ancestors 'none'`.
-- Navigation to anything other than the app bundle is blocked; `window.open` denied (https links
-  open in the system browser); `<webview>` blocked.
+- Navigation to anything other than the app bundle is blocked; `window.open` is always denied;
+  `<webview>` blocked. External pages open only through validated IPC (§10).
 - All permission requests (camera, mic, geolocation, notifications…) denied.
 - IPC: every handler checks that the sender is the main window loading the app's own URL, and
   validates each argument (types, lengths, enums, absolute paths without NUL/device namespaces).
@@ -81,8 +83,11 @@ Each module is a main-process service plus a renderer page, communicating only t
   attacker indicators, and a security tool should not look like malware to EDRs or to its own
   threat-hunting module.
 
-Current scripts (read-only): OS caption/version/build, CPU cores, process count,
-`Get-MpComputerStatus`, `Get-NetFirewallProfile`, `Get-AuthenticodeSignature`.
+All PowerShell scripts are read-only (Defender scans run through `MpCmdRun.exe` by absolute path
+with execFile argument arrays, not PowerShell). The scripts cover system facts, `Get-MpComputerStatus`, `Get-NetFirewallProfile`, `Get-AuthenticodeSignature`,
+Defender threat history, and the forensics collectors (tested against a deny-list of
+state-changing cmdlets). Locale-independent sources are preferred (CIM objects, SIDs,
+`Test-Connection`) because tool output and group names are localized on Arabic Windows.
 
 ## 6. Detection model
 
@@ -105,25 +110,30 @@ All under `%APPDATA%\BLAZMA CYBER\` (Electron `userData`, overridable by `BLAZMA
 | `state/activity.json` | recent activity (max 200, can be disabled/cleared) |
 | `state/network-activity.json` | external request log (host + data category, max 1000) |
 | `secrets/api-keys.json` | API keys encrypted with DPAPI via `safeStorage` |
+| `quarantine/*.blazmaq` + `index.json` | neutralized (XOR 0xFF) quarantined files, owner-only permissions |
+| `yara/` | built-in and user YARA rules + index |
+| `cases/CASE-YYYY-NNN.json` | investigation cases (evidence, notes, timeline) |
+| `reports/` + `index.json` | generated HTML / JSON / PDF reports |
 | `logs/blazma.log.jsonl` | structured redacted logs, rotated at 5 MB |
 | `temp/` | temporary files (clearable) |
 
 Writes are atomic (temp file + rename). Corrupt JSON is set aside, never crashes the app.
 
-## 8. Planned engine integrations
+## 8. Engine integrations
 
 | Capability | Engine | Integration | License | Notes |
 |---|---|---|---|---|
-| AV scanning | Microsoft Defender | `MpCmdRun.exe -Scan` + `Get-MpThreatDetection` via execFile/fixed scripts | OS component | Detect availability; passive mode when third-party AV is active |
-| YARA | **YARA-X** (VirusTotal) | CLI (`yr`) adapter or `yara-x` Node/C bindings | BSD-3-Clause | Successor to libyara; memory-safe |
-| Password recovery | hashcat | Separately installed executable, verified path + hash, execFile args | MIT | GPU; progress via `--status-json` |
-| Password recovery | John the Ripper (jumbo) | Separately installed executable; `*2john` extractors | GPL-2.0 (core) + mixed | Never bundled/linked → no license contamination |
-| Archive handling | 7-Zip | Separately installed `7z.exe` | LGPL-2.1 + unRAR restriction | For safe listing/extraction in quarantine/analysis |
+| AV scanning | Microsoft Defender | `MpCmdRun.exe -Scan` (file/folder with `-DisableRemediation`) + threat history via fixed scripts | OS component | Implemented; needs Windows verification |
+| YARA | **YARA-X** (VirusTotal) | user-installed `yr` CLI, run from the rules dir with relative `ns:file.yar` args | BSD-3-Clause | Implemented; tested with yr 1.20.0 |
+| Password recovery | hashcat | user-installed executable, execFile args | MIT | Implemented (orchestration only) |
+| Password recovery | John the Ripper (jumbo) | user-installed executable | GPL-2.0 (core) + mixed | Implemented; never bundled/linked; `*2john` extraction inside BLAZMA still TODO |
+| Archive handling | 7-Zip | Separately installed `7z.exe` | LGPL-2.1 + unRAR restriction | Not integrated (evaluated) |
 | DNS | Node `dns` (`Resolver`) | built-in | — | Through NetworkGate when querying external resolvers |
 | RDAP | IANA bootstrap + registry RDAP (HTTPS) | built-in fetch via NetworkGate | public data | Replaces port-43 WHOIS |
 | TLS | Node `tls.connect` + `getPeerCertificate` | built-in | — | Through NetworkGate |
-| Reputation | VirusTotal, AbuseIPDB, Shodan, Censys | HTTPS adapters via NetworkGate, user's own keys | service ToS | Hash lookup before any upload; upload needs explicit confirmation |
-| Reports (later PDF) | Electron `printToPDF` | built-in | — | HTML report → PDF without extra deps |
+| Reputation | VirusTotal, AbuseIPDB, Shodan | HTTPS adapters via NetworkGate, user's own keys | service ToS | Hash lookups only; file upload is not implemented. Censys not implemented |
+| OSINT | crt.sh, Wayback availability API, GitHub REST API, mail-domain DNS | HTTPS/DNS via NetworkGate | service ToS / public data | Public, unauthenticated sources only |
+| Reports | Electron `printToPDF` | built-in | — | HTML report → PDF in a hidden sandboxed window, JavaScript disabled |
 
 ## 9. Threat model (summary)
 
@@ -136,3 +146,34 @@ Writes are atomic (temp file + rename). Corrupt JSON is set aside, never crashes
 | Silent data exfiltration | Single NetworkGate, Offline Mode, Network Activity log, renderer has no network |
 | Supply-chain | Minimal deps, lockfile, license review, no postinstall downloads beyond Electron's official binary |
 | Privilege misuse | Runs unelevated; per-feature elevation with explanation (future) |
+| Evidence text (file names, malware strings) turns a report into an attack | Every value HTML-escaped, no scripts, `default-src 'none'` CSP in the report |
+| Compromised renderer opens arbitrary URLs/protocols | No `window.open`; `app:openLink` host allowlist; OSINT pivots re-derived in main |
+| Tampered packaged app / binary reused as a Node runtime | Electron fuses + asar integrity validation (§11) |
+
+## 10. Investigation and intelligence flows
+
+- **Cases** (`services/cases.ts`): one JSON file per case; evidence (`kind`, `value`, `source`,
+  `details`), notes and an automatic timeline. Pages add evidence through the shared `AddToCase`
+  component.
+- **Reports** (`core/report.ts` pure builder + `services/reports.ts`): HTML/JSON from a case in the
+  chosen language; PDF via `printToPDF`. Open/remove only touch files inside `reports/`.
+- **Threat Hunting** (`core/hunt.ts` + `services/hunt.ts`): types the query (IP/domain/hash/text),
+  matches with token boundaries across local stores and live read-only collectors, and returns a
+  hits timeline; persistence review flags autostart entries by location (prompts, not verdicts).
+- **OSINT** (`core/osint.ts` + `services/osint.ts`): validated target → selected sources through
+  `IntelService` helpers (NetworkGate, provenance URL + time per source). Pivot links:
+  renderer sends `(type, value, pivotId)` → main re-normalizes the target, rebuilds the link list,
+  picks the id, requires https, and opens it via `gate.run(...)` → `shell.openExternal` (blocked in
+  Offline Mode, recorded in Network Activity). The renderer never supplies a URL.
+- **External result links** (e.g. a VirusTotal page): `app:openLink(url)` accepts only https URLs
+  to `EXTERNAL_LINK_HOSTS` (no credentials/ports), then goes through NetworkGate.
+
+## 11. Packaging & hardening
+
+`electron-builder.yml` packages only `dist/` + `package.json` into `app.asar` (all code is bundled).
+Windows target: per-user NSIS, `asInvoker`, no elevation, Arabic + English installer, no publish or
+auto-update. Fuses flipped at package time: RunAsNode off, `NODE_OPTIONS` off, Node CLI inspect
+arguments off, embedded asar integrity validation on, only load app from asar. DevTools are
+disabled when packaged. `scripts/package-smoke.mjs` verifies a packaged build over CDP (renderer
+loads from asar, preload bridge present, no Node in the renderer). Verified on Linux; the Windows
+installer still needs to be built and verified on Windows.
