@@ -21,6 +21,7 @@ import { PasswordRecovery } from './pages/PasswordRecovery';
 import { Cases } from './pages/Cases';
 import { Reports } from './pages/Reports';
 import { ThreatHunting } from './pages/ThreatHunting';
+import { Osint } from './pages/Osint';
 
 function Page({ id }: { id: PageId }) {
   switch (id) {
@@ -40,6 +41,8 @@ function Page({ id }: { id: PageId }) {
       return <IpIntel />;
     case 'domain-intel':
       return <DomainIntel />;
+    case 'osint':
+      return <Osint />;
     case 'reputation':
       return <ReputationCenter />;
     case 'windows-forensics':

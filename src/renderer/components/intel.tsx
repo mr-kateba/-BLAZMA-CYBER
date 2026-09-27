@@ -63,6 +63,9 @@ export function SourcesTable({ sources }: { sources: LookupSource[] }) {
             ),
           },
           { key: 't', label: t('intel.col.time'), render: (s) => <span className="small nowrap">{formatDateTime(locale, s.queriedAt)}</span> },
+          ...(sources.some((s) => s.url)
+            ? [{ key: 'u', label: t('intel.col.url'), render: (s: LookupSource) => (s.url ? <Ltr mono breakAll className="tiny">{s.url}</Ltr> : '—') }]
+            : []),
         ]}
       />
     </Card>

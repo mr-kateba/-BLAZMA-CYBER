@@ -46,7 +46,8 @@
     "appearance": "Appearance",
     "language": "Language",
     "planned": "Soon",
-    "plannedTooltip": "Planned for phase {{phase}} — not available yet"
+    "plannedTooltip": "Planned for phase {{phase}} — not available yet",
+    "terminal": "PowerShell Terminal"
   },
   "topbar": {
     "search": "Search tools…",
@@ -216,7 +217,6 @@
     "modules": {
       "ipIntel": "Country, region, approximate city · ISP, organization, ASN · Reverse DNS and RDAP network range · Optional VPN/proxy/Tor/hosting indicators through your own API keys",
       "domainIntel": "DNS records (A, AAAA, MX, TXT, NS, CNAME) · RDAP/WHOIS registrar and dates · TLS certificate issuer, validity, SANs · Hosting ASN",
-      "osint": "IP, domain, username, email and hash targets · Lawful public sources only · Source, time and local/external label for every result",
       "reputation": "Optional VirusTotal, AbuseIPDB, Shodan and Censys lookups · Hash lookups before any upload · Uploads only with explicit confirmation",
       "securityCenter": "Quick, full, file and folder scans through Microsoft Defender · Engine and definition status · Combined verdict with YARA and static analysis",
       "yara": "Local YARA-X engine · Scan files and folders · Rule manager, rule packs, custom rules · Matched rule, namespace, tags and metadata",
@@ -226,7 +226,8 @@
       "threatHunting": "Search by hash, IP, domain, filename, process, service · Persistence indicators · Correlated timeline across modules",
       "cases": "Local cases (CASE-YYYY-NNN) · Evidence kept separate from analyst notes · Tags, timeline and evidence metadata",
       "reports": "HTML and JSON reports in Arabic or English · Case, findings, indicators and hashes · No machine identifiers unless you choose to include them",
-      "engines": "Microsoft Defender detection and status · YARA-X engine and rule packs · Password recovery engine locations"
+      "engines": "Microsoft Defender detection and status · YARA-X engine and rule packs · Password recovery engine locations",
+      "terminal": "A separate PowerShell session inside BLAZMA · Clearly separated from GUI operations (GUI never builds commands from your input) · No elevation without an explicit request"
     }
   },
   "file": {
@@ -434,7 +435,10 @@
       "ip_address": "IP address",
       "domain": "Domain name",
       "file_hash": "File hash",
-      "none": "Nothing identifying (public reference data)"
+      "none": "Nothing identifying (public reference data)",
+      "email": "Email address",
+      "username": "Username",
+      "url": "URL"
     },
     "module": {
       "dashboard": "Dashboard",
@@ -442,7 +446,8 @@
       "domainIntel": "Domain Intelligence",
       "reputation": "Reputation Center",
       "fileAnalyzer": "File Analyzer",
-      "networkToolkit": "Network Toolkit"
+      "networkToolkit": "Network Toolkit",
+      "osint": "OSINT Workspace"
     },
     "clearTitle": "Clear local data",
     "clearSub": "Permanently removes data stored by BLAZMA CYBER on this machine.",
@@ -537,7 +542,8 @@
       "reputation_lookup": "Reputation lookup",
       "forensics": "Forensics collection",
       "port_check": "Port check",
-      "discovery": "Device discovery"
+      "discovery": "Device discovery",
+      "osint_lookup": "OSINT lookup"
     },
     "summary": {
       "hashed": "Hashes calculated",
@@ -636,7 +642,8 @@
     "wordlist_not_found": "The selected wordlist file was not found.",
     "case_not_found": "This case no longer exists.",
     "note_not_found": "This note no longer exists.",
-    "report_not_found": "This report no longer exists."
+    "report_not_found": "This report no longer exists.",
+    "invalid_osint_target": "This value isn't valid for the selected target type."
   },
   "defender": {
     "status": {
@@ -780,7 +787,8 @@
       "source": "Source",
       "status": "Status",
       "time": "Queried",
-      "where": "Type"
+      "where": "Type",
+      "url": "Query"
     },
     "ok": "OK",
     "failed": "Failed",
@@ -795,7 +803,11 @@
       "infrastructure": "Infrastructure (ASN)",
       "reputation:virustotal": "VirusTotal",
       "reputation:abuseipdb": "AbuseIPDB",
-      "reputation:shodan": "Shodan"
+      "reputation:shodan": "Shodan",
+      "osint:ct": "Certificate Transparency (crt.sh)",
+      "osint:wayback": "Wayback Machine",
+      "osint:github": "GitHub API",
+      "osint:emailDns": "Mail domain DNS"
     },
     "options": "Sources to query",
     "needsKey": "needs API key",
@@ -1288,7 +1300,8 @@
       "forensics": "Windows Forensics",
       "networkToolkit": "Network Toolkit",
       "manual": "Manual",
-      "quarantine": "Quarantine"
+      "quarantine": "Quarantine",
+      "osint": "OSINT Workspace"
     }
   },
   "hunt": {
@@ -1341,6 +1354,95 @@
       "startup": "Startup",
       "task": "Scheduled task",
       "service": "Service"
+    }
+  },
+  "osint": {
+    "title": "OSINT Workspace",
+    "subtitle": "Lawful public sources for a domain, email, username or URL — with the source and time of every result.",
+    "lawful": "Use only for lawful investigations of targets you are authorized to research. BLAZMA queries public sources you select, nothing more, and never collects private data.",
+    "type": {
+      "domain": "Domain",
+      "email": "Email",
+      "username": "Username",
+      "url": "URL"
+    },
+    "placeholder": {
+      "domain": "e.g. example.com",
+      "email": "e.g. someone@example.com",
+      "username": "e.g. octocat",
+      "url": "e.g. https://example.com/page"
+    },
+    "opt": {
+      "ct": "Certificate Transparency (crt.sh)",
+      "wayback": "Wayback Machine snapshots",
+      "github": "GitHub public profile",
+      "emailDns": "Mail domain DNS (MX, SPF, DMARC)"
+    },
+    "externalNote": "Selected sources receive the target when you start the lookup. Pivot links open in your browser only when you click them. Everything is recorded in Network Activity.",
+    "ct": {
+      "title": "Certificate Transparency",
+      "sub": "Certificates publicly logged for this domain and its subdomains",
+      "certs": "Certificates",
+      "names": "Unique names",
+      "firstSeen": "First logged",
+      "lastSeen": "Last logged",
+      "issuers": "Top issuers",
+      "none": "No logged certificates found.",
+      "subdomains": "Names seen in certificates",
+      "name": "Name",
+      "truncated": "Showing the first {{count}} names"
+    },
+    "wayback": {
+      "title": "Wayback Machine",
+      "sub": "Internet Archive snapshots",
+      "first": "Earliest snapshot",
+      "last": "Latest snapshot",
+      "none": "No archived snapshots found."
+    },
+    "github": {
+      "title": "GitHub",
+      "sub": "Public profile (unauthenticated API)",
+      "none": "No public GitHub account with this name.",
+      "login": "Account",
+      "name": "Name",
+      "company": "Company",
+      "location": "Location",
+      "blog": "Website",
+      "bio": "Bio",
+      "repos": "Public repositories",
+      "followers": "Followers",
+      "created": "Created"
+    },
+    "email": {
+      "title": "Mail domain",
+      "sub": "Only the domain part is queried, never the full address",
+      "domain": "Domain",
+      "accepts": "Accepts mail",
+      "mx": "MX records",
+      "noMx": "No MX records",
+      "note": "This does not verify that the mailbox exists — BLAZMA never probes mail servers."
+    },
+    "pivots": {
+      "title": "Pivot to public sources",
+      "sub": "Opens the site in your browser. Blocked in Offline Mode and recorded in Network Activity.",
+      "open": "Open in browser",
+      "confirmTitle": "Open {{site}}?",
+      "confirmBody": "Your browser will open {{host}}. The site will receive: {{data}}."
+    },
+    "pivot": {
+      "crtsh": "crt.sh",
+      "wayback": "Wayback Machine",
+      "urlscan": "urlscan.io",
+      "virustotal": "VirusTotal",
+      "securitytrails": "SecurityTrails",
+      "duckduckgo": "DuckDuckGo",
+      "hibp": "Have I Been Pwned",
+      "github": "GitHub",
+      "gitlab": "GitLab",
+      "reddit": "Reddit",
+      "x": "X",
+      "keybase": "Keybase",
+      "hackernews": "Hacker News"
     }
   }
 }

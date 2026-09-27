@@ -143,8 +143,9 @@ export class IntelService {
 
   // ------------------------------------------------------------ HTTP helpers
 
-  /** GET JSON through the gate, following up to 3 https redirects (each hop is gated/logged). */
-  private async getJson(url: string, meta: { module: string; service: string; dataKind: string; headers?: Record<string, string>; authenticated?: boolean }): Promise<unknown | null> {
+  /** GET JSON through the gate, following up to 3 https redirects (each hop is gated/logged). Shared with OSINT. */
+  async getJson(url: string, meta: { module: string; service: string; dataKind: string; headers?: Record<string, string>; authenticated?: boolean; maxBytes?: number; timeoutMs?: number }): Promise<unknown | null> {
+    const maxBytes = meta.maxBytes ?? MAX_JSON_BYTES;
     let current = url;
     for (let hop = 0; hop < 4; hop++) {
       const res = await this.gate.request({
@@ -154,7 +155,7 @@ export class IntelService {
         dataKind: meta.dataKind,
         redirect: 'manual',
         init: { headers: { accept: 'application/rdap+json, application/json', ...(meta.headers ?? {}) } },
-        timeoutMs: 15_000,
+        timeoutMs: meta.timeoutMs ?? 15_000,
       });
       if (res.status >= 300 && res.status < 400) {
         const loc = res.headers.get('location');
@@ -170,9 +171,9 @@ export class IntelService {
       if (res.status === 429) throw new IntelError('rate_limited');
       if (!res.ok) throw new IntelError('api_error');
       const len = Number(res.headers.get('content-length') ?? 0);
-      if (len > MAX_JSON_BYTES) throw new IntelError('response_too_large');
+      if (len > maxBytes) throw new IntelError('response_too_large');
       const text = await res.text();
-      if (text.length > MAX_JSON_BYTES) throw new IntelError('response_too_large');
+      if (text.length > maxBytes) throw new IntelError('response_too_large');
       try {
         return JSON.parse(text);
       } catch {
@@ -358,8 +359,8 @@ export class IntelService {
     return { results: results.filter((r): r is ReputationResult => !!r), sources };
   }
 
-  private async dnsRecords(domain: string): Promise<DnsRecords> {
-    return this.gate.run({ module: 'domainIntel', service: 'dns', host: this.dnsHost(), dataKind: 'privacy.data.domain' }, async () => {
+  async dnsRecords(domain: string, module = 'domainIntel'): Promise<DnsRecords> {
+    return this.gate.run({ module, service: 'dns', host: this.dnsHost(), dataKind: 'privacy.data.domain' }, async () => {
       const r = this.resolver;
       const [a, aaaa, mx, txt, ns, cname, soa, caa, dmarcTxt] = await Promise.all([
         r.resolve4(domain).catch(dnsEmpty),
@@ -388,16 +389,18 @@ export class IntelService {
     });
   }
 
-  private async step<T>(sources: LookupSource[], id: string, enabled: boolean, skipReason: string | null, fn: () => Promise<T>): Promise<T | null> {
+  /** Runs one independent source and records its outcome (shared with OSINT; `url` = provenance). */
+  async step<T>(sources: LookupSource[], id: string, enabled: boolean, skipReason: string | null, fn: () => Promise<T>, url?: string): Promise<T | null> {
     if (!enabled) return null;
     const queriedAt = new Date(this.now()).toISOString();
+    const prov = url ? { url } : {};
     if (skipReason) {
-      sources.push({ id, external: true, ok: false, error: skipReason, queriedAt });
+      sources.push({ id, external: true, ok: false, error: skipReason, queriedAt, ...prov });
       return null;
     }
     try {
       const r = await fn();
-      sources.push({ id, external: true, ok: true, queriedAt });
+      sources.push({ id, external: true, ok: true, queriedAt, ...prov });
       return r;
     } catch (e) {
       const code = (e as { code?: string }).code;
@@ -407,7 +410,7 @@ export class IntelService {
         : code && dnsCodes[code] ? dnsCodes[code]!
         : (e as Error).name === 'AbortError' || (e as Error).name === 'TimeoutError' ? 'timeout'
         : 'network_error';
-      sources.push({ id, external: true, ok: false, error: known, queriedAt });
+      sources.push({ id, external: true, ok: false, error: known, queriedAt, ...prov });
       return null;
     }
   }

@@ -68,6 +68,10 @@ const api: BlazmaApi = {
     remove: (id) => invoke('yara:remove', id),
     scan: (target, recursive, taskId) => invoke('yara:scan', target, recursive, taskId),
   },
+  osint: {
+    lookup: (type, value, options) => invoke('osint:lookup', type, value, options),
+    openPivot: (type, value, pivotId) => invoke('osint:openPivot', type, value, pivotId),
+  },
   intel: {
     ip: (ip, options) => invoke('intel:ip', ip, options),
     domain: (domain, options) => invoke('intel:domain', domain, options),

@@ -10,6 +10,7 @@ import type { PeInfo } from '../core/pe';
 import type { EncryptionInfo } from '../core/encrypted';
 import type { ExtractedIocs } from '../core/ioc';
 import type { Assessment } from '../core/detection';
+import type { CtSummary, GithubProfile, OsintPivot, OsintTargetType, WaybackSnapshot } from '../core/osint';
 
 export type Theme = 'dark' | 'midnight';
 export type StartPage = 'dashboard' | 'file-analyzer' | 'hash-lab' | 'privacy';
@@ -255,7 +256,7 @@ export interface ActivityEntry {
   kind:
     | 'file_analysis' | 'hash_file' | 'hash_text' | 'hash_identify' | 'hash_compare'
     | 'defender_scan' | 'yara_scan' | 'quarantine' | 'restore'
-    | 'ip_lookup' | 'domain_lookup' | 'reputation_lookup'
+    | 'ip_lookup' | 'domain_lookup' | 'reputation_lookup' | 'osint_lookup'
     | 'forensics' | 'port_check' | 'discovery';
   /** Displayable subject, e.g. a filename. Never a secret. */
   subject: string;
@@ -289,6 +290,8 @@ export interface LookupSource {
   /** i18n error code when !ok (e.g. offline_mode, api_key_missing, not_public_ip). */
   error?: string;
   queriedAt: string;
+  /** Provenance: the public endpoint that produced the data (OSINT). Never contains API keys. */
+  url?: string;
 }
 
 export interface IpRdap {
@@ -433,6 +436,39 @@ export interface DomainLookupResult {
   tls: TlsInfo | null;
   infrastructure: Array<{ ip: string; asn: AsnInfo | null }>;
   reputation: ReputationResult[];
+  sources: LookupSource[];
+}
+
+export type { OsintTargetType } from '../core/osint';
+
+export interface OsintOptions {
+  /** Certificate Transparency (crt.sh) — domain */
+  ct: boolean;
+  /** Wayback Machine first/last snapshot — domain, url */
+  wayback: boolean;
+  /** GitHub public profile — username */
+  github: boolean;
+  /** MX / SPF / DMARC of the email domain via your resolver — email */
+  emailDns: boolean;
+}
+
+export interface EmailDomainInfo {
+  domain: string;
+  mx: Array<{ exchange: string; priority: number }>;
+  spf: string | null;
+  dmarc: string | null;
+  /** Null MX (RFC 7505) or no MX/A: the domain doesn't accept mail. */
+  acceptsMail: boolean;
+}
+
+export interface OsintResult {
+  type: OsintTargetType;
+  value: string;
+  ct: CtSummary | null;
+  wayback: { first: WaybackSnapshot | null; last: WaybackSnapshot | null } | null;
+  github: GithubProfile | null;
+  email: EmailDomainInfo | null;
+  pivots: OsintPivot[];
   sources: LookupSource[];
 }
 
@@ -832,6 +868,11 @@ export interface BlazmaApi {
     importFile(): Promise<Result<YaraRuleFile | null>>;
     remove(id: string): Promise<Result<YaraRuleFile[]>>;
     scan(target: string, recursive: boolean, taskId: string): Promise<Result<YaraScanResult>>;
+  };
+  osint: {
+    lookup(type: OsintTargetType, value: string, options: OsintOptions): Promise<Result<OsintResult>>;
+    /** Opens a pivot link in the default browser (blocked in Offline Mode, recorded in Network Activity). */
+    openPivot(type: OsintTargetType, value: string, pivotId: string): Promise<Result<void>>;
   };
   intel: {
     ip(ip: string, options: IpLookupOptions): Promise<Result<IpLookupResult>>;

@@ -1,6 +1,6 @@
 import {
   Crosshair, Earth, FileSearch, FolderOpen, Hash, KeyRound, Languages, Link2, MonitorCog, Network, Palette, Plug,
-  ScanSearch, ScrollText, ShieldCheck, ShieldHalf, UserSearch, LayoutDashboard, Cpu, Scale, type LucideIcon,
+  ScanSearch, ScrollText, ShieldCheck, ShieldHalf, SquareTerminal, UserSearch, LayoutDashboard, Cpu, Scale, type LucideIcon,
 } from 'lucide-react';
 
 export type PageId =
@@ -8,7 +8,7 @@ export type PageId =
   | 'ip-intel' | 'domain-intel' | 'osint' | 'reputation'
   | 'security-center' | 'file-analyzer' | 'yara' | 'hash-lab'
   | 'password-recovery'
-  | 'windows-forensics' | 'network-toolkit' | 'threat-hunting'
+  | 'windows-forensics' | 'network-toolkit' | 'threat-hunting' | 'terminal'
   | 'cases' | 'reports'
   | 'privacy'
   | 'settings-api' | 'settings-engines' | 'settings-appearance' | 'settings-language';
@@ -35,7 +35,7 @@ export const NAV: NavSection[] = [
     items: [
       { id: 'ip-intel', labelKey: 'nav.ipIntel', icon: Earth },
       { id: 'domain-intel', labelKey: 'nav.domainIntel', icon: Link2 },
-      { id: 'osint', labelKey: 'nav.osint', icon: UserSearch, planned: p(6, 'osint') },
+      { id: 'osint', labelKey: 'nav.osint', icon: UserSearch },
       { id: 'reputation', labelKey: 'nav.reputation', icon: Scale },
     ],
   },
@@ -58,6 +58,7 @@ export const NAV: NavSection[] = [
       { id: 'windows-forensics', labelKey: 'nav.windowsForensics', icon: MonitorCog },
       { id: 'network-toolkit', labelKey: 'nav.networkToolkit', icon: Network },
       { id: 'threat-hunting', labelKey: 'nav.threatHunting', icon: Crosshair },
+      { id: 'terminal', labelKey: 'nav.terminal', icon: SquareTerminal, planned: p(7, 'terminal') },
     ],
   },
   {

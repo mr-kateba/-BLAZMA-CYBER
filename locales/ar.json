@@ -46,7 +46,8 @@
     "appearance": "المظهر",
     "language": "اللغة",
     "planned": "قريبًا",
-    "plannedTooltip": "مخطط للمرحلة {{phase}} — غير متاح بعد"
+    "plannedTooltip": "مخطط للمرحلة {{phase}} — غير متاح بعد",
+    "terminal": "طرفية PowerShell"
   },
   "topbar": {
     "search": "ابحث عن أداة…",
@@ -216,7 +217,6 @@
     "modules": {
       "ipIntel": "الدولة والمنطقة والمدينة التقريبية · مزوّد الخدمة والمنظمة و ASN · ‏DNS العكسي ونطاق الشبكة عبر RDAP · مؤشرات VPN/Proxy/Tor/الاستضافة اختياريًا بمفاتيحك الخاصة",
       "domainIntel": "سجلات DNS ‏(A و AAAA و MX و TXT و NS و CNAME) · المسجّل والتواريخ عبر RDAP/WHOIS · مُصدر شهادة TLS وصلاحيتها و SANs · ‏ASN الاستضافة",
-      "osint": "أهداف: IP، نطاق، اسم مستخدم، بريد، هاش · مصادر عامة ومشروعة فقط · المصدر والوقت ونوع الاستعلام (محلي/خارجي) لكل نتيجة",
       "reputation": "استعلامات اختيارية من VirusTotal و AbuseIPDB و Shodan و Censys · البحث بالهاش قبل أي رفع · لا رفع للملفات إلا بموافقة صريحة",
       "securityCenter": "فحص سريع وكامل وملف ومجلد عبر Microsoft Defender · حالة المحرك والتعريفات · حكم موحّد مع YARA والتحليل الثابت",
       "yara": "محرك YARA-X محلي · فحص الملفات والمجلدات · إدارة القواعد وحزمها والقواعد المخصصة · القاعدة المطابقة ونطاقها ووسومها وبياناتها",
@@ -226,7 +226,8 @@
       "threatHunting": "البحث بالهاش و IP والنطاق واسم الملف والعملية والخدمة · مؤشرات الاستمرارية · خط زمني موحّد عبر الوحدات",
       "cases": "قضايا محلية (CASE-YYYY-NNN) · فصل الأدلة عن ملاحظات المحلل · وسوم وخط زمني وبيانات الأدلة",
       "reports": "تقارير HTML و JSON بالعربية أو الإنجليزية · القضية والنتائج والمؤشرات والهاشات · دون معلومات تعريفية عن الجهاز إلا باختيارك",
-      "engines": "كشف Microsoft Defender وحالته · محرك YARA-X وحزم القواعد · مواقع محركات استعادة كلمات المرور"
+      "engines": "كشف Microsoft Defender وحالته · محرك YARA-X وحزم القواعد · مواقع محركات استعادة كلمات المرور",
+      "terminal": "جلسة PowerShell منفصلة داخل BLAZMA · مفصولة بوضوح عن عمليات الواجهة (الواجهة لا تبني أوامر من مدخلاتك أبدًا) · بلا صلاحيات مرتفعة دون طلب صريح"
     }
   },
   "file": {
@@ -434,7 +435,10 @@
       "ip_address": "عنوان IP",
       "domain": "اسم نطاق",
       "file_hash": "هاش ملف",
-      "none": "لا شيء يعرّف بك (بيانات مرجعية عامة)"
+      "none": "لا شيء يعرّف بك (بيانات مرجعية عامة)",
+      "email": "عنوان بريد إلكتروني",
+      "username": "اسم مستخدم",
+      "url": "رابط"
     },
     "module": {
       "dashboard": "لوحة التحكم",
@@ -442,7 +446,8 @@
       "domainIntel": "معلومات النطاقات",
       "reputation": "مركز السمعة",
       "fileAnalyzer": "محلل الملفات",
-      "networkToolkit": "أدوات الشبكة"
+      "networkToolkit": "أدوات الشبكة",
+      "osint": "مساحة OSINT"
     },
     "clearTitle": "مسح البيانات المحلية",
     "clearSub": "يحذف نهائيًا البيانات التي خزّنها BLAZMA CYBER على هذا الجهاز.",
@@ -537,7 +542,8 @@
       "reputation_lookup": "فحص السمعة",
       "forensics": "جمع جنائي",
       "port_check": "فحص منافذ",
-      "discovery": "اكتشاف الأجهزة"
+      "discovery": "اكتشاف الأجهزة",
+      "osint_lookup": "استعلام OSINT"
     },
     "summary": {
       "hashed": "حُسبت الهاشات",
@@ -636,7 +642,8 @@
     "wordlist_not_found": "لم يُعثر على ملف قائمة الكلمات المحدد.",
     "case_not_found": "هذه القضية لم تعد موجودة.",
     "note_not_found": "هذه الملاحظة لم تعد موجودة.",
-    "report_not_found": "هذا التقرير لم يعد موجودًا."
+    "report_not_found": "هذا التقرير لم يعد موجودًا.",
+    "invalid_osint_target": "هذه القيمة غير صالحة لنوع الهدف المحدد."
   },
   "defender": {
     "status": {
@@ -780,7 +787,8 @@
       "source": "المصدر",
       "status": "الحالة",
       "time": "وقت الاستعلام",
-      "where": "النوع"
+      "where": "النوع",
+      "url": "الاستعلام"
     },
     "ok": "تم",
     "failed": "فشل",
@@ -795,7 +803,11 @@
       "infrastructure": "البنية التحتية (ASN)",
       "reputation:virustotal": "VirusTotal",
       "reputation:abuseipdb": "AbuseIPDB",
-      "reputation:shodan": "Shodan"
+      "reputation:shodan": "Shodan",
+      "osint:ct": "شفافية الشهادات (crt.sh)",
+      "osint:wayback": "أرشيف Wayback Machine",
+      "osint:github": "واجهة GitHub",
+      "osint:emailDns": "DNS نطاق البريد"
     },
     "options": "المصادر المطلوب الاستعلام منها",
     "needsKey": "يحتاج مفتاح API",
@@ -1288,7 +1300,8 @@
       "forensics": "التحليل الجنائي",
       "networkToolkit": "أدوات الشبكة",
       "manual": "يدوي",
-      "quarantine": "الحجر"
+      "quarantine": "الحجر",
+      "osint": "مساحة OSINT"
     }
   },
   "hunt": {
@@ -1341,6 +1354,95 @@
       "startup": "بدء التشغيل",
       "task": "مهمة مجدولة",
       "service": "خدمة"
+    }
+  },
+  "osint": {
+    "title": "مساحة OSINT",
+    "subtitle": "مصادر عامة ومشروعة لنطاق أو بريد أو اسم مستخدم أو رابط — مع مصدر ووقت كل نتيجة.",
+    "lawful": "استخدمها فقط في تحقيقات مشروعة لأهداف مخوَّل بالبحث عنها. يستعلم BLAZMA المصادر العامة التي تختارها فقط، ولا يجمع أي بيانات خاصة.",
+    "type": {
+      "domain": "نطاق",
+      "email": "بريد إلكتروني",
+      "username": "اسم مستخدم",
+      "url": "رابط"
+    },
+    "placeholder": {
+      "domain": "مثال: example.com",
+      "email": "مثال: someone@example.com",
+      "username": "مثال: octocat",
+      "url": "مثال: https://example.com/page"
+    },
+    "opt": {
+      "ct": "شفافية الشهادات (crt.sh)",
+      "wayback": "لقطات Wayback Machine",
+      "github": "ملف GitHub العام",
+      "emailDns": "سجلات DNS لنطاق البريد (MX وSPF وDMARC)"
+    },
+    "externalNote": "تستلم المصادر المختارة الهدف عند بدء الاستعلام. روابط التتبع لا تُفتح في متصفحك إلا عند النقر عليها. كل ذلك يُسجَّل في نشاط الشبكة.",
+    "ct": {
+      "title": "شفافية الشهادات",
+      "sub": "الشهادات المسجلة علنًا لهذا النطاق ونطاقاته الفرعية",
+      "certs": "الشهادات",
+      "names": "أسماء فريدة",
+      "firstSeen": "أول تسجيل",
+      "lastSeen": "آخر تسجيل",
+      "issuers": "أبرز الجهات المُصدِرة",
+      "none": "لم يُعثر على شهادات مسجلة.",
+      "subdomains": "الأسماء الظاهرة في الشهادات",
+      "name": "الاسم",
+      "truncated": "عرض أول {{count}} اسم"
+    },
+    "wayback": {
+      "title": "أرشيف Wayback Machine",
+      "sub": "لقطات أرشيف الإنترنت",
+      "first": "أقدم لقطة",
+      "last": "أحدث لقطة",
+      "none": "لا توجد لقطات مؤرشفة."
+    },
+    "github": {
+      "title": "حساب GitHub",
+      "sub": "الملف العام (واجهة دون مصادقة)",
+      "none": "لا يوجد حساب GitHub عام بهذا الاسم.",
+      "login": "الحساب",
+      "name": "الاسم",
+      "company": "الشركة",
+      "location": "الموقع",
+      "blog": "الموقع الإلكتروني",
+      "bio": "النبذة",
+      "repos": "المستودعات العامة",
+      "followers": "المتابعون",
+      "created": "تاريخ الإنشاء"
+    },
+    "email": {
+      "title": "نطاق البريد",
+      "sub": "يُستعلم عن جزء النطاق فقط، وليس العنوان الكامل",
+      "domain": "النطاق",
+      "accepts": "يستقبل البريد",
+      "mx": "سجلات MX",
+      "noMx": "لا توجد سجلات MX",
+      "note": "هذا لا يثبت وجود صندوق البريد — BLAZMA لا يفحص خوادم البريد أبدًا."
+    },
+    "pivots": {
+      "title": "التتبع في مصادر عامة",
+      "sub": "يفتح الموقع في متصفحك. محجوب في وضع عدم الاتصال ومُسجَّل في نشاط الشبكة.",
+      "open": "فتح في المتصفح",
+      "confirmTitle": "فتح {{site}}؟",
+      "confirmBody": "سيفتح متصفحك {{host}}. سيستلم الموقع: {{data}}."
+    },
+    "pivot": {
+      "crtsh": "موقع crt.sh",
+      "wayback": "أرشيف Wayback Machine",
+      "urlscan": "موقع urlscan.io",
+      "virustotal": "موقع VirusTotal",
+      "securitytrails": "موقع SecurityTrails",
+      "duckduckgo": "بحث DuckDuckGo",
+      "hibp": "موقع Have I Been Pwned",
+      "github": "موقع GitHub",
+      "gitlab": "موقع GitLab",
+      "reddit": "موقع Reddit",
+      "x": "منصة X",
+      "keybase": "موقع Keybase",
+      "hackernews": "موقع Hacker News"
     }
   }
 }
