@@ -1349,7 +1349,15 @@
       "language": "Language",
       "created": "Created",
       "size": "Size"
-    }
+    },
+    "formatName": {
+      "html": "HTML",
+      "pdf": "PDF",
+      "json": "JSON",
+      "csv": "CSV (IOCs)",
+      "stix": "STIX 2.1"
+    },
+    "iocOnly": "Indicator export: hashes, IP addresses, domains, URLs, email addresses and file names from this case’s evidence (no notes or timeline). STIX 2.1 imports into MISP, OpenCTI and other threat-intelligence platforms."
   },
   "report": {
     "title": "Investigation report",
@@ -1796,6 +1804,10 @@
     "memory_implants": {
       "title": "What is a memory implant?",
       "text": "Some malware never saves a program to disk. Instead it hides its code inside a normal running program — for example by replacing it (\"process hollowing\") or injecting code into it. File scanners cannot see this. HollowsHunter compares each running program with its file on disk and looks for code that should not be there."
+    },
+    "attack": {
+      "title": "What is MITRE ATT&CK?",
+      "text": "A public catalogue of the techniques attackers use, grouped by the stage of an attack — from getting in, to staying hidden, to stealing data. Mapping matches to it shows which stages of an attack may have happened."
     }
   },
   "mode": {
@@ -2270,5 +2282,13 @@
     "whatToDo": "What should I do?",
     "advice": "Do not panic and do not delete anything yet. Run a Microsoft Defender full scan, and check whether you recognise the program (games and security tools often explain \"modified in memory\"). \"Hidden code\" in a program you did not expect is serious: disconnect from the internet and ask for help.",
     "openSecurityCenter": "Open Security Center"
+  },
+  "attack": {
+    "title": "MITRE ATT&CK map",
+    "subtitle": "Techniques behind the matches, by attack stage (ATT&CK {{version}})",
+    "open": "Open this technique on attack.mitre.org",
+    "count": "{{n}} match(es)",
+    "notice": "MITRE ATT&CK® is a registered trademark of The MITRE Corporation; © The MITRE Corporation, reproduced with permission.",
+    "was": "was {{id}}"
   }
 }

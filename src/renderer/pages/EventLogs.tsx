@@ -6,6 +6,7 @@ import { OptionPills } from '../components/intel';
 import { useApp } from '../components/AppContext';
 import { useI18n } from '../i18n/I18nProvider';
 import { formatDateTime, formatDuration, newTaskId } from '../format';
+import { AttackMatrix } from '../components/AttackMatrix';
 
 const LEVEL_TONE: Record<EventLevel, Tone> = { critical: 'red', high: 'red', medium: 'amber', low: 'blue', informational: 'gray' };
 const SHOW = 500;
@@ -114,6 +115,8 @@ export function EventLogs() {
                 <div className="tiny dim">{t('evlog.disclaimer')}</div>
               </div>
             </Card>
+
+            {r.techniques.length > 0 && <AttackMatrix observed={r.techniques} />}
 
             {r.topRules.length > 0 && (
               <Card title={t('evlog.rulesTitle')} subtitle={t('evlog.rulesSub')}>

@@ -33,7 +33,7 @@ export function Reports() {
             rows={list}
             columns={[
               { key: 'c', label: t('reports.col.case'), render: (r) => <div><Ltr mono className="small">{r.caseId}</Ltr><div>{r.caseName}</div></div> },
-              { key: 'f', label: t('reports.col.format'), render: (r) => <Badge tone="blue">{r.format.toUpperCase()}</Badge> },
+              { key: 'f', label: t('reports.col.format'), render: (r) => <Badge tone="blue">{t(`reports.formatName.${r.format}`)}</Badge> },
               { key: 'l', label: t('reports.col.language'), render: (r) => (r.language === 'ar' ? 'العربية' : 'English') },
               { key: 'd', label: t('reports.col.created'), render: (r) => <span className="small nowrap">{formatDateTime(locale, r.createdAt)}</span> },
               { key: 's', label: t('reports.col.size'), render: (r) => <span className="small">{formatBytes(t, r.sizeBytes)}</span> },

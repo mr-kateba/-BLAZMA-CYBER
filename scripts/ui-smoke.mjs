@@ -318,6 +318,19 @@ try {
   assert.ok(html.includes('203.0.113.77'), 'report contains the evidence');
   assert.ok(!html.includes('<b>wave</b>') && html.includes('&lt;b&gt;wave&lt;/b&gt;'), 'case name must be escaped');
   assert.ok(!/<script/i.test(html), 'report contains no scripts');
+  // Phase F: IOC export as STIX 2.1 and CSV from the same case.
+  for (const [fmt, ext] of [['STIX 2.1', '.stix.json'], ['CSV (مؤشرات)', '.csv']]) {
+    await win.getByRole('button', { name: fmt, exact: true }).click();
+    await win.getByRole('button', { name: 'إنشاء تقرير' }).first().click();
+    const deadline = Date.now() + 20000;
+    while (!readdirSync(repDir).some((f) => f.endsWith(ext)) && Date.now() < deadline) await win.waitForTimeout(200);
+  }
+  const stix = JSON.parse(readdirSync(repDir).filter((f) => f.endsWith('.stix.json')).map((f) => readFileSync(join(repDir, f), 'utf8'))[0]);
+  assert.equal(stix.type, 'bundle');
+  assert.ok(stix.objects.some((o) => o.type === 'indicator' && o.pattern === "[ipv4-addr:value = '203.0.113.77']"), 'STIX has the IP indicator');
+  const csv = readdirSync(repDir).filter((f) => f.endsWith('.csv')).map((f) => readFileSync(join(repDir, f), 'utf8'))[0];
+  assert.ok(csv.startsWith('type,value,label') && csv.includes('ipv4,203.0.113.77'), 'CSV has the IP indicator');
+  await win.getByRole('button', { name: 'HTML', exact: true }).click();
 
   await win.locator('.nav-item', { hasText: 'التقارير' }).click();
   await win.getByText('HTML').first().waitFor();
@@ -466,6 +479,7 @@ try {
     await stubOpen(evtx);
     await win.getByRole('button', { name: /evtx/ }).click();
     await win.getByText('النتيجة', { exact: true }).waitFor({ timeout: 300000 });
+    if (process.env.BLAZMA_TEST_EVTX) await win.getByText('خريطة MITRE ATT&CK').waitFor();
     await win.waitForTimeout(300);
     await win.screenshot({ path: join(out, '36-event-logs-ar.png'), fullPage: true });
   } else {

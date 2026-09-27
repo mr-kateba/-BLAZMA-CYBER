@@ -788,7 +788,8 @@ export interface InvestigationCase {
 
 export type CaseSummary = Pick<InvestigationCase, 'id' | 'name' | 'status' | 'tags' | 'createdAt' | 'updatedAt'> & { evidenceCount: number; noteCount: number };
 
-export type ReportFormat = 'html' | 'json' | 'pdf';
+/** csv / stix = indicators only (IOC export). */
+export type ReportFormat = 'html' | 'json' | 'pdf' | 'csv' | 'stix';
 
 export interface ReportOptions {
   format: ReportFormat;

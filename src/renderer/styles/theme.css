@@ -1562,3 +1562,40 @@ table.data tbody tr:hover td {
   line-height: 1.7;
   color: var(--text-2);
 }
+
+/* MITRE ATT&CK matrix (observed techniques by tactic) */
+.attack-matrix {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-block-end: 6px;
+}
+.attack-col {
+  flex: 0 0 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.attack-tactic {
+  font-weight: 600;
+  font-size: 13px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(139, 92, 246, 0.12);
+}
+.attack-tech {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: start;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.02);
+  color: inherit;
+  cursor: pointer;
+}
+.attack-tech:hover {
+  border-color: rgba(139, 92, 246, 0.5);
+}

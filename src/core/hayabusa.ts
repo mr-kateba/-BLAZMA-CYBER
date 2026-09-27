@@ -33,6 +33,8 @@ export interface EventHuntSummary {
   byLevel: Record<EventLevel, number>;
   topRules: Array<{ rule: string; level: EventLevel; count: number; author: string | null }>;
   tactics: Array<{ id: string; count: number }>;
+  /** MITRE ATT&CK technique ids with match counts. */
+  techniques: Array<{ id: string; count: number }>;
   computers: string[];
   first: string | null;
   last: string | null;
@@ -99,6 +101,7 @@ export class HuntAccumulator {
   private byLevel: Record<EventLevel, number> = { critical: 0, high: 0, medium: 0, low: 0, informational: 0 };
   private rules = new Map<string, { rule: string; level: EventLevel; count: number; author: string | null }>();
   private tactics = new Map<string, number>();
+  private techniques = new Map<string, number>();
   private computers = new Set<string>();
   private first: string | null = null;
   private last: string | null = null;
@@ -114,6 +117,7 @@ export class HuntAccumulator {
     r.count++;
     this.rules.set(d.rule, r);
     for (const t of d.tactics) this.tactics.set(t, (this.tactics.get(t) ?? 0) + 1);
+    for (const t of d.techniques) this.techniques.set(t, (this.techniques.get(t) ?? 0) + 1);
     if (d.computer && this.computers.size < 50) this.computers.add(d.computer);
     if (d.time) {
       if (!this.first || d.time < this.first) this.first = d.time;
@@ -129,6 +133,7 @@ export class HuntAccumulator {
       byLevel: { ...this.byLevel },
       topRules: [...this.rules.values()].sort((a, b) => LEVEL_ORDER[a.level] - LEVEL_ORDER[b.level] || b.count - a.count).slice(0, 50),
       tactics: [...this.tactics.entries()].map(([id, count]) => ({ id, count })).sort((a, b) => b.count - a.count),
+      techniques: [...this.techniques.entries()].map(([id, count]) => ({ id, count })).sort((a, b) => b.count - a.count),
       computers: [...this.computers],
       first: this.first,
       last: this.last,

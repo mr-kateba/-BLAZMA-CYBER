@@ -15,6 +15,8 @@ import { createTranslator, type Dict } from '../../core/i18n';
 import en from '../../../locales/en.json';
 import ar from '../../../locales/ar.json';
 import { readJson, writeJson } from './json-store';
+import { randomUUID } from 'node:crypto';
+import { caseIocs, iocsToCsv, iocsToStix } from '../../core/ioc-export';
 import { subDir } from './paths';
 
 export class ReportError extends Error {
@@ -48,7 +50,7 @@ export class ReportService {
 
   async generate(c: InvestigationCase, rawOpts: unknown): Promise<ReportRecord> {
     const o = (rawOpts ?? {}) as Record<string, unknown>;
-    const format: ReportFormat = o.format === 'json' ? 'json' : o.format === 'pdf' ? 'pdf' : 'html';
+    const format: ReportFormat = (['json', 'pdf', 'csv', 'stix'] as const).find((f) => f === o.format) ?? 'html';
     const language: Lang = o.language === 'ar' ? 'ar' : 'en';
     const opts: ReportOptions = {
       format,
@@ -61,10 +63,14 @@ export class ReportService {
     const now = new Date().toISOString();
     const machine = opts.includeMachineInfo ? machineInfo() : null;
     const id = `rep-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
-    const ext = format === 'json' ? 'json' : format === 'pdf' ? 'pdf' : 'html';
+    const ext = format === 'stix' ? 'stix.json' : format;
     const path = join(this.dir, `${c.id}-${language}-${id}.${ext}`);
 
-    if (format === 'json') {
+    if (format === 'csv' || format === 'stix') {
+      const rows = caseIocs(c);
+      const body = format === 'csv' ? iocsToCsv(rows, c.id, c.name) : iocsToStix(c, rows, now, randomUUID);
+      await writeFile(path, body, { encoding: 'utf8', mode: 0o600 });
+    } else if (format === 'json') {
       await writeFile(path, buildJsonReport(c, opts, now, machine), { encoding: 'utf8', mode: 0o600 });
     } else {
       const html = buildHtmlReport(c, opts, t, now, machine);

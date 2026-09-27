@@ -195,12 +195,13 @@ function ReportTab({ c }: { c: InvestigationCase }) {
       <div className="col" style={{ gap: 12 }}>
         <div className="row-wrap">
           <div className="field"><label>{t('reports.format')}</label>
-            <div className="row-wrap">{(['html', 'pdf', 'json'] as const).map((f) => <button key={f} type="button" className="opt" aria-pressed={format === f} onClick={() => setFormat(f)}>{f.toUpperCase()}</button>)}</div>
+            <div className="row-wrap">{(['html', 'pdf', 'json', 'csv', 'stix'] as const).map((f) => <button key={f} type="button" className="opt" aria-pressed={format === f} onClick={() => setFormat(f)}>{t(`reports.formatName.${f}`)}</button>)}</div>
           </div>
           <div className="field"><label>{t('reports.language')}</label>
             <div className="row-wrap">{(['ar', 'en'] as const).map((l) => <button key={l} type="button" className="opt" aria-pressed={language === l} onClick={() => setLanguage(l)}>{l === 'ar' ? 'العربية' : 'English'}</button>)}</div>
           </div>
         </div>
+        {(format === 'csv' || format === 'stix') && <div className="small dim">{t('reports.iocOnly')}</div>}
         <div className="row"><Toggle checked={notes} label={t('reports.includeNotes')} onChange={setNotes} /><span>{t('reports.includeNotes')}</span></div>
         <div className="row"><Toggle checked={timeline} label={t('reports.includeTimeline')} onChange={setTimeline} /><span>{t('reports.includeTimeline')}</span></div>
         <div className="row" style={{ alignItems: 'flex-start' }}><Toggle checked={machine} label={t('reports.includeMachine')} onChange={setMachine} /><div><div>{t('reports.includeMachine')}</div><div className="small dim">{t('reports.machineNote')}</div></div></div>

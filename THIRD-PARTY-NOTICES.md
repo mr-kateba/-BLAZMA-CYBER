@@ -33,6 +33,7 @@ license text next to it (`resources/engines/<id>/LICENSE.txt`, `resources/rules/
 | Hayabusa (`hayabusa-4.1.0-win-x64.exe`), unmodified | 4.1.0 | AGPL-3.0 (separate program; exact source: https://github.com/Yamato-Security/hayabusa/tree/v4.1.0) | Event-log hunting | https://github.com/Yamato-Security/hayabusa |
 | Hayabusa + Sigma detection rules (shipped inside the Hayabusa release) | 4.1.0 bundle | Detection Rule License 1.1 — rule authors are shown with every match | Event-log detection rules | https://github.com/Yamato-Security/hayabusa-rules, https://github.com/SigmaHQ/sigma |
 | HollowsHunter (`hollows_hunter.exe`, includes PE-sieve), unmodified | 0.4.1.1 | BSD-2-Clause | Memory implant scan | https://github.com/hasherezade/hollows_hunter |
+| MITRE ATT&CK® Enterprise data (technique names/tactics, `src/core/attack-data.json`) | 19.2 (attack-stix-data 6cda5ad) | MITRE ATT&CK Terms of Use — © The MITRE Corporation, reproduced with permission (`engines/licenses/mitre-attack.txt`) | ATT&CK map | https://github.com/mitre-attack/attack-stix-data |
 | ReversingLabs YARA rules (1,240 rules, commit e0a0be5) | 2025-11-03 | MIT | Malware family detection | https://github.com/reversinglabs/reversinglabs-yara-rules |
 
 ## Development-only components (not shipped)
