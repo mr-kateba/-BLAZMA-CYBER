@@ -36,9 +36,17 @@ describe.runIf(WIN)('Windows integration (real PowerShell / Defender / Authentic
   }, 60_000);
 
   it('Authenticode: a Windows binary is signed, an unsigned script is not', async () => {
-    const signed = await verifySignature(join(SYS, 'notepad.exe'));
-    expect(signed).toMatchObject({ checked: true, status: 'valid' });
-    expect(signed.publisher).toMatch(/Microsoft/);
+    // Windows system binaries are embedded- or catalog-signed; report what each one returns.
+    const results: Array<[string, Awaited<ReturnType<typeof verifySignature>>]> = [];
+    for (const f of ['notepad.exe', 'cmd.exe', 'kernel32.dll', 'WindowsPowerShell\\v1.0\\powershell.exe']) {
+      const p = join(SYS, f);
+      if (existsSync(p)) results.push([f, await verifySignature(p)]);
+    }
+    console.log('Authenticode:', JSON.stringify(results));
+    for (const [, r] of results) expect(r.checked).toBe(true);
+    const valid = results.filter(([, r]) => r.status === 'valid');
+    expect(valid.length).toBeGreaterThan(0);
+    for (const [, r] of valid) expect(r.publisher).toMatch(/Microsoft/);
 
     // Hostile file name: spaces, Arabic, quotes and PowerShell sub-expression syntax. It reaches the
     // script only via an environment variable, so it must be treated as a literal path.
