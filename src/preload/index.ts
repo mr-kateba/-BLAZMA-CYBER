@@ -68,6 +68,11 @@ const api: BlazmaApi = {
     remove: (id) => invoke('yara:remove', id),
     scan: (target, recursive, taskId) => invoke('yara:scan', target, recursive, taskId),
   },
+  intel: {
+    ip: (ip, options) => invoke('intel:ip', ip, options),
+    domain: (domain, options) => invoke('intel:domain', domain, options),
+    reputation: (kind, value, services) => invoke('intel:reputation', kind, value, services),
+  },
   secrets: {
     status: () => invoke('secrets:status'),
     set: (service, value) => invoke('secrets:set', service, value),

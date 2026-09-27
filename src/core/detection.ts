@@ -72,3 +72,18 @@ export function assess(signals: Signal[], opts: { availableSources: Set<SignalSo
 
   return { verdict, signals, reasons, incomplete };
 }
+
+/**
+ * Converts a VirusTotal file-hash result into one piece of evidence.
+ * A handful of detections among ~70 engines is common for false positives, so only a clear
+ * majority signal (>= 5 engines) counts as malicious on its own.
+ */
+export function vtSignal(r: { found: boolean; malicious?: number; suspicious?: number }): Signal {
+  if (!r.found) return { source: 'hash_reputation', weight: 'neutral', reasonKey: 'assessment.reason.vt_unknown' };
+  const mal = r.malicious ?? 0;
+  const sus = r.suspicious ?? 0;
+  if (mal >= 5) return { source: 'hash_reputation', weight: 'malicious', reasonKey: 'assessment.reason.vt_malicious', reasonArgs: { count: mal } };
+  if (mal >= 1) return { source: 'hash_reputation', weight: 'strong', reasonKey: 'assessment.reason.vt_malicious', reasonArgs: { count: mal } };
+  if (sus >= 1) return { source: 'hash_reputation', weight: 'weak', reasonKey: 'assessment.reason.vt_suspicious', reasonArgs: { count: sus } };
+  return { source: 'hash_reputation', weight: 'clean', reasonKey: 'assessment.reason.vt_clean' };
+}

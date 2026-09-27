@@ -1295,3 +1295,70 @@ table.data tbody tr:hover td {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* ============ Option pills (source selection) ============ */
+
+.opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 32px;
+  padding-inline: 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(8, 15, 34, 0.7);
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 12.5px;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+.opt:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+.opt[aria-pressed='true'] {
+  background: rgba(47, 134, 255, 0.16);
+  border-color: rgba(47, 134, 255, 0.55);
+  color: #fff;
+}
+.opt:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.opt .opt-box {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1.5px solid currentColor;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.opt[aria-pressed='true'] .opt-box {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+.opt .opt-hint {
+  font-size: 11px;
+  color: var(--amber);
+}
+
+.lookup-bar {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+.lookup-bar .input {
+  flex: 1;
+  height: 44px;
+  font-size: 15px;
+}
+.lookup-bar .btn {
+  height: 44px;
+  min-width: 130px;
+}
+.big-value {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}

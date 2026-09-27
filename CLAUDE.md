@@ -116,9 +116,11 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
   clear-data controls, File Analyzer (static: hashes, type, PE, entropy, IOCs, strings, signature
   on Windows, combined assessment), Hash Lab (text/file/verify/identify/compare), launcher,
   Quarantine (neutralized, verified restore), YARA-X adapter + rule manager (tested with real yr 1.20.0),
-  Security Center (Defender scans/history/quarantine UI; Defender needs Windows verification).
+  Security Center (Defender scans/history/quarantine UI; Defender needs Windows verification),
+  IP / Domain Intelligence + Reputation Center (RDAP, DNS, Team Cymru ASN, TLS, ipinfo, Tor,
+  VirusTotal/AbuseIPDB/Shodan), hash-only file reputation.
 - Latest audit: docs/AUDIT-REPORT.md (3 bugs found and fixed; weaknesses and proposed features listed).
-- NOT YET: intelligence lookups, forensics, network toolkit,
+- NOT YET: forensics, network toolkit,
   password recovery, cases, reports, threat hunting, OSINT, terminal, packaging/installer.
 - Verified on Linux (Xvfb) only in this environment. Windows-specific PowerShell paths
   (Defender/firewall/Authenticode) are implemented but **still need verification on real Windows**.
@@ -135,4 +137,7 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
 | 2026-09 | YARA-X via official `yr` CLI (user-installed) | Maintained successor by VirusTotal, BSD-3; CLI keeps a process boundary and needs no native Node addon |
 | 2026-09 | YARA runs from the rules dir with relative `ns:file.yar` args | YARA-X uses `:` as namespace separator, which clashes with Windows drive letters |
 | 2026-09 | Quarantine stores XOR-0xFF neutralized blobs, restore verifies SHA-256 | Prevents accidental execution/AV re-detection; guarantees byte-exact restore |
+| 2026-09 | NetworkGate.run() also covers DNS and TLS | DNS queries and TLS handshakes disclose the queried indicator too; Offline Mode must block them |
+| 2026-09 | Private/reserved IPs never go to external sources | Privacy; geolocating RFC1918 space is meaningless |
+| 2026-09 | 401/403 = "invalid key" only when a key was sent | Avoids blaming the user's key for network/policy blocks |
 | 2026-09 | File/folder Defender scans use -DisableRemediation | Blazma reports; the user decides (quick/full follow Defender policy, stated in UI) |

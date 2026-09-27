@@ -12,6 +12,9 @@ import { SettingsPage } from './pages/Settings';
 import { PlannedModule } from './pages/PlannedModule';
 import { SecurityCenter } from './pages/SecurityCenter';
 import { YaraScanner } from './pages/YaraScanner';
+import { IpIntel } from './pages/IpIntel';
+import { DomainIntel } from './pages/DomainIntel';
+import { ReputationCenter } from './pages/ReputationCenter';
 
 function Page({ id }: { id: PageId }) {
   switch (id) {
@@ -27,6 +30,12 @@ function Page({ id }: { id: PageId }) {
       return <SecurityCenter />;
     case 'yara':
       return <YaraScanner />;
+    case 'ip-intel':
+      return <IpIntel />;
+    case 'domain-intel':
+      return <DomainIntel />;
+    case 'reputation':
+      return <ReputationCenter />;
     case 'settings-api':
       return <SettingsPage tab="apiKeys" />;
     case 'settings-engines':

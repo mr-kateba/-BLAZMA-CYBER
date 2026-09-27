@@ -146,8 +146,8 @@ const TOOLS: Tool[] = [
   { id: 'scanFile', icon: FileSearch, tone: 'purple', to: 'file-analyzer' },
   { id: 'yara', icon: ScanSearch, tone: 'purple', to: 'yara' },
   { id: 'hashLab', icon: Hash, tone: 'purple', to: 'hash-lab' },
-  { id: 'ipLookup', icon: Earth, tone: 'blue', to: 'ip-intel', phase: 3 },
-  { id: 'domainLookup', icon: Link2, tone: 'blue', to: 'domain-intel', phase: 3 },
+  { id: 'ipLookup', icon: Earth, tone: 'blue', to: 'ip-intel' },
+  { id: 'domainLookup', icon: Link2, tone: 'blue', to: 'domain-intel' },
   { id: 'passwordRecovery', icon: KeyRound, tone: 'amber', to: 'password-recovery', phase: 5 },
   { id: 'networkTools', icon: Network, tone: 'green', to: 'network-toolkit', phase: 4 },
   { id: 'privacy', icon: ShieldCheck, tone: 'cyan', to: 'privacy' },
@@ -157,6 +157,7 @@ const TOOLS: Tool[] = [
 const ACTIVITY_ICON: Record<ActivityEntry['kind'], LucideIcon> = {
   file_analysis: FileSearch, hash_file: Hash, hash_text: Hash, hash_identify: Hash, hash_compare: Hash,
   defender_scan: ShieldCheck, yara_scan: FileSearch, quarantine: ShieldCheck, restore: RefreshCw,
+  ip_lookup: Earth, domain_lookup: Link2, reputation_lookup: Globe,
 };
 
 export function Dashboard() {

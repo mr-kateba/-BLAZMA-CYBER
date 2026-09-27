@@ -149,6 +149,39 @@ try {
     await win.screenshot({ path: join(out, '15-security-center-ar.png') });
   }
 
+  // 5c) Phase 3: intelligence. Offline Mode (default) must block every external source.
+  await win.getByRole('button', { name: 'English' }).click();
+  await win.locator('.nav-item', { hasText: 'IP Intelligence' }).click();
+  await win.getByText('Offline Mode is on: all external sources are blocked').waitFor();
+  await win.locator('input.input').first().fill('8.8.8.8');
+  await win.getByRole('button', { name: 'Look up', exact: true }).click();
+  await win.getByText('Sources', { exact: true }).waitFor();
+  const blockedCount = await win.getByText('Blocked: Offline Mode is on', { exact: false }).count();
+  assert.ok(blockedCount >= 5, `every source should be blocked offline (got ${blockedCount})`);
+  await win.getByRole('button', { name: 'العربية' }).click();
+  await win.waitForTimeout(300);
+  await win.screenshot({ path: join(out, '16-ip-intel-offline-ar.png'), fullPage: true });
+
+  if (process.env.BLAZMA_E2E_ONLINE === '1') {
+    // Opt-in live check against the IANA-reserved example.com only.
+    await win.locator('.nav-item', { hasText: 'مركز الخصوصية' }).click();
+    await win.getByRole('switch', { name: 'وضع عدم الاتصال' }).click();
+    await win.getByText('الاستعلامات الخارجية مفعّلة', { exact: false }).first().waitFor();
+    await win.locator('.nav-item', { hasText: 'معلومات النطاقات' }).click();
+    await win.locator('input.input').first().fill('example.com');
+    await win.getByRole('button', { name: 'استعلام', exact: true }).click();
+    await win.getByText('أمان البريد').waitFor({ timeout: 30000 });
+    await win.waitForTimeout(500);
+    await win.screenshot({ path: join(out, '17-domain-intel-ar.png'), fullPage: true });
+    await win.getByRole('button', { name: 'English' }).click();
+    await win.waitForTimeout(300);
+    await win.screenshot({ path: join(out, '18-domain-intel-en.png'), fullPage: true });
+    await win.getByRole('button', { name: 'العربية' }).click();
+    // Back to Local only
+    await win.locator('.nav-item', { hasText: 'مركز الخصوصية' }).click();
+    await win.getByRole('switch', { name: 'وضع عدم الاتصال' }).click();
+  }
+
   // 6) Hash Lab identify (Arabic)
   await win.locator('.nav-item', { hasText: 'مختبر الهاشات' }).click();
   await win.getByRole('tab', { name: 'تعرّف' }).click();
