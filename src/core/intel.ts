@@ -255,6 +255,22 @@ export function vtPath(kind: VtKind, value: string): string {
   return `https://www.virustotal.com/api/v3/${coll}/${encodeURIComponent(value)}`;
 }
 
+/** Hosts whose result pages the UI may open in the user's browser (always via NetworkGate). */
+export const EXTERNAL_LINK_HOSTS: readonly string[] = ['www.virustotal.com'];
+
+/** Returns the host when `url` is an https link to an allowlisted host (no credentials/port), else null. */
+export function externalLinkHost(url: unknown): string | null {
+  if (typeof url !== 'string' || url.length > 2048) return null;
+  let u: URL;
+  try {
+    u = new URL(url);
+  } catch {
+    return null;
+  }
+  if (u.protocol !== 'https:' || u.username || u.password || u.port) return null;
+  return EXTERNAL_LINK_HOSTS.includes(u.hostname) ? u.hostname : null;
+}
+
 export function vtGuiLink(kind: VtKind, value: string): string {
   const seg = kind === 'ip' ? 'ip-address' : kind === 'domain' ? 'domain' : 'file';
   return `https://www.virustotal.com/gui/${seg}/${encodeURIComponent(value)}`;

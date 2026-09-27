@@ -286,6 +286,10 @@ try {
   await win.getByText('https://crt.sh/?q=%25.example.com&output=json').waitFor();
   await win.getByRole('button', { name: 'موقع crt.sh' }).click();
   await win.getByText('سيفتح متصفحك crt.sh', { exact: false }).waitFor();
+  await win.keyboard.press('Escape'); // keyboard: Escape cancels a dialog
+  await win.getByText('سيفتح متصفحك crt.sh', { exact: false }).waitFor({ state: 'detached' });
+  await win.getByRole('button', { name: 'موقع crt.sh' }).click();
+  await win.getByText('سيفتح متصفحك crt.sh', { exact: false }).waitFor();
   await win.getByRole('button', { name: 'فتح في المتصفح' }).click();
   await win.locator('.toast', { hasText: offlineAr }).first().waitFor();
   await win.waitForTimeout(300);

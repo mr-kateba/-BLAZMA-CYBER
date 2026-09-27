@@ -4,6 +4,7 @@ import type { CaseSummary, Evidence, EvidenceKind } from '../../shared/api';
 import { useApp } from './AppContext';
 import { useI18n } from '../i18n/I18nProvider';
 import { Ltr } from './ui';
+import { useEscape } from './useEscape';
 
 export interface EvidenceDraft {
   kind: EvidenceKind;
@@ -21,6 +22,7 @@ export function AddToCase({ items, small = true }: { items: EvidenceDraft[]; sma
   const [cases, setCases] = useState<CaseSummary[] | null>(null);
   const [newName, setNewName] = useState('');
   const [busy, setBusy] = useState(false);
+  useEscape(open, () => setOpen(false));
 
   const show = async () => {
     setOpen(true);
@@ -57,7 +59,7 @@ export function AddToCase({ items, small = true }: { items: EvidenceDraft[]; sma
           <div className="dialog" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
             <div className="row" style={{ marginBottom: 10 }}>
               <h3 style={{ flex: 1 }}>{t('cases.addToCase')}</h3>
-              <button className="icon-btn" aria-label={t('common.close')} onClick={() => setOpen(false)}><X size={16} /></button>
+              <button className="icon-btn" aria-label={t('common.close')} onClick={() => setOpen(false)} autoFocus><X size={16} /></button>
             </div>
             <div className="small dim" style={{ marginBottom: 10 }}>
               {items.slice(0, 3).map((i) => <div key={i.value}><Ltr mono breakAll>{i.value}</Ltr></div>)}

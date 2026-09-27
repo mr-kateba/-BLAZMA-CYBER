@@ -812,6 +812,8 @@ export interface BlazmaApi {
   app: {
     info(): Promise<AppInfo>;
     openDataFolder(): Promise<Result<true>>;
+    /** Opens an allowlisted https result page in the default browser (gated, logged). */
+    openLink(url: string): Promise<Result<true>>;
   };
   settings: {
     get(): Promise<Settings>;

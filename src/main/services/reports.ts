@@ -6,7 +6,7 @@ import { BrowserWindow, shell } from 'electron';
 import os from 'node:os';
 import { app } from 'electron';
 import { writeFile, readFile, rm, stat } from 'node:fs/promises';
-import { join } from 'node:path';
+import { dirname, extname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import type { InvestigationCase, ReportFormat, ReportOptions, ReportRecord } from '../../shared/api';
 import type { Lang } from '../../core/i18n';
@@ -102,6 +102,10 @@ export class ReportService {
     if (typeof id !== 'string' || !ID_RE.test(id)) throw new ReportError('invalid_input');
     const r = this.index().find((x) => x.id === id);
     if (!r) throw new ReportError('report_not_found');
+    // Defence in depth: the index is local state, but we only ever open/delete our own report files.
+    if (typeof r.path !== 'string' || dirname(resolve(r.path)) !== resolve(this.dir) || !['.html', '.pdf', '.json'].includes(extname(r.path))) {
+      throw new ReportError('report_not_found');
+    }
     return r;
   }
 

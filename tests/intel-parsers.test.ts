@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import ipRdap from './fixtures/rdap-ip.json';
 import domainRdap from './fixtures/rdap-domain.json';
 import {
-  cidrContains, cymruOriginName, expandIPv6, parseAbuseIpdb, parseCymruAsName, parseCymruOrigin, parseDomainRdap, parseIpRdap,
+  cidrContains, cymruOriginName, externalLinkHost, expandIPv6, parseAbuseIpdb, parseCymruAsName, parseCymruOrigin, parseDomainRdap, parseIpRdap,
   parseIpinfo, parseShodanHost, parseTorExitList, parseVirusTotal, pickDmarc, pickSpf, rdapBaseForDomain, rdapBaseForIp, vtPath,
 } from '../src/core/intel';
 
@@ -102,5 +102,15 @@ describe('providers', () => {
       .toEqual({ service: 'abuseipdb', found: true, abuseScore: 87, totalReports: 120, lastReported: '2026-09-01T00:00:00+00:00', usageType: 'Data Center/Web Hosting/Transit', isp: 'Example Hosting', isTor: false });
     expect(parseShodanHost({ ports: [443, 22, 80], hostnames: ['h.example'], vulns: { 'CVE-2024-0001': {} }, tags: ['cloud'], org: 'Org' }))
       .toEqual({ service: 'shodan', found: true, ports: [22, 80, 443], hostnames: ['h.example'], vulns: ['CVE-2024-0001'], tags: ['cloud'], isp: 'Org' });
+  });
+});
+
+describe('external result links', () => {
+  it('allows only https links to allowlisted hosts', () => {
+    expect(externalLinkHost('https://www.virustotal.com/gui/domain/example.com')).toBe('www.virustotal.com');
+    for (const bad of [
+      'http://www.virustotal.com/gui/x', 'https://evil.example/', 'https://www.virustotal.com.evil.example/', 'https://user@www.virustotal.com/',
+      'https://www.virustotal.com:8443/', 'javascript:alert(1)', 'file:///c:/windows/system32/calc.exe', 'ms-settings:', 42, null,
+    ]) expect(externalLinkHost(bad), String(bad)).toBeNull();
   });
 });

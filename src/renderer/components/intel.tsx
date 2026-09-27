@@ -85,12 +85,17 @@ export function ReputationCard({ r }: { r: ReputationResult }) {
   const Icon = tone === 'red' ? ShieldAlert : tone === 'amber' ? TriangleAlert : ShieldCheck;
   const kv = (label: string, v: React.ReactNode) => (<><dt>{label}</dt><dd>{v}</dd></>);
   const name = t(`intel.src.reputation:${r.service}`);
+  const { toast } = useApp();
+  const openLink = async (url: string) => {
+    const res = await window.blazma.app.openLink(url);
+    if (!res.ok) toast('red', t(`errors.${res.error}`));
+  };
   return (
     <Card
       title={name}
       icon={Icon}
       tone={tone}
-      actions={r.link ? <a className="btn sm" href={r.link} target="_blank" rel="noreferrer noopener"><ExternalLink size={13} /> {t('intel.rep.open')}</a> : undefined}
+      actions={r.link ? <button className="btn sm" onClick={() => void openLink(r.link!)}><ExternalLink size={13} /> {t('intel.rep.open')}</button> : undefined}
     >
       {!r.found ? <div className="muted">{t('intel.rep.notFound')}</div> : (
         <dl className="kv">
