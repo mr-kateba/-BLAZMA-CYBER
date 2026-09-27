@@ -20,9 +20,9 @@ function isTrustedSender(e: IpcMainInvokeEvent): boolean {
   return e.senderFrame !== null && e.sender === win?.webContents && isTrustedUrl(e.senderFrame.url);
 }
 
-// Single instance: a second launch focuses the existing window.
+// Single instance: a second launch focuses the existing window and exits immediately.
 if (!app.requestSingleInstanceLock()) {
-  app.quit();
+  app.exit(0);
 }
 
 app.on('second-instance', () => {

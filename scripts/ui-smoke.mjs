@@ -46,6 +46,18 @@ try {
   await win.waitForTimeout(7000); // let CPU samples accumulate (real data)
   await win.screenshot({ path: join(out, '02-dashboard-ar.png') });
 
+  // Drag & drop path resolution works inside the sandboxed preload (webUtils)
+  const dropPath = await win.evaluate(() => window.blazma.files.pathForFile(new File(['x'], 'a.txt')));
+  assert.equal(dropPath, '', 'in-memory File has no disk path, but the API must not throw');
+
+  // No horizontal overflow at the minimum window width (RTL)
+  await win.setViewportSize({ width: 1100, height: 700 });
+  await win.waitForTimeout(300);
+  const overflow = await win.locator('.main').evaluate((m) => m.scrollWidth - m.clientWidth);
+  assert.ok(overflow <= 1, `horizontal overflow in RTL at 1100px: ${overflow}px`);
+  await win.screenshot({ path: join(out, '11-dashboard-ar-min-width.png') });
+  await win.setViewportSize({ width: 1440, height: 900 });
+
   // 3) Switch to English -> LTR
   await win.getByRole('button', { name: 'English' }).click();
   await win.locator('h1', { hasText: 'Dashboard' }).waitFor();

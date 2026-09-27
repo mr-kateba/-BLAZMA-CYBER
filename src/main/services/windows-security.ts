@@ -41,17 +41,55 @@ export interface WindowsFacts {
   security: SecurityStatus;
 }
 
-let cache: { at: number; value: WindowsFacts } | null = null;
+const SUCCESS_TTL_MS = 30_000;
+/** Failed queries are cached too, so a broken PowerShell is not re-spawned on every dashboard poll. */
+const FAILURE_TTL_MS = 5 * 60_000;
 
-export async function getWindowsFacts(maxAgeMs = 30000): Promise<WindowsFacts> {
-  if (cache && Date.now() - cache.at < maxAgeMs) return cache.value;
+let cache: { at: number; ok: boolean; value: WindowsFacts } | null = null;
+let inflight: Promise<WindowsFacts> | null = null;
+
+/**
+ * Cached, de-duplicated access to Windows facts: at most ONE PowerShell process runs at a time,
+ * no matter how many callers poll concurrently.
+ */
+export function getWindowsFacts(): Promise<WindowsFacts> {
+  if (cache && Date.now() - cache.at < (cache.ok ? SUCCESS_TTL_MS : FAILURE_TTL_MS)) return Promise.resolve(cache.value);
+  if (!inflight) {
+    inflight = queryWindowsFacts()
+      .then((r) => {
+        cache = { at: Date.now(), ok: r.ok, value: r.value };
+        return r.value;
+      })
+      .finally(() => {
+        inflight = null;
+      });
+  }
+  return inflight;
+}
+
+/** Non-blocking read for the dashboard: returns the last known facts and refreshes in the background. */
+export function peekWindowsFacts(): WindowsFacts | null {
+  getWindowsFacts().catch(() => undefined);
+  return cache?.value ?? null;
+}
+
+/** Test hook. */
+export function __resetWindowsFactsCache(): void {
+  cache = null;
+  inflight = null;
+}
+
+async function queryWindowsFacts(): Promise<{ ok: boolean; value: WindowsFacts }> {
   const checkedAt = new Date().toISOString();
 
   if (process.platform !== 'win32') {
     const unavailable = { available: false, reason: 'unsupported_platform' };
     return {
-      osCaption: null, osVersion: null, osBuild: null, physicalCores: null, processCount: null,
-      security: { platformSupported: false, defender: unavailable, firewall: unavailable, checkedAt },
+      ok: true,
+      value: {
+        osCaption: null, osVersion: null, osBuild: null, physicalCores: null, processCount: null,
+        security: { platformSupported: false, defender: unavailable, firewall: unavailable, checkedAt },
+      },
     };
   }
 
@@ -59,8 +97,11 @@ export async function getWindowsFacts(maxAgeMs = 30000): Promise<WindowsFacts> {
   if (!res.ok) {
     const failed = { available: false, reason: res.error };
     return {
-      osCaption: null, osVersion: null, osBuild: null, physicalCores: null, processCount: null,
-      security: { platformSupported: true, defender: failed, firewall: failed, checkedAt },
+      ok: false,
+      value: {
+        osCaption: null, osVersion: null, osBuild: null, physicalCores: null, processCount: null,
+        security: { platformSupported: true, defender: failed, firewall: failed, checkedAt },
+      },
     };
   }
   const d = res.data;
@@ -86,8 +127,7 @@ export async function getWindowsFacts(maxAgeMs = 30000): Promise<WindowsFacts> {
     processCount: d.processes ?? null,
     security: { platformSupported: true, defender, firewall, checkedAt },
   };
-  cache = { at: Date.now(), value };
-  return value;
+  return { ok: true, value };
 }
 
 // The file path arrives via $env:BLAZMA_ARG_PATH, never inside the script text.

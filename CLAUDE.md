@@ -112,6 +112,7 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
   settings, structured redacted logging, secure API-key storage, Offline Mode + Network Activity,
   clear-data controls, File Analyzer (static: hashes, type, PE, entropy, IOCs, strings, signature
   on Windows, combined assessment), Hash Lab (text/file/verify/identify/compare), launcher.
+- Latest audit: docs/AUDIT-REPORT.md (3 bugs found and fixed; weaknesses and proposed features listed).
 - NOT YET: Defender scanning, YARA-X, quarantine, intelligence lookups, forensics, network toolkit,
   password recovery, cases, reports, threat hunting, OSINT, terminal, packaging/installer.
 - Verified on Linux (Xvfb) only in this environment. Windows-specific PowerShell paths
@@ -125,4 +126,5 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
 | 2026-09 | Custom tiny i18n instead of i18next | ~60 lines, fully tested, no dependency |
 | 2026-09 | Offline Mode default ON | Privacy-first; user opts in to online lookups |
 | 2026-09 | PowerShell via `-Command` + env-var args | No `-EncodedCommand`/`-ExecutionPolicy Bypass` (both are classic attacker IOCs our own threat hunting should flag) |
+| 2026-09 | Windows facts: single in-flight PowerShell, failures cached 5 min, dashboard never waits on PowerShell | Audit found a PowerShell process storm on slow/failed queries |
 | 2026-09 | YARA-X planned over libyara | Maintained successor by VirusTotal, BSD-3, memory-safe |
