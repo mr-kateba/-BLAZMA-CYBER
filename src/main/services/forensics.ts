@@ -92,13 +92,15 @@ foreach ($k in $keys) {
   }
 }`),
   usb: wrap(`
-Get-ChildItem -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Enum\\USBSTOR' -ErrorAction Stop | ForEach-Object {
+$root = 'HKLM:\\SYSTEM\\CurrentControlSet\\Enum\\USBSTOR'
+# No USBSTOR key simply means no USB storage device was ever attached: an empty result, not an error.
+if (Test-Path -LiteralPath $root) { Get-ChildItem -LiteralPath $root -ErrorAction Stop | ForEach-Object {
   $vp = $_.PSChildName
   Get-ChildItem -Path $_.PSPath -ErrorAction SilentlyContinue | ForEach-Object {
     $fn = (Get-ItemProperty -Path $_.PSPath -Name FriendlyName -ErrorAction SilentlyContinue).FriendlyName
     @{ name = [string]$fn; serial = [string]$_.PSChildName; vp = [string]$vp }
   }
-}`),
+} }`),
   // Parameters via env: log name (allow-listed in TS), max events, levels "1,2,3"
   events: wrap(`
 $levels = @(([string]$env:BLAZMA_ARG_LEVELS).Split(',') | Where-Object { $_ } | ForEach-Object { [int]$_ })

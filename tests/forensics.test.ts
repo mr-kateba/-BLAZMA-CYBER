@@ -130,7 +130,7 @@ describe('Network Toolkit', () => {
     if (!subnet) return; // no private interface in this environment
     const r = await svc.discover(subnet.cidr, new AbortController().signal);
     expect(r.alive.map((a) => a.address)).toContain(subnet.cidr.split('.').slice(0, 3).join('.') + '.10');
-  });
+  }, 30_000); // Windows: the neighbor table comes from a PowerShell process (slow cold start)
 
   it('reports missing tools honestly (no ping in this environment → tool_not_installed)', async () => {
     if (process.platform === 'win32') return;
