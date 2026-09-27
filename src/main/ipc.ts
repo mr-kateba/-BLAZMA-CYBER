@@ -11,6 +11,7 @@ import { DefenderError, findMpCmdRun, getThreatHistory, runDefenderScan } from '
 import { YaraError, YaraService } from './services/yara';
 import { IntelError, IntelService } from './services/intel';
 import { OsintService } from './services/osint';
+import { openTerminal, TerminalError } from './services/terminal';
 import { externalLinkHost } from '../core/intel';
 import * as forensics from './services/forensics';
 import { NetToolsError, NetToolsService } from './services/nettools';
@@ -38,7 +39,7 @@ function fail(error: string, detail?: string): Result<never> {
 }
 
 function errorCode(e: unknown): string {
-  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError || e instanceof RecoveryError || e instanceof CaseError || e instanceof ReportError) return e.code;
+  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError || e instanceof RecoveryError || e instanceof CaseError || e instanceof ReportError || e instanceof TerminalError) return e.code;
   if (e instanceof OfflineModeError) return 'offline_mode';
   return 'internal_error';
 }
@@ -138,6 +139,11 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
     if (!host) return fail('invalid_input');
     await gate.run({ module: 'reputation', service: 'browser:link', host, dataKind: 'privacy.data.indicator' }, () => shell.openExternal(url as string));
     return { ok: true, data: true };
+  });
+  handle('app:openTerminal', async () => {
+    const kind = await openTerminal();
+    logger.info('terminal_opened', { kind });
+    return { ok: true, data: kind };
   });
   handle('app:openDataFolder', async () => {
     const err = await shell.openPath(dataDir());

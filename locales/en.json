@@ -47,7 +47,8 @@
     "language": "Language",
     "planned": "Soon",
     "plannedTooltip": "Planned for phase {{phase}} — not available yet",
-    "terminal": "PowerShell Terminal"
+    "terminal": "Terminal",
+    "externalTooltip": "Opens Windows Terminal (or PowerShell) in a separate window"
   },
   "topbar": {
     "search": "Search tools…",
@@ -226,8 +227,7 @@
       "threatHunting": "Search by hash, IP, domain, filename, process, service · Persistence indicators · Correlated timeline across modules",
       "cases": "Local cases (CASE-YYYY-NNN) · Evidence kept separate from analyst notes · Tags, timeline and evidence metadata",
       "reports": "HTML and JSON reports in Arabic or English · Case, findings, indicators and hashes · No machine identifiers unless you choose to include them",
-      "engines": "Microsoft Defender detection and status · YARA-X engine and rule packs · Password recovery engine locations",
-      "terminal": "A separate PowerShell session inside BLAZMA · Clearly separated from GUI operations (GUI never builds commands from your input) · No elevation without an explicit request"
+      "engines": "Microsoft Defender detection and status · YARA-X engine and rule packs · Password recovery engine locations"
     }
   },
   "file": {
@@ -644,7 +644,8 @@
     "case_not_found": "This case no longer exists.",
     "note_not_found": "This note no longer exists.",
     "report_not_found": "This report no longer exists.",
-    "invalid_osint_target": "This value isn't valid for the selected target type."
+    "invalid_osint_target": "This value isn't valid for the selected target type.",
+    "terminal_unavailable": "Could not open Windows Terminal or PowerShell."
   },
   "defender": {
     "status": {
@@ -1444,6 +1445,12 @@
       "x": "X",
       "keybase": "Keybase",
       "hackernews": "Hacker News"
+    }
+  },
+  "terminal": {
+    "opened": {
+      "windows-terminal": "Windows Terminal opened in a separate window.",
+      "powershell": "PowerShell opened in a separate window."
     }
   }
 }

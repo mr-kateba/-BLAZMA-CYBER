@@ -19,6 +19,8 @@ export interface NavItem {
   icon: LucideIcon;
   /** Present only for modules that do not exist yet; the UI labels them honestly as planned. */
   planned?: { phase: number; itemsKey: string };
+  /** Opens something outside BLAZMA (e.g. the Windows terminal) instead of a page. */
+  external?: boolean;
 }
 
 export interface NavSection {
@@ -58,7 +60,7 @@ export const NAV: NavSection[] = [
       { id: 'windows-forensics', labelKey: 'nav.windowsForensics', icon: MonitorCog },
       { id: 'network-toolkit', labelKey: 'nav.networkToolkit', icon: Network },
       { id: 'threat-hunting', labelKey: 'nav.threatHunting', icon: Crosshair },
-      { id: 'terminal', labelKey: 'nav.terminal', icon: SquareTerminal, planned: p(7, 'terminal') },
+      { id: 'terminal', labelKey: 'nav.terminal', icon: SquareTerminal, external: true },
     ],
   },
   {

@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
-import { Search, Settings as SettingsIcon } from 'lucide-react';
+import { ExternalLink, Search, Settings as SettingsIcon } from 'lucide-react';
 import { Logo } from './components/Logo';
 import { useApp } from './components/AppContext';
 import { useI18n } from './i18n/I18nProvider';
@@ -182,13 +182,14 @@ export function Shell() {
                     <button
                       key={item.id}
                       className={`nav-item ${page === item.id ? 'active' : ''} ${item.planned ? 'planned' : ''}`}
-                      title={item.planned ? t('nav.plannedTooltip', { phase: item.planned.phase }) : undefined}
+                      title={item.planned ? t('nav.plannedTooltip', { phase: item.planned.phase }) : item.external ? t('nav.externalTooltip') : undefined}
                       aria-current={page === item.id ? 'page' : undefined}
                       onClick={() => navigate(item.id)}
                     >
                       <Icon size={17} strokeWidth={1.8} />
                       <span className="nav-label">{t(item.labelKey)}</span>
                       {item.planned && <span className="nav-soon">{t('nav.planned')}</span>}
+                      {item.external && <ExternalLink size={13} className="nav-external" aria-hidden="true" />}
                     </button>
                   );
                 })}

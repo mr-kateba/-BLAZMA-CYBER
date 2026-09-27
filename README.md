@@ -19,8 +19,8 @@ hunting into one modern desktop application — without accounts, activation or 
 integrates mature engines (Microsoft Defender, YARA-X, John the Ripper / hashcat) through clean
 adapters rather than re-implementing them.
 
-> **Status: v0.1, all planned modules implemented except the integrated PowerShell terminal**
-> (shown in the app as *planned*; it does nothing). Verified end-to-end on Linux and, through CI,
+> **Status: v0.1, all modules implemented.** "Terminal" opens the regular Windows terminal
+> (Windows Terminal, else PowerShell) in its own window. Verified end-to-end on Linux and, through CI,
 > on real Windows (Server 2025, build 26100 — the Windows 11 24H2 code base): PowerShell queries,
 > Defender status and file scan, Authenticode, forensics, network tools, the full UI and the NSIS
 > installer build. **Not yet verified on a Windows 10/11 desktop:** installing/uninstalling, the

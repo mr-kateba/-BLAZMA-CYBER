@@ -311,10 +311,13 @@ try {
   await win.getByText('محجوب (دون اتصال)').first().waitFor();
   await win.screenshot({ path: join(out, '08-privacy-ar.png') });
 
-  // 8) A planned module is labeled honestly
-  await win.locator('.nav-item', { hasText: 'طرفية PowerShell' }).click();
-  await win.getByText('هذه الوحدة غير متاحة بعد').waitFor();
-  await win.screenshot({ path: join(out, '09-planned-module-ar.png') });
+  // 8) "Terminal" opens the regular Windows terminal in its own window (not a page inside BLAZMA).
+  //    On Windows a separate terminal window really opens; elsewhere the app says it's Windows-only.
+  const pageBefore = await win.locator('.page-title').first().textContent();
+  await win.locator('.nav-item', { hasText: 'الطرفية' }).click();
+  const terminalToast = process.platform === 'win32' ? /فُتحت (Windows Terminal|PowerShell) في نافذة منفصلة/ : 'متاح على Windows فقط.';
+  await win.locator('.toast', { hasText: terminalToast }).first().waitFor();
+  assert.equal(await win.locator('.page-title').first().textContent(), pageBefore, 'terminal must not navigate away');
 
   // 9) Settings (English)
   await win.getByRole('button', { name: 'English' }).click();

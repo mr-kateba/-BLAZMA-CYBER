@@ -77,6 +77,18 @@ export function AppProvider({ settings, setSettings, initialPage, children }: {
     [setSettings, toast, t],
   );
 
+  // "Terminal" is an action, not a page: it opens the regular Windows terminal in its own window.
+  const navigate = useCallback(
+    (p: PageId) => {
+      if (p !== 'terminal') return setPage(p);
+      void window.blazma.app.openTerminal().then((r) => {
+        if (r.ok) toast('green', t(`terminal.opened.${r.data}`));
+        else toast('red', t(`errors.${r.error}`));
+      });
+    },
+    [setPage, toast, t],
+  );
+
   const [checked, setChecked] = useState(false);
   const confirm = useCallback((o: ConfirmOptions) => new Promise<boolean>((resolve) => { setChecked(false); setDialog({ ...o, resolve }); }), []);
   const close = (v: boolean) => {
@@ -86,7 +98,7 @@ export function AppProvider({ settings, setSettings, initialPage, children }: {
   useEscape(!!dialog, () => close(false));
 
   return (
-    <Ctx.Provider value={{ settings, updateSettings, page, navigate: setPage, toast, confirm, analyzeFile, takePendingFile }}>
+    <Ctx.Provider value={{ settings, updateSettings, page, navigate, toast, confirm, analyzeFile, takePendingFile }}>
       {children}
       <div className="toasts" aria-live="polite">
         {toasts.map((x) => {

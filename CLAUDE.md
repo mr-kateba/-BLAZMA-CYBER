@@ -128,7 +128,7 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
   (cross-module correlation + persistence review), OSINT workspace (CT, Wayback, GitHub, mail-domain DNS,
   gated pivot links, provenance on every source).
 - Latest audit: docs/AUDIT-REPORT.md (3 bugs found and fixed; weaknesses and proposed features listed).
-- NOT YET: integrated terminal (planned in UI), signed installer.
+- NOT YET: signed installer.
 - Verified on Linux (Xvfb) locally and on real Windows (Server 2025, build 26100) in CI: PowerShell
   facts, Defender status + EICAR file scan, Authenticode, forensics, network, full UI E2E, NSIS build.
   Not yet verified: Windows 10/11 desktop specifics (title-bar overlay, launcher, installer
@@ -158,4 +158,5 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
 | 2026-09 | Reports: every value HTML-escaped, no scripts, `default-src 'none'` CSP; PDF rendered in a hidden sandboxed window with JavaScript disabled | Evidence strings come from malware/untrusted sources; a report must never become an attack vector |
 | 2026-09 | OSINT pivot links are re-derived in main from (type, value, id); the renderer never passes a URL to open | A compromised renderer must not be able to open arbitrary URLs/protocols via shell.openExternal |
 | 2026-09 | Email OSINT queries only the domain's DNS; no mailbox probing (SMTP VRFY/RCPT) | Probing mail servers is intrusive and unreliable; privacy-first |
+| 2026-09 | No in-app terminal: "Terminal" opens Windows Terminal / PowerShell in its own window (absolute path, clean env, unelevated) | A hosted terminal would need a native pty addon and would break the rule that the GUI never runs commands from user input |
 | 2026-09 | File/folder Defender scans use -DisableRemediation | Blazma reports; the user decides (quick/full follow Defender policy, stated in UI) |

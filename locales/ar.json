@@ -47,7 +47,8 @@
     "language": "اللغة",
     "planned": "قريبًا",
     "plannedTooltip": "مخطط للمرحلة {{phase}} — غير متاح بعد",
-    "terminal": "طرفية PowerShell"
+    "terminal": "الطرفية",
+    "externalTooltip": "تفتح Windows Terminal (أو PowerShell) في نافذة منفصلة"
   },
   "topbar": {
     "search": "ابحث عن أداة…",
@@ -226,8 +227,7 @@
       "threatHunting": "البحث بالهاش و IP والنطاق واسم الملف والعملية والخدمة · مؤشرات الاستمرارية · خط زمني موحّد عبر الوحدات",
       "cases": "قضايا محلية (CASE-YYYY-NNN) · فصل الأدلة عن ملاحظات المحلل · وسوم وخط زمني وبيانات الأدلة",
       "reports": "تقارير HTML و JSON بالعربية أو الإنجليزية · القضية والنتائج والمؤشرات والهاشات · دون معلومات تعريفية عن الجهاز إلا باختيارك",
-      "engines": "كشف Microsoft Defender وحالته · محرك YARA-X وحزم القواعد · مواقع محركات استعادة كلمات المرور",
-      "terminal": "جلسة PowerShell منفصلة داخل BLAZMA · مفصولة بوضوح عن عمليات الواجهة (الواجهة لا تبني أوامر من مدخلاتك أبدًا) · بلا صلاحيات مرتفعة دون طلب صريح"
+      "engines": "كشف Microsoft Defender وحالته · محرك YARA-X وحزم القواعد · مواقع محركات استعادة كلمات المرور"
     }
   },
   "file": {
@@ -644,7 +644,8 @@
     "case_not_found": "هذه القضية لم تعد موجودة.",
     "note_not_found": "هذه الملاحظة لم تعد موجودة.",
     "report_not_found": "هذا التقرير لم يعد موجودًا.",
-    "invalid_osint_target": "هذه القيمة غير صالحة لنوع الهدف المحدد."
+    "invalid_osint_target": "هذه القيمة غير صالحة لنوع الهدف المحدد.",
+    "terminal_unavailable": "تعذّر فتح Windows Terminal أو PowerShell."
   },
   "defender": {
     "status": {
@@ -1444,6 +1445,12 @@
       "x": "منصة X",
       "keybase": "موقع Keybase",
       "hackernews": "موقع Hacker News"
+    }
+  },
+  "terminal": {
+    "opened": {
+      "windows-terminal": "فُتحت Windows Terminal في نافذة منفصلة.",
+      "powershell": "فُتحت PowerShell في نافذة منفصلة."
     }
   }
 }

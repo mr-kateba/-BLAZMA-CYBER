@@ -70,7 +70,7 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE OSINT workspace: domain/email/username/URL; Certificate Transparency (crt.sh), Wayback first/last snapshot, GitHub public profile, mail-domain DNS; provenance (endpoint + time) on every source; pivot links re-derived in main, opened only on click, gated. Verified with mocks + offline E2E — live sources were unreachable from the build sandbox
 
 ## Phase 7 — Polish
-- TODO Integrated PowerShell terminal (separate from GUI operations; needs a pty — listed in the UI as planned)
+- DONE Terminal: opens the regular Windows terminal (Windows Terminal, else PowerShell) in its own window — no in-app terminal by decision (the GUI never runs commands from user input)
 - DONE Packaging config (electron-builder.yml): per-user NSIS (asInvoker, no elevation, Arabic + English installer), asar, hardened Electron fuses (RunAsNode off, NODE_OPTIONS/inspect off, asar integrity, only-load-from-asar), no publish/auto-update; app icon generated from the logo SVG (scripts/make-icon.mjs)
 - DONE Packaged-app smoke test (scripts/package-smoke.mjs via CDP) — verified on Linux; `electron-builder --win --dir` also succeeds on Linux
 - DONE Windows installer build: `npm run dist:win` builds the NSIS installer in CI and the packaged app passes the smoke test (installer uploaded as an unsigned artifact); install/uninstall on a desktop not yet tested

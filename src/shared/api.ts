@@ -814,6 +814,8 @@ export interface BlazmaApi {
     openDataFolder(): Promise<Result<true>>;
     /** Opens an allowlisted https result page in the default browser (gated, logged). */
     openLink(url: string): Promise<Result<true>>;
+    /** Opens the regular Windows terminal (Windows Terminal, else PowerShell) in its own window. */
+    openTerminal(): Promise<Result<'windows-terminal' | 'powershell'>>;
   };
   settings: {
     get(): Promise<Settings>;

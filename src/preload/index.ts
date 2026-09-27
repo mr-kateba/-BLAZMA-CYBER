@@ -10,6 +10,7 @@ const api: BlazmaApi = {
     info: () => invoke('app:info'),
     openDataFolder: () => invoke('app:openDataFolder'),
     openLink: (url) => invoke('app:openLink', url),
+    openTerminal: () => invoke('app:openTerminal'),
   },
   settings: {
     get: () => invoke('settings:get'),
