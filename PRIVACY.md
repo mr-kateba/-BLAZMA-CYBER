@@ -35,6 +35,7 @@ that needs them. Currently:
 | OSINT → Wayback Machine | archive.org | The queried domain or URL | No |
 | OSINT → GitHub profile | api.github.com | The queried username | No |
 | OSINT → Mail domain DNS | Your configured DNS resolver | Only the domain part of the email address | No |
+| Settings → About → "Check for updates" (only when pressed) | api.github.com (this project's public release list) | Nothing but the request itself | No |
 | Was my password leaked? | api.pwnedpasswords.com (Have I Been Pwned) | Only the **first 5 characters of the password's SHA-1 hash** (k-anonymity, with response padding). The password and the rest of the hash never leave the computer; nothing is logged or saved | No |
 | OSINT → Pivot links (only when clicked, after confirmation) | The site you picked, in your browser | The target, as shown in the confirmation | No |
 

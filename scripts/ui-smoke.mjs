@@ -551,6 +551,10 @@ try {
   await win.locator('.nav-item', { hasText: 'Appearance' }).click();
   await win.getByText('Theme').first().waitFor();
   await win.screenshot({ path: join(out, '10-settings-en.png') });
+  // Phase F4: manual update check — Offline Mode (default) blocks it; nothing is fetched or installed.
+  await win.getByRole('tab', { name: 'About' }).click();
+  await win.getByRole('button', { name: 'Check for updates' }).click();
+  await win.getByText('Blocked: Offline Mode is on', { exact: false }).first().waitFor();
 
   assert.deepEqual(errors, [], `renderer errors:\n${errors.join('\n')}`);
   console.log('UI smoke test passed. Screenshots in docs/screenshots/');

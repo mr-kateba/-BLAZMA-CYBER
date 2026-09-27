@@ -580,7 +580,16 @@
     "installType": "Copy",
     "portable": "Portable (runs from its folder, e.g. a USB drive)",
     "installed": "Installed for this user",
-    "portableNote": "All data stays in the BLAZMA-data folder next to the program. API keys are still encrypted for this Windows account, so they must be entered again on another PC."
+    "portableNote": "All data stays in the BLAZMA-data folder next to the program. API keys are still encrypted for this Windows account, so they must be entered again on another PC.",
+    "update": {
+      "check": "Check for updates",
+      "available": "New version available: {{version}}",
+      "open": "Open the download page",
+      "upToDate": "Up to date (latest: {{version}})",
+      "none": "No published release found",
+      "published": "Published {{time}}",
+      "note": "Only when you press the button: asks GitHub for this project’s release list (blocked in Offline Mode). Nothing is downloaded or installed automatically — you choose."
+    }
   },
   "activity": {
     "kind": {

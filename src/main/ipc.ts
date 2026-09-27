@@ -22,6 +22,7 @@ import { tamperChecks } from './services/tamper';
 import { auditExtensions } from './services/extensions';
 import { EventHuntError, parseOptions, parseSource, runEventHunt } from './services/event-hunt';
 import { MemoryScanError, runMemoryScan } from './services/memory-scan';
+import { checkForUpdates, lastReleaseUrl, UpdateError } from './services/updates';
 import { DownloadsWatcher } from './services/downloads-watch';
 import { createTranslator, type Dict } from '../core/i18n';
 import enDict from '../../locales/en.json';
@@ -53,7 +54,7 @@ function fail(error: string, detail?: string): Result<never> {
 }
 
 function errorCode(e: unknown): string {
-  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError || e instanceof RecoveryError || e instanceof CaseError || e instanceof ReportError || e instanceof TerminalError || e instanceof DeviceSecurityError || e instanceof EmailError || e instanceof PwnedError || e instanceof EventHuntError || e instanceof MemoryScanError) return e.code;
+  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError || e instanceof RecoveryError || e instanceof CaseError || e instanceof ReportError || e instanceof TerminalError || e instanceof DeviceSecurityError || e instanceof EmailError || e instanceof PwnedError || e instanceof EventHuntError || e instanceof MemoryScanError || e instanceof UpdateError) return e.code;
   if (e instanceof OfflineModeError) return 'offline_mode';
   return 'internal_error';
 }
@@ -193,6 +194,13 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
     const host = externalLinkHost(url);
     if (!host) return fail('invalid_input');
     await gate.run({ module: 'reputation', service: 'browser:link', host, dataKind: 'privacy.data.indicator' }, () => shell.openExternal(url as string));
+    return { ok: true, data: true };
+  });
+  handle('app:checkUpdates', async () => ({ ok: true, data: await checkForUpdates(gate, app.getVersion()) }));
+  handle('app:openReleasePage', async () => {
+    const url = lastReleaseUrl();
+    if (!url) return fail('invalid_input');
+    await gate.run({ module: 'settings', service: 'browser:release-page', host: 'github.com', dataKind: 'privacy.data.none' }, () => shell.openExternal(url));
     return { ok: true, data: true };
   });
   handle('app:bundledEngines', () =>

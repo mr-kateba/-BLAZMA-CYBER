@@ -14,6 +14,7 @@ import type { DeviceSecurityReport, SettingsLink } from '../core/device-security
 import type { TamperReport } from '../core/tamper';
 import type { ExtensionAudit } from '../core/extensions';
 import type { DownloadEvent, DownloadsWatchState } from '../core/downloads';
+import type { ReleaseInfo } from '../core/version';
 import type { EventDetection, EventHuntSummary } from '../core/hayabusa';
 import type { MemoryScanSummary } from '../core/hollows';
 import type { CapaSummary } from '../core/capa';
@@ -512,6 +513,8 @@ export type { DieDetection, DieSummary } from '../core/die';
 export type { DeviceCheck, DeviceSecurityReport, SettingsLink } from '../core/device-security';
 export type { TamperFinding, TamperItem, TamperReport } from '../core/tamper';
 export type { DownloadEvent, DownloadsWatchState } from '../core/downloads';
+export type { ReleaseInfo } from '../core/version';
+export interface UpdateCheck { current: string; latest: ReleaseInfo | null; newer: boolean; checkedAt: string }
 export type { EventDetection, EventHuntSummary, EventLevel } from '../core/hayabusa';
 export type { ImplantIndicator, MemoryScanSummary, SuspiciousProcess } from '../core/hollows';
 export type EventHuntSource = { kind: 'file' | 'dir'; path: string } | { kind: 'live' };
@@ -894,7 +897,11 @@ export interface BlazmaApi {
     /** Opens an allowlisted https result page in the default browser (gated, logged). */
     openLink(url: string): Promise<Result<true>>;
     /** Engines shipped with this build (verified at build time); empty when none are bundled. */
-    bundledEngines(): Promise<Array<{ id: 'yara-x' | 'capa' | 'die'; name: string; version: string; license: string }>>;
+    bundledEngines(): Promise<Array<{ id: 'yara-x' | 'capa' | 'die' | 'hayabusa' | 'hollows-hunter'; name: string; version: string; license: string }>>;
+    /** Manual update check against this project's GitHub releases (gated; nothing is downloaded). */
+    checkUpdates(): Promise<Result<UpdateCheck>>;
+    /** Opens the release page found by the last check in the browser. */
+    openReleasePage(): Promise<Result<true>>;
     /** Opens the regular Windows terminal (Windows Terminal, else PowerShell) in its own window. */
     openTerminal(): Promise<Result<'windows-terminal' | 'powershell'>>;
   };

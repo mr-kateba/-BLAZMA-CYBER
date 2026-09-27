@@ -104,7 +104,7 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE F1 IOC export: CSV (RFC 4180, spreadsheet-formula neutralized) and STIX 2.1 bundle (identity, one indicator per IOC with escaped patterns, grouping for the case) from a case's evidence — hashes (incl. file evidence hashes), IPv4/IPv6, domains, URLs, emails, file names
 - DONE F2 MITRE ATT&CK: Enterprise ATT&CK 19.2 table generated from MITRE's official STIX data (scripts/make-attack-data.mjs; 697 techniques, 15 tactics, 146 revoked ids mapped to their replacements); event-log hunting shows an ATT&CK map by tactic with links to attack.mitre.org
 - DONE F3 Portable mode: `portable.txt` next to the executable keeps all BLAZMA data and Chromium's own data in `BLAZMA-data` beside the program (own single-instance lock; read-only media fall back to the normal location); CI and releases build `*-x64-portable.zip` and smoke-test it in portable mode; Settings shows the copy type
-- TODO F4 Manual update check
+- DONE F4 Manual update check (Settings → About): only on click, through NetworkGate (blocked in Offline Mode), reads this repository's GitHub release list, SemVer comparison incl. pre-releases; opens the release page built by the main process — nothing is downloaded or installed
 - TODO F5 Bundled John the Ripper / hashcat
 
 ## Phase 7 — Polish

@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Cpu, Info, KeyRound, Lock, Settings as Gear, ShieldCheck } from 'lucide-react';
-import type { ApiKeyService, AppInfo, Settings } from '../../shared/api';
+import { Cpu, Info, KeyRound, Lock, RefreshCw, Settings as Gear, ShieldCheck } from 'lucide-react';
+import type { ApiKeyService, AppInfo, Settings, UpdateCheck } from '../../shared/api';
 import { Badge, Card, IconTile, Ltr, Notice, Tabs, Toggle, usePoll } from '../components/ui';
 import { useApp } from '../components/AppContext';
 import { useI18n } from '../i18n/I18nProvider';
+import { formatDateTime } from '../format';
 
 type Tab = 'general' | 'privacy' | 'apiKeys' | 'engines' | 'about';
 
@@ -234,6 +235,35 @@ function RecoveryEngines() {
   );
 }
 
+function UpdateCheckRow() {
+  const { t, locale } = useI18n();
+  const { toast } = useApp();
+  const [s, setS] = useState<{ busy?: boolean; r?: UpdateCheck; error?: string }>({});
+  return (
+    <div className="col" style={{ gap: 8, marginTop: 14 }}>
+      <div className="row-wrap" style={{ gap: 10, alignItems: 'center' }}>
+        <button className="btn" disabled={s.busy} onClick={async () => {
+          setS({ busy: true });
+          const r = await window.blazma.app.checkUpdates();
+          setS(r.ok ? { r: r.data } : { error: r.error });
+        }}><RefreshCw size={14} /> {t('settings.update.check')}</button>
+        {s.r && (s.r.newer && s.r.latest ? (
+          <>
+            <Badge tone="green">{t('settings.update.available', { version: s.r.latest.tag })}</Badge>
+            <button className="btn sm primary" onClick={async () => {
+              const r = await window.blazma.app.openReleasePage();
+              if (!r.ok) toast('red', t(`errors.${r.error}`));
+            }}>{t('settings.update.open')}</button>
+          </>
+        ) : <Badge tone="gray">{s.r.latest ? t('settings.update.upToDate', { version: s.r.latest.tag }) : t('settings.update.none')}</Badge>)}
+        {s.error && <span className="small" style={{ color: 'var(--amber)' }}>{t(`errors.${s.error}`)}</span>}
+      </div>
+      {s.r?.latest?.publishedAt && <div className="tiny dim">{t('settings.update.published', { time: formatDateTime(locale, s.r.latest.publishedAt) })}</div>}
+      <div className="tiny dim">{t('settings.update.note')}</div>
+    </div>
+  );
+}
+
 function About({ info }: { info: AppInfo | null }) {
   const { t } = useI18n();
   return (
@@ -247,6 +277,7 @@ function About({ info }: { info: AppInfo | null }) {
           <dt>{t('settings.installType')}</dt><dd>{t(info.portable ? 'settings.portable' : 'settings.installed')}</dd>
         </dl>
       )}
+      <UpdateCheckRow />
       <p className="small dim" style={{ marginBottom: 0 }}>{t('settings.license')}</p>
     </Card>
   );
