@@ -1,0 +1,85 @@
+# Continuous verification on real Windows (and Linux).
+# - check:    typecheck + unit tests + locale parity; on Windows this includes
+#             tests/windows-integration.test.ts (real PowerShell, Defender, Authenticode).
+# - e2e:      drives the real Electron app through every module (Arabic + English).
+# - package:  builds the NSIS installer and smoke-tests the packaged app.
+# Nothing here publishes anything, and no secrets are used (builds are unsigned).
+name: CI
+
+on:
+  push:
+    branches: [main, 'claude/**']
+    paths-ignore: ['**.md', 'docs/**']
+  pull_request:
+    paths-ignore: ['**.md', 'docs/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: check (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+
+  e2e:
+    name: e2e (windows)
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: UI smoke test on the real app
+        run: node scripts/ui-smoke.mjs "$env:SystemRoot\System32\notepad.exe"
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-windows
+          path: docs/screenshots/
+          retention-days: 14
+
+  package:
+    name: package (windows)
+    runs-on: windows-latest
+    timeout-minutes: 30
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run dist:win
+      - name: Packaged app smoke test
+        run: node scripts/package-smoke.mjs "release\win-unpacked\BLAZMA CYBER.exe"
+      - name: Upload installer (unsigned)
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer-windows-unsigned
+          path: release/*-setup.exe
+          retention-days: 14

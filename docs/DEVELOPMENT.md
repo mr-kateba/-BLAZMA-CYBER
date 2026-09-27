@@ -32,6 +32,17 @@ On Windows you can also use `.\Start-Blazma.ps1` (`-Install`, `-Dev`, `-SkipBuil
   + quarantine flow) and `BLAZMA_TEST_ZIP` (a ZipCrypto archive for the password-recovery flow).
 - Network tests use mocks/localhost only.
 
+## Continuous integration
+`.github/workflows/ci.yml` runs on pushes to `main` / `claude/**`, pull requests and manual dispatch:
+- **check** on `windows-latest` and `ubuntu-latest` — `npm run check`. On Windows this includes
+  `tests/windows-integration.test.ts`, which runs the real PowerShell scripts (system facts,
+  Defender/firewall status, forensics collectors, network), Authenticode (a signed system binary
+  and an unsigned script with a hostile file name), and a report-only Defender scan of the EICAR
+  test file (assembled at runtime). It only touches localhost, system files and temp files.
+- **e2e** on Windows — the full UI smoke test on the real app; screenshots uploaded as an artifact.
+- **package** on Windows — `npm run dist:win` + `scripts/package-smoke.mjs`; the unsigned installer
+  is uploaded as an artifact (14 days). Nothing is published and no secrets are used.
+
 ## Packaging
 Configuration: `electron-builder.yml`.
 - Only `dist/` and `package.json` are packaged (everything is bundled by esbuild/Vite, so all npm

@@ -86,7 +86,7 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - TODO "What does this mean?" educational explanations for every indicator
 - TODO Downloads folder watcher, File Integrity Monitoring, browser-extension audit
 - TODO MITRE ATT&CK mapping, Sigma via external engine, IOC export (CSV/JSON/STIX 2.1), portable mode
-- TODO Windows CI job (GitHub Actions windows-latest) to verify PowerShell paths
+- IN PROGRESS Windows CI (.github/workflows/ci.yml, windows-latest + ubuntu): unit tests incl. tests/windows-integration.test.ts (real PowerShell, Defender EICAR scan, Authenticode, forensics, network), full UI E2E, NSIS installer build + packaged smoke test — DONE once the first Windows run is green
 
 ## BLOCKED
 - (none)

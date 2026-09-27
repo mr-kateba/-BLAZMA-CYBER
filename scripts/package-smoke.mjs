@@ -5,10 +5,11 @@ import { spawn } from 'node:child_process';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 
-const root = new URL('..', import.meta.url).pathname;
+const root = fileURLToPath(new URL('..', import.meta.url));
 const exe = process.argv[2] ?? join(root, 'release', 'linux-unpacked', 'blazma-cyber');
 const dataDir = mkdtempSync(join(tmpdir(), 'blazma-pkg-'));
 const port = 9300 + Math.floor(Math.random() * 500);
