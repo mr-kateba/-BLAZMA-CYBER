@@ -9,8 +9,8 @@ and are included with distributed builds.
 
 | Component | Version | License | Use | Source |
 |---|---|---|---|---|
-| Electron (includes Chromium, Node.js) | 44.4.5 | MIT (Chromium: BSD-3-Clause and others, see `LICENSES.chromium.html`) | Desktop runtime | https://github.com/electron/electron |
-| React / React DOM | 19.3.0 | MIT | UI library | https://github.com/facebook/react |
+| Electron (includes Chromium, Node.js) | 44.4.5 | MIT (Chromium: BSD-3-Clause and others; packaged builds include `LICENSE.electron.txt` and `LICENSES.chromium.html`) | Desktop runtime | https://github.com/electron/electron |
+| React / React DOM | 19.3.0 | MIT | UI library (bundled into the renderer by Vite) | https://github.com/facebook/react |
 | lucide-react | 1.48.0 | ISC | Icons | https://github.com/lucide-icons/lucide |
 | IBM Plex Sans Arabic (via @fontsource) | 5.3.0 | SIL Open Font License 1.1 | Arabic + Latin UI font, bundled locally (no web font requests) | https://github.com/IBM/plex |
 | JetBrains Mono (via @fontsource) | 5.3.0 | SIL Open Font License 1.1 | Monospace font for hashes/paths | https://github.com/JetBrains/JetBrainsMono |
@@ -24,7 +24,8 @@ and are included with distributed builds.
 | @vitejs/plugin-react | 6.1.1 | MIT | React support for Vite |
 | esbuild | 0.28.2 | MIT | Main/preload bundler |
 | Vitest | 5.0.2 | MIT | Unit tests |
-| Playwright | 1.63.0 | Apache-2.0 | End-to-end UI smoke test |
+| Playwright | 1.63.0 | Apache-2.0 | End-to-end UI smoke test, packaged-app smoke test, icon rendering |
+| electron-builder | 26.15.3 | MIT | Packaging (NSIS installer, asar, Electron fuses) — build-time only |
 | @types/* | — | MIT | Type definitions |
 
 ## Operating-system components used (not redistributed)
@@ -36,7 +37,7 @@ and are included with distributed builds.
 | NetSecurity cmdlets (`Get-NetFirewallProfile`) | Firewall status |
 | `Get-AuthenticodeSignature` | Digital signature verification |
 
-## Evaluated for future integration (NOT yet included)
+## External engines (user-installed, never bundled) and evaluated options
 
 | Engine | License | Planned integration | Assessment |
 |---|---|---|---|
@@ -51,5 +52,7 @@ Rejected: unmaintained npm "hash identifier" and "PE parser" packages (small, ea
 and fully tested in-house: `src/core/hash-id.ts`, `src/core/pe.ts`); i18next (unnecessary for
 this project's needs; replaced by `src/core/i18n.ts`).
 
-External web services (VirusTotal, AbuseIPDB, Shodan, Censys, api.ipify.org) are used only on
-explicit user action and are subject to their own terms. No API keys are distributed.
+External web services (VirusTotal, AbuseIPDB, Shodan, ipinfo.io, api.ipify.org, IANA/RIR RDAP,
+Team Cymru, the Tor Project exit list, crt.sh, the Internet Archive Wayback Machine, the GitHub
+REST API) are used only on explicit user action, through NetworkGate, and are subject to their own
+terms. A Censys key can be stored but is not used yet. No API keys are distributed.
