@@ -15,6 +15,7 @@ import type { TamperReport } from '../core/tamper';
 import type { ExtensionAudit } from '../core/extensions';
 import type { DownloadEvent, DownloadsWatchState } from '../core/downloads';
 import type { EventDetection, EventHuntSummary } from '../core/hayabusa';
+import type { MemoryScanSummary } from '../core/hollows';
 import type { CapaSummary } from '../core/capa';
 import type { EmailAnalysis } from '../core/email';
 import type { DieSummary } from '../core/die';
@@ -286,7 +287,7 @@ export interface ActivityEntry {
   kind:
     | 'file_analysis' | 'hash_file' | 'hash_text' | 'hash_identify' | 'hash_compare'
     | 'defender_scan' | 'yara_scan' | 'quarantine' | 'restore'
-    | 'ip_lookup' | 'domain_lookup' | 'reputation_lookup' | 'osint_lookup' | 'email_check' | 'event_hunt'
+    | 'ip_lookup' | 'domain_lookup' | 'reputation_lookup' | 'osint_lookup' | 'email_check' | 'event_hunt' | 'memory_scan'
     | 'forensics' | 'port_check' | 'discovery';
   /** Displayable subject, e.g. a filename. Never a secret. */
   subject: string;
@@ -510,6 +511,7 @@ export type { DeviceCheck, DeviceSecurityReport, SettingsLink } from '../core/de
 export type { TamperFinding, TamperItem, TamperReport } from '../core/tamper';
 export type { DownloadEvent, DownloadsWatchState } from '../core/downloads';
 export type { EventDetection, EventHuntSummary, EventLevel } from '../core/hayabusa';
+export type { ImplantIndicator, MemoryScanSummary, SuspiciousProcess } from '../core/hollows';
 export type EventHuntSource = { kind: 'file' | 'dir'; path: string } | { kind: 'live' };
 export interface EventHuntOptions { minLevel: 'low' | 'medium' | 'high' | 'critical'; days: 1 | 7 | 30 | 90 | null }
 export interface EventHuntResult extends EventHuntSummary { rows: EventDetection[]; source: { kind: EventHuntSource['kind']; path: string | null }; durationMs: number }
@@ -960,6 +962,12 @@ export interface BlazmaApi {
   password: {
     /** "Was my password leaked?" — sends only a 5-char SHA-1 prefix (k-anonymity) through NetworkGate. */
     checkPwned(password: string): Promise<Result<PwnedResult>>;
+  };
+  memory: {
+    /** Bundled HollowsHunter, if this build ships it. */
+    engine(): Promise<{ available: boolean; version: string | null }>;
+    /** Looks for injected / replaced code in the memory of the current user's running programs (read-only). */
+    scan(taskId: string): Promise<Result<MemoryScanSummary & { durationMs: number }>>;
   };
   downloads: {
     /** State of the opt-in Downloads watcher (enabled via settings.watchDownloads). */

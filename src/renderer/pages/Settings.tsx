@@ -194,6 +194,10 @@ function Engines() {
         <Badge tone={has('hayabusa') ? 'green' : 'gray'}>{t(has('hayabusa') ? 'settings.engineStatus.bundled' : 'settings.engineStatus.unavailable')}</Badge>
         <button className="btn sm" onClick={() => navigate('event-logs')}>{t('settings.configure')}</button>
       </Row>
+      <Row title={t('nav.memoryScan')} desc={has('hollows-hunter') ? `${has('hollows-hunter')!.name} ${has('hollows-hunter')!.version} · ${has('hollows-hunter')!.license}` : t('errors.engine_not_bundled')}>
+        <Badge tone={has('hollows-hunter') ? 'green' : 'gray'}>{t(has('hollows-hunter') ? 'settings.engineStatus.bundled' : 'settings.engineStatus.unavailable')}</Badge>
+        <button className="btn sm" onClick={() => navigate('memory-scan')}>{t('settings.configure')}</button>
+      </Row>
       <RecoveryEngines />
       <p className="tiny dim" style={{ marginBottom: 0 }}>{t('settings.bundledNote')}</p>
     </Card>

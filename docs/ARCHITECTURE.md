@@ -136,6 +136,7 @@ Writes are atomic (temp file + rename). Corrupt JSON is set aside, never crashes
 | TLS | Node `tls.connect` + `getPeerCertificate` | built-in | — | Through NetworkGate |
 | Reputation | VirusTotal, AbuseIPDB, Shodan, abuse.ch (MalwareBazaar, URLhaus, ThreatFox) | HTTPS adapters via NetworkGate, user's own keys (one abuse.ch Auth-Key for all three; POST APIs) | service ToS | Hash lookups only; file upload is not implemented. Censys not implemented |
 | Event-log hunting | Hayabusa 4.1.0 (Yamato Security) + Sigma/Hayabusa rules | bundled separate program (`dfir-timeline`, JSONL), `.evtx` files unelevated, this computer via UAC | AGPL-3.0 / DRL-1.1 | Rule authors shown with every match |
+| Memory implants | HollowsHunter 0.4.1.1 (PE-sieve) | bundled separate program, `/quiet /json /ofilter 2`, unelevated | BSD-2-Clause | Never /kill, /suspend or dumps |
 | Leaked passwords | Have I Been Pwned — Pwned Passwords | k-anonymity range API via NetworkGate (5-char SHA-1 prefix, padding) | service ToS (no key) | Matching is local; the password is never logged |
 | OSINT | crt.sh, Wayback availability API, GitHub REST API, mail-domain DNS | HTTPS/DNS via NetworkGate | service ToS / public data | Public, unauthenticated sources only |
 | Reports | Electron `printToPDF` | built-in | — | HTML report → PDF in a hidden sandboxed window, JavaScript disabled |

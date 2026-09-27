@@ -134,6 +134,8 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
   Phases A–D (docs/ROADMAP.md): simple mode + explanations, Device Security Score, bundled engines
   (YARA-X, capa, DIE, ReversingLabs rules), "Check an email" (local phishing analysis),
   "Was my password leaked?" (HIBP k-anonymity), abuse.ch reputation (MalwareBazaar/URLhaus/ThreatFox).
+  Phase E: system proxy, signs of tampering, browser extensions audit, Downloads watcher,
+  Hayabusa event-log hunting, HollowsHunter memory scan.
 - Latest audit: docs/AUDIT-REPORT.md (3 bugs found and fixed; weaknesses and proposed features listed).
 - NOT YET: signed installer.
 - Verified on Linux (Xvfb) locally and on real Windows (Server 2025, build 26100) in CI: PowerShell

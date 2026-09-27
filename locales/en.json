@@ -57,7 +57,8 @@
     "emailCheck": "Check an email",
     "passwordCheck": "Was my password leaked?",
     "extensions": "Browser extensions",
-    "eventLogs": "Event log hunting"
+    "eventLogs": "Event log hunting",
+    "memoryScan": "Memory implant scan"
   },
   "topbar": {
     "search": "Search tools…",
@@ -596,7 +597,8 @@
       "discovery": "Device discovery",
       "osint_lookup": "OSINT lookup",
       "email_check": "Email check",
-      "event_hunt": "Event log hunting"
+      "event_hunt": "Event log hunting",
+      "memory_scan": "Memory scan"
     },
     "summary": {
       "hashed": "Hashes calculated",
@@ -608,7 +610,9 @@
       "collected": "Data collected",
       "port_checked": "Ports checked",
       "discovered": "Network discovered",
-      "event_hunt": "event logs analyzed"
+      "event_hunt": "event logs analyzed",
+      "memory_suspicious": "suspicious programs found",
+      "memory_clean": "nothing suspicious in memory"
     }
   },
   "errors": {
@@ -1788,6 +1792,10 @@
     "event_logs": {
       "title": "What are event logs?",
       "text": "Windows records what happens on the computer — sign-ins, new services, scripts, security changes — in event logs. Attackers leave traces there. Hayabusa checks those records against more than 4,000 community detection rules (Sigma) and lists matches. A match is a lead to investigate, not proof of an attack."
+    },
+    "memory_implants": {
+      "title": "What is a memory implant?",
+      "text": "Some malware never saves a program to disk. Instead it hides its code inside a normal running program — for example by replacing it (\"process hollowing\") or injecting code into it. File scanners cannot see this. HollowsHunter compares each running program with its file on disk and looks for code that should not be there."
     }
   },
   "mode": {
@@ -2052,7 +2060,8 @@
       "dns_local": "Your router or local network",
       "dns_known": "A well-known public DNS provider",
       "dns_unknown": "Not a well-known provider — make sure you set it yourself",
-      "root_user_added": "Added to your account, not part of Windows"
+      "root_user_added": "Added to your account, not part of Windows",
+      "hosts_local": "A device on your local network (normal)"
     }
   },
   "ext": {
@@ -2222,5 +2231,44 @@
       "exfiltration": "Exfiltration",
       "impact": "Impact"
     }
+  },
+  "memscan": {
+    "title": "Memory implant scan",
+    "subtitle": "Look inside running programs for hidden or injected code (HollowsHunter / PE-sieve).",
+    "readOnly": "Programs are only inspected: nothing is stopped, changed or saved to disk.",
+    "notBundledHint": "HollowsHunter is included in the Windows installer.",
+    "startTitle": "Scan running programs",
+    "engine": "HollowsHunter {{version}} · BSD-2-Clause",
+    "scope": "Checks the programs running under your account (about 1–3 minutes). System services need administrator rights and are skipped.",
+    "scan": "Scan now",
+    "scanning": "Inspecting the memory of running programs…",
+    "resultTitle": "Result",
+    "again": "Scan again",
+    "scanned": "{{n}} programs scanned",
+    "suspiciousCount": "{{n}} suspicious",
+    "failed": "{{n}} could not be read",
+    "nothing": "No hidden or injected code was found in the programs that could be read.",
+    "found": "Some programs contain code that differs from their files on disk.",
+    "disclaimer": "Games, anti-cheat, security products and .NET programs can also change code in memory — treat findings as leads.",
+    "listTitle": "Programs to check",
+    "listSub": "Most serious first.",
+    "severity": {
+      "high": "Hidden code",
+      "medium": "Modified in memory",
+      "low": "Unusual"
+    },
+    "indicator": {
+      "implanted_pe": "A whole program was hidden inside it ({{n}})",
+      "implanted_shc": "Shellcode found ({{n}})",
+      "replaced": "Its code was replaced (process hollowing) ({{n}})",
+      "hdr_modified": "Program headers changed ({{n}})",
+      "patched": "Code patched / hooked ({{n}})",
+      "iat_hooked": "Import table hooked ({{n}})",
+      "unreachable_file": "Its file on disk cannot be found ({{n}})",
+      "other": "Other anomalies ({{n}})"
+    },
+    "whatToDo": "What should I do?",
+    "advice": "Do not panic and do not delete anything yet. Run a Microsoft Defender full scan, and check whether you recognise the program (games and security tools often explain \"modified in memory\"). \"Hidden code\" in a program you did not expect is serious: disconnect from the internet and ask for help.",
+    "openSecurityCenter": "Open Security Center"
   }
 }

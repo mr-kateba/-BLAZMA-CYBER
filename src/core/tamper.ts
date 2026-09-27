@@ -82,6 +82,9 @@ export function evaluateHosts(text: string | null | undefined): TamperFinding {
         items.push({ value: `${e.ip} ${name}`, note: isSink(e.ip) ? 'hosts_blocks_security' : 'hosts_redirects_security', tone: 'red' });
       } else if (isSink(e.ip)) {
         blocked++;
+      } else if (classifyIP(e.ip) !== 'public') {
+        // Names pointed at the local network (this PC's own name, a NAS, a printer) are normal.
+        if (items.length < 200) items.push({ value: `${e.ip} ${name}`, note: 'hosts_local', tone: 'gray' });
       } else {
         redirected++;
         if (items.length < 200) items.push({ value: `${e.ip} ${name}`, note: 'hosts_redirect', tone: 'amber' });
@@ -136,6 +139,8 @@ const KNOWN_DNS: Record<string, string> = {
   '208.67.222.222': 'OpenDNS', '208.67.220.220': 'OpenDNS', '208.67.222.123': 'OpenDNS', '208.67.220.123': 'OpenDNS',
   '94.140.14.14': 'AdGuard', '94.140.15.15': 'AdGuard', '94.140.14.15': 'AdGuard', '94.140.15.16': 'AdGuard',
   '185.228.168.9': 'CleanBrowsing', '185.228.169.9': 'CleanBrowsing', '76.76.2.0': 'Control D', '76.76.10.0': 'Control D',
+  // Cloud platforms' built-in resolvers
+  '168.63.129.16': 'Microsoft Azure',
 };
 
 export function evaluateDns(raw: RawTamperFacts['dns']): TamperFinding {

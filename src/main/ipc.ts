@@ -21,6 +21,7 @@ import { deviceSecurity, DeviceSecurityError, openSettingsPage } from './service
 import { tamperChecks } from './services/tamper';
 import { auditExtensions } from './services/extensions';
 import { EventHuntError, parseOptions, parseSource, runEventHunt } from './services/event-hunt';
+import { MemoryScanError, runMemoryScan } from './services/memory-scan';
 import { DownloadsWatcher } from './services/downloads-watch';
 import { createTranslator, type Dict } from '../core/i18n';
 import enDict from '../../locales/en.json';
@@ -52,7 +53,7 @@ function fail(error: string, detail?: string): Result<never> {
 }
 
 function errorCode(e: unknown): string {
-  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError || e instanceof RecoveryError || e instanceof CaseError || e instanceof ReportError || e instanceof TerminalError || e instanceof DeviceSecurityError || e instanceof EmailError || e instanceof PwnedError || e instanceof EventHuntError) return e.code;
+  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError || e instanceof RecoveryError || e instanceof CaseError || e instanceof ReportError || e instanceof TerminalError || e instanceof DeviceSecurityError || e instanceof EmailError || e instanceof PwnedError || e instanceof EventHuntError || e instanceof MemoryScanError) return e.code;
   if (e instanceof OfflineModeError) return 'offline_mode';
   return 'internal_error';
 }
@@ -194,7 +195,7 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
     return { ok: true, data: true };
   });
   handle('app:bundledEngines', () =>
-    (['yara-x', 'capa', 'die', 'hayabusa'] as const).flatMap((id) => {
+    (['yara-x', 'capa', 'die', 'hayabusa', 'hollows-hunter'] as const).flatMap((id) => {
       const e = bundledEngine(id);
       return e ? [{ id, name: e.name, version: e.version, license: e.license }] : [];
     }),
@@ -584,6 +585,20 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
 
   handle('hunt:search', (query: unknown, taskId: unknown) => runTask(taskId, () => hunt.search(query)));
   handle('hunt:persistence', async () => ({ ok: true, data: await hunt.persistence() }));
+  handle('memory:engine', () => {
+    const e = bundledEngine('hollows-hunter');
+    return { available: !!e, version: e?.version ?? null };
+  });
+  handle('memory:scan', (taskId: unknown) => {
+    const exe = bundledEngine('hollows-hunter')?.path;
+    if (!exe) return fail(process.platform === 'win32' ? 'engine_not_bundled' : 'unsupported_platform');
+    return runTask(taskId, async (signal) => {
+      const r = await runMemoryScan(exe, signal);
+      history.record({ kind: 'memory_scan', subject: String(r.scanned ?? '?'), summaryKey: r.suspicious.length ? 'activity.summary.memory_suspicious' : 'activity.summary.memory_clean' });
+      logger.info('memory_scan', { scanned: r.scanned, suspicious: r.suspicious.length, ms: r.durationMs });
+      return r;
+    });
+  });
   handle('hunt:eventEngine', () => {
     const e = bundledEngine('hayabusa');
     return { available: !!e, version: e?.version ?? null };

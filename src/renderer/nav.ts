@@ -1,5 +1,5 @@
 import {
-  BadgeCheck, Crosshair, Earth, FileClock, MailWarning, FileSearch, FolderOpen, Hash, KeyRound, KeySquare, Languages, Link2, MonitorCog, Network, Palette, Plug,
+  BadgeCheck, Crosshair, Earth, FileClock, MemoryStick, MailWarning, FileSearch, FolderOpen, Hash, KeyRound, KeySquare, Languages, Link2, MonitorCog, Network, Palette, Plug,
   Puzzle, ScanSearch, ScrollText, ShieldCheck, ShieldHalf, SquareTerminal, UserSearch, LayoutDashboard, Cpu, Scale, type LucideIcon,
 } from 'lucide-react';
 
@@ -8,7 +8,7 @@ export type PageId =
   | 'ip-intel' | 'domain-intel' | 'email-check' | 'password-check' | 'osint' | 'reputation'
   | 'security-center' | 'file-analyzer' | 'browser-extensions' | 'yara' | 'hash-lab'
   | 'password-recovery'
-  | 'windows-forensics' | 'network-toolkit' | 'threat-hunting' | 'event-logs' | 'terminal'
+  | 'windows-forensics' | 'network-toolkit' | 'threat-hunting' | 'event-logs' | 'memory-scan' | 'terminal'
   | 'cases' | 'reports'
   | 'privacy'
   | 'settings-api' | 'settings-engines' | 'settings-appearance' | 'settings-language';
@@ -73,6 +73,7 @@ export const NAV: NavSection[] = [
       { id: 'network-toolkit', labelKey: 'nav.networkToolkit', icon: Network },
       { id: 'threat-hunting', labelKey: 'nav.threatHunting', icon: Crosshair },
       { id: 'event-logs', labelKey: 'nav.eventLogs', icon: FileClock },
+      { id: 'memory-scan', labelKey: 'nav.memoryScan', icon: MemoryStick },
       { id: 'terminal', labelKey: 'nav.terminal', icon: SquareTerminal, external: true },
     ],
   },

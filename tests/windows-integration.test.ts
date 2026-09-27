@@ -15,6 +15,7 @@ import { tamperChecks } from '../src/main/services/tamper';
 import { auditExtensions } from '../src/main/services/extensions';
 import { runCapa, runDie } from '../src/main/services/static-engines';
 import { runEventHunt } from '../src/main/services/event-hunt';
+import { runMemoryScan } from '../src/main/services/memory-scan';
 import { execFileSync } from 'node:child_process';
 import { YaraService } from '../src/main/services/yara';
 import { readdirSync, readFileSync, copyFileSync } from 'node:fs';
@@ -204,5 +205,14 @@ describe.runIf(WIN && manifest?.hayabusa)('Hayabusa on real Windows event logs',
     const r = await runEventHunt(exe('hayabusa')!, { kind: 'live' }, { minLevel: 'medium', days: 1 }, new AbortController().signal);
     console.log('Hayabusa (live, last day):', JSON.stringify({ total: r.total, byLevel: r.byLevel, rules: r.topRules.slice(0, 8).map((x) => `${x.level}:${x.rule}`), ms: r.durationMs }));
     expect(r.source.kind).toBe('live');
+  }, 900_000);
+});
+
+describe.runIf(WIN && manifest?.['hollows-hunter'])('HollowsHunter on real running processes', () => {
+  it('scans the memory of running programs (read-only, no dumps)', async () => {
+    process.env.BLAZMA_DATA_DIR ??= mkdtempSync(join(tmpdir(), 'blazma-hh-'));
+    const r = await runMemoryScan(exe('hollows-hunter')!, new AbortController().signal);
+    console.log('HollowsHunter:', JSON.stringify({ scanned: r.scanned, failed: r.failed, suspicious: r.suspicious.map((p) => `${p.name}:${p.severity}:${JSON.stringify(p.indicators)}`), ms: r.durationMs }));
+    expect(r.scanned).toBeGreaterThan(0);
   }, 900_000);
 });

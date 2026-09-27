@@ -473,6 +473,17 @@ try {
     if (!hbAvailable) await win.getByText('Hayabusa مضمَّن في مثبّت Windows.').waitFor();
   }
 
+  // Phase E6: memory implant scan (bundled HollowsHunter on Windows; elsewhere honestly unavailable).
+  await win.locator('.nav-item', { hasText: 'فحص الذاكرة' }).click();
+  if (process.platform === 'win32') {
+    await win.getByRole('button', { name: 'افحص الآن' }).click();
+    await win.getByText('النتيجة', { exact: true }).waitFor({ timeout: 600000 });
+    await win.waitForTimeout(300);
+    await win.screenshot({ path: join(out, '37-memory-scan-ar.png'), fullPage: true });
+  } else {
+    await win.getByText('HollowsHunter مضمَّن في مثبّت Windows.').waitFor();
+  }
+
   // 6) Hash Lab identify (Arabic)
   await win.locator('.nav-item', { hasText: 'مختبر الهاشات' }).click();
   await win.getByRole('tab', { name: 'تعرّف' }).click();

@@ -6,7 +6,7 @@ import { app } from 'electron';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-export type BundledEngineId = 'yara-x' | 'capa' | 'die' | 'hayabusa';
+export type BundledEngineId = 'yara-x' | 'capa' | 'die' | 'hayabusa' | 'hollows-hunter';
 
 export interface BundledEngine {
   id: BundledEngineId;

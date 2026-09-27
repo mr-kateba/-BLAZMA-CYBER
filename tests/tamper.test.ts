@@ -29,10 +29,14 @@ describe('Tamper checks — hosts file', () => {
 
   it('ad-block style entries are counted, not flagged; other redirects need a look', () => {
     expect(evaluateHosts('0.0.0.0 ads.example\n0.0.0.0 tracker.example\n').status).toBe('pass');
-    const r = evaluateHosts('0.0.0.0 ads.example\n192.168.1.20 nas.home\n');
+    const r = evaluateHosts('0.0.0.0 ads.example\n203.0.113.20 bank.example\n');
     expect(r.status).toBe('warn');
     expect(r.detail?.vars).toEqual({ hijacked: 0, redirected: 1, blocked: 1 });
-    expect(r.items).toEqual([{ value: '192.168.1.20 nas.home', note: 'hosts_redirect', tone: 'amber' }]);
+    expect(r.items).toEqual([{ value: '203.0.113.20 bank.example', note: 'hosts_redirect', tone: 'amber' }]);
+    // This PC's own name / devices on the local network (seen on a real Windows runner) are normal.
+    const lan = evaluateHosts('10.1.0.134 runnervm99s1a\n192.168.1.20 nas.home\n');
+    expect(lan.status).toBe('pass');
+    expect(lan.items.map((i) => i.note)).toEqual(['hosts_local', 'hosts_local']);
     expect(evaluateHosts('evil.example 1.2.3.4\nnot-an-ip evil\n').status).toBe('pass');
     expect(evaluateHosts(null).status).toBe('unknown');
   });
@@ -53,6 +57,7 @@ describe('Tamper checks — proxy, DNS, root certificates', () => {
     expect(ok.status).toBe('pass');
     expect(ok.items.map((i) => i.note)).toEqual(['dns_local', 'dns_known']);
     expect(ok.items[1]!.value).toBe('1.1.1.1 — Cloudflare (Wi-Fi)');
+    expect(evaluateDns({ iface: 'Ethernet 3', server: '168.63.129.16' }).status).toBe('pass'); // Azure's resolver (real runner)
     const bad = evaluateDns({ iface: 'Ethernet', server: '203.0.113.53' });
     expect(bad).toMatchObject({ status: 'warn', items: [{ value: '203.0.113.53 (Ethernet)', note: 'dns_unknown', tone: 'amber' }] });
     expect(evaluateDns(null).status).toBe('unknown');

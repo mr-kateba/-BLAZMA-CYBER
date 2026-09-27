@@ -32,6 +32,7 @@ license text next to it (`resources/engines/<id>/LICENSE.txt`, `resources/rules/
 | Detect It Easy (`diec.exe`) | 3.21 | MIT | Compiler / packer / installer identification | https://github.com/horsicq/DIE-engine |
 | Hayabusa (`hayabusa-4.1.0-win-x64.exe`), unmodified | 4.1.0 | AGPL-3.0 (separate program; exact source: https://github.com/Yamato-Security/hayabusa/tree/v4.1.0) | Event-log hunting | https://github.com/Yamato-Security/hayabusa |
 | Hayabusa + Sigma detection rules (shipped inside the Hayabusa release) | 4.1.0 bundle | Detection Rule License 1.1 — rule authors are shown with every match | Event-log detection rules | https://github.com/Yamato-Security/hayabusa-rules, https://github.com/SigmaHQ/sigma |
+| HollowsHunter (`hollows_hunter.exe`, includes PE-sieve), unmodified | 0.4.1.1 | BSD-2-Clause | Memory implant scan | https://github.com/hasherezade/hollows_hunter |
 | ReversingLabs YARA rules (1,240 rules, commit e0a0be5) | 2025-11-03 | MIT | Malware family detection | https://github.com/reversinglabs/reversinglabs-yara-rules |
 
 ## Development-only components (not shipped)

@@ -51,6 +51,17 @@
       "extraLicenses": {
         "rules": "hayabusa-rules.txt"
       }
+    },
+    {
+      "id": "hollows-hunter",
+      "name": "HollowsHunter (hasherezade)",
+      "version": "0.4.1.1",
+      "license": "BSD-2-Clause",
+      "homepage": "https://github.com/hasherezade/hollows_hunter",
+      "url": "https://github.com/hasherezade/hollows_hunter/releases/download/v0.4.1.1/hollows_hunter64.zip",
+      "size": 581846,
+      "sha256": "00bff71b46f81f1c5f5d6c64fe8682a695a435d00e9b84112d79be05f8e1140c",
+      "exe": "hollows_hunter.exe"
     }
   ],
   "rules": [

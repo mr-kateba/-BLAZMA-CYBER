@@ -28,6 +28,7 @@ const ThreatHunting = lazy(() => import('./pages/ThreatHunting').then((m) => ({ 
 const DeviceSecurity = lazy(() => import('./pages/DeviceSecurity').then((m) => ({ default: m.DeviceSecurity })));
 const EmailCheck = lazy(() => import('./pages/EmailCheck').then((m) => ({ default: m.EmailCheck })));
 const BrowserExtensions = lazy(() => import('./pages/BrowserExtensions').then((m) => ({ default: m.BrowserExtensions })));
+const MemoryScan = lazy(() => import('./pages/MemoryScan').then((m) => ({ default: m.MemoryScan })));
 const EventLogs = lazy(() => import('./pages/EventLogs').then((m) => ({ default: m.EventLogs })));
 const PasswordCheck = lazy(() => import('./pages/PasswordCheck').then((m) => ({ default: m.PasswordCheck })));
 const Osint = lazy(() => import('./pages/Osint').then((m) => ({ default: m.Osint })));
@@ -60,6 +61,8 @@ function Page({ id }: { id: PageId }) {
       return <BrowserExtensions />;
     case 'event-logs':
       return <EventLogs />;
+    case 'memory-scan':
+      return <MemoryScan />;
     case 'osint':
       return <Osint />;
     case 'reputation':

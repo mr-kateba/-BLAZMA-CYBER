@@ -80,6 +80,10 @@ const api: BlazmaApi = {
   password: {
     checkPwned: (password) => invoke('password:checkPwned', password),
   },
+  memory: {
+    engine: () => invoke('memory:engine'),
+    scan: (taskId) => invoke('memory:scan', taskId),
+  },
   downloads: {
     state: () => invoke('downloads:state'),
     onState: (cb) => {
