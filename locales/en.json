@@ -53,7 +53,8 @@
     "simple": {
       "scanFile": "Scan a file",
       "checkLink": "Check a link or website"
-    }
+    },
+    "emailCheck": "Check an email"
   },
   "topbar": {
     "search": "Search tools…",
@@ -582,7 +583,8 @@
       "forensics": "Forensics collection",
       "port_check": "Port check",
       "discovery": "Device discovery",
-      "osint_lookup": "OSINT lookup"
+      "osint_lookup": "OSINT lookup",
+      "email_check": "Email check"
     },
     "summary": {
       "hashed": "Hashes calculated",
@@ -691,7 +693,11 @@
     "yara_pack_readonly": "Rule packs shipped with BLAZMA can be turned off but not deleted.",
     "engine_not_bundled": "Not included in this build (it ships with the Windows installer).",
     "engine_unsupported_file": "This engine does not support this file type.",
-    "engine_missing": "The engine's program could not be started."
+    "engine_missing": "The engine's program could not be started.",
+    "email_msg_unsupported": "Outlook .msg files are not supported yet. In Outlook use File → Save As → “.eml”, or paste the message source.",
+    "email_too_large": "The email is larger than 25 MB.",
+    "not_an_email": "This doesn't look like an email (no From/Subject/Received headers).",
+    "email_expired": "This email is no longer in memory — check it again."
   },
   "defender": {
     "status": {
@@ -1820,7 +1826,98 @@
       "archive": "Archive",
       "format": "Format",
       "language": "Language",
-      "operation system": "OS"
+      "operation system": "OS",
+      "debug data": "Debug data"
     }
+  },
+  "email": {
+    "title": "Check an email",
+    "subtitle": "Is this message a phishing attempt? Sender, authentication, real link destinations and attachments.",
+    "localOnly": "The email is analyzed on this computer only — it is never uploaded, and nothing in it is opened or run.",
+    "dropTitle": "Drop a saved email (.eml) here",
+    "dropHint": "or browse for the file",
+    "dropActive": "Drop the email to check it",
+    "howToSave": "How to save an email: in Outlook or Gmail open the message → ⋯ → “Save as” / “Download message” (.eml). Outlook .msg files are not supported yet — use “Save as .eml” or paste the source.",
+    "pasteTitle": "…or paste the message source",
+    "pastePlaceholder": "Paste the full source (Gmail: ⋮ → Show original)",
+    "analyze": "Check this email",
+    "analyzing": "Checking the email…",
+    "another": "Check another email",
+    "verdictTitle": "Is this email trustworthy?",
+    "disclaimer": "Based only on what the message itself shows. When in doubt, contact the sender through a channel you already trust — never through links or numbers in the email.",
+    "level": {
+      "risky": "Warning signs — likely phishing",
+      "caution": "Be careful",
+      "no_red_flags": "No warning signs found"
+    },
+    "levelHint": {
+      "risky": "Don't click links, open attachments or reply with personal information.",
+      "caution": "Some things deserve attention before you trust it.",
+      "no_red_flags": "Nothing alarming was found, but stay careful with unexpected requests."
+    },
+    "signal": {
+      "noAuth": "No authentication results were found, so the sender can't be verified.",
+      "dmarcFail": "DMARC failed: the sender's domain says this message is NOT authorised to use its name.",
+      "dmarcPass": "DMARC passed: the message is authorised by the sender's domain.",
+      "spfFail": "SPF result “{{result}}”: the sending server isn't allowed to send for this domain.",
+      "dkimFail": "The DKIM signature failed: the message may have been altered.",
+      "displayNameSpoof": "The sender's name shows “{{shown}}” but the real address is {{real}}.",
+      "replyToDiffers": "Replies would go to a different address: {{replyTo}}.",
+      "returnPathDiffers": "Bounces go to a different domain ({{returnPath}}).",
+      "deceptiveLinks": "{{count}} link(s) are deceptive: they show one site but go to another (or to a raw IP address).",
+      "suspiciousLinks": "{{count}} link(s) deserve caution (shortened, look-alike characters, or not encrypted).",
+      "dangerousAttachment": "Dangerous attachment: {{names}} — do not open it.",
+      "riskyAttachment": "Attachment that needs care: {{names}}."
+    },
+    "sender": "Sender",
+    "subject": "Subject",
+    "from": "From",
+    "replyTo": "Reply-To",
+    "returnPath": "Return-Path",
+    "to": "To",
+    "date": "Date",
+    "auth": "Authentication",
+    "authSub": "As recorded by your mail provider when the message arrived.",
+    "noAuth": "No authentication results in this message.",
+    "authMeaning": {
+      "pass": "Verified",
+      "fail": "Failed verification",
+      "softfail": "Probably not allowed",
+      "other": "Not verified"
+    },
+    "links": "Links ({{count}})",
+    "linksSub": "What each link shows vs. where it really goes.",
+    "noLinks": "No links.",
+    "linkShown": "Shown text",
+    "linkGoesTo": "Really goes to",
+    "linkFlag": {
+      "mismatch": "Shows a different site",
+      "ip": "Raw IP address",
+      "userinfo": "Hidden address trick (@)",
+      "script": "Script link",
+      "invalid": "Invalid link",
+      "punycode": "Look-alike characters",
+      "shortener": "Shortened link",
+      "http": "Not encrypted"
+    },
+    "attachments": "Attachments ({{count}})",
+    "noAttachments": "No attachments.",
+    "attName": "File",
+    "attFlag": {
+      "executable": "Program / script",
+      "double_extension": "Double extension",
+      "rtlo": "Hidden reversed name",
+      "macro": "Office macros",
+      "container": "Archive / disk image",
+      "html": "Web page (login forms)"
+    },
+    "analyzeAttachment": "Analyze",
+    "attachmentNote": "“Analyze” saves the attachment to BLAZMA's private temp folder under a name that can't run, then scans it in File Analyzer. It is never opened.",
+    "route": "Delivery route ({{count}} servers)",
+    "routeSub": "Servers the message passed through, newest first.",
+    "hopFrom": "From",
+    "hopBy": "Received by",
+    "preview": "Message text",
+    "previewSub": "Plain text only — images, scripts and formatting are not loaded."
   }
 }

@@ -80,12 +80,17 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE B2 "What does this mean?": 24 plain-language explanations (Arabic + English) on the key cards of File Analyzer, Domain/IP Intelligence, Security Center, YARA, Hash Lab, Forensics, Threat Hunting and Offline Mode
 - DONE B3 Simple/expert mode (chosen at first launch, switchable in the sidebar and Settings; simple = 8 essentials with friendlier labels and a lighter dashboard), drop a file anywhere to scan it, "What should I do?" advice under every file verdict, "Is this site trustworthy?" summary built only from retrieved facts
 
-## Phase C — No external tools needed — IN PROGRESS (awaiting Windows CI)
+## Phase C — No external tools needed — DONE (verified on Windows in CI)
 - DONE YARA-X 1.20.0, capa 9.4.0, Detect It Easy 3.21 bundled in the Windows installer (build-time download, pinned SHA-256)
 - DONE ReversingLabs YARA pack (1,240 rules, MIT): compiled with YARA-X, zero false positives on Linux binaries; read-only pack in the rule manager; family rules = definitive, PUA = strong
 - DONE File Analyzer: "What can this program do?" (capa, with MITRE ATT&CK IDs) and "Built with" (DIE); conservative evidence weights
 - DONE Fixed: rule validation treated YARA-X warnings (exit code 2) and the word "error" in rule text as failures
-- TODO Confirm on Windows CI: engines fetched/verified, capa + DIE on System32 programs, RL pack false-positive scan of System32
+- DONE Verified on Windows CI: engines fetched + SHA-256 verified; capa on notepad.exe → 30 capabilities / 11 ATT&CK techniques (49 s); DIE → Microsoft Linker 14.38 / MSVC 19.38; RL pack → 0 matches on 150 System32 files
+
+## Phase D — Phishing & reputation — IN PROGRESS
+- DONE D1 "Check an email": local .eml / pasted-source analysis — sender consistency (display-name spoofing, Reply-To/Return-Path), SPF/DKIM/DMARC as recorded by the provider, real link destinations (mismatch, IP, @-trick, look-alike, shortener, http), risky attachments (executable, double extension, RTLO, macros, archives, HTML) with hand-off to File Analyzer under a non-executable name; Arabic encodings (RFC 2047/2231, windows-1256)
+- TODO D2 Pwned Passwords (k-anonymity)
+- TODO D3 abuse.ch MalwareBazaar / URLhaus / ThreatFox
 
 ## Phase 7 — Polish
 - DONE Terminal: opens the regular Windows terminal (Windows Terminal, else PowerShell) in its own window — no in-app terminal by decision (the GUI never runs commands from user input)

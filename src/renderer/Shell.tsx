@@ -25,6 +25,7 @@ const Cases = lazy(() => import('./pages/Cases').then((m) => ({ default: m.Cases
 const Reports = lazy(() => import('./pages/Reports').then((m) => ({ default: m.Reports })));
 const ThreatHunting = lazy(() => import('./pages/ThreatHunting').then((m) => ({ default: m.ThreatHunting })));
 const DeviceSecurity = lazy(() => import('./pages/DeviceSecurity').then((m) => ({ default: m.DeviceSecurity })));
+const EmailCheck = lazy(() => import('./pages/EmailCheck').then((m) => ({ default: m.EmailCheck })));
 const Osint = lazy(() => import('./pages/Osint').then((m) => ({ default: m.Osint })));
 
 function Page({ id }: { id: PageId }) {
@@ -47,6 +48,8 @@ function Page({ id }: { id: PageId }) {
       return <IpIntel />;
     case 'domain-intel':
       return <DomainIntel />;
+    case 'email-check':
+      return <EmailCheck />;
     case 'osint':
       return <Osint />;
     case 'reputation':

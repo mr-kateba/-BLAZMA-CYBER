@@ -12,6 +12,7 @@ import type { ExtractedIocs } from '../core/ioc';
 import type { Assessment } from '../core/detection';
 import type { DeviceSecurityReport, SettingsLink } from '../core/device-security';
 import type { CapaSummary } from '../core/capa';
+import type { EmailAnalysis } from '../core/email';
 import type { DieSummary } from '../core/die';
 import type { CtSummary, GithubProfile, OsintPivot, OsintTargetType, WaybackSnapshot } from '../core/osint';
 
@@ -278,7 +279,7 @@ export interface ActivityEntry {
   kind:
     | 'file_analysis' | 'hash_file' | 'hash_text' | 'hash_identify' | 'hash_compare'
     | 'defender_scan' | 'yara_scan' | 'quarantine' | 'restore'
-    | 'ip_lookup' | 'domain_lookup' | 'reputation_lookup' | 'osint_lookup'
+    | 'ip_lookup' | 'domain_lookup' | 'reputation_lookup' | 'osint_lookup' | 'email_check'
     | 'forensics' | 'port_check' | 'discovery';
   /** Displayable subject, e.g. a filename. Never a secret. */
   subject: string;
@@ -462,6 +463,7 @@ export interface DomainLookupResult {
 }
 
 export type { OsintTargetType } from '../core/osint';
+export type { EmailAnalysis, EmailAttachment, EmailLink, EmailSignal, AuthResult } from '../core/email';
 export type { AttackRef, Capability, CapaSummary } from '../core/capa';
 export type { DieDetection, DieSummary } from '../core/die';
 export type { DeviceCheck, DeviceSecurityReport, SettingsLink } from '../core/device-security';
@@ -899,6 +901,14 @@ export interface BlazmaApi {
     importFile(): Promise<Result<YaraRuleFile | null>>;
     remove(id: string): Promise<Result<YaraRuleFile[]>>;
     scan(target: string, recursive: boolean, taskId: string): Promise<Result<YaraScanResult>>;
+  };
+  email: {
+    /** Lets the user choose a saved email (.eml); returns its path or null. */
+    pick(): Promise<string | null>;
+    analyzeFile(path: string): Promise<Result<EmailAnalysis & { token: string }>>;
+    analyzeText(source: string): Promise<Result<EmailAnalysis & { token: string }>>;
+    /** Writes attachment #index to BLAZMA's temp folder (non-executable name) for File Analyzer. */
+    extractAttachment(token: string, index: number): Promise<Result<string>>;
   };
   device: {
     /** Read-only Device Security Score (Windows). */

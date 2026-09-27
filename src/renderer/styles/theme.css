@@ -1550,3 +1550,15 @@ table.data tbody tr:hover td {
 .linksum-list li.tone-red::marker { color: var(--red); }
 .linksum-list li.tone-amber::marker { color: var(--amber); }
 .linksum-list li.tone-green::marker { color: var(--green); }
+
+.email-preview {
+  white-space: pre-wrap;
+  unicode-bidi: plaintext;
+  max-height: 280px;
+  overflow: auto;
+  margin: 0;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-2);
+}

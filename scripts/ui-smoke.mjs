@@ -335,6 +335,44 @@ try {
   await win.waitForTimeout(300);
   await win.screenshot({ path: join(out, '26-osint-offline-ar.png'), fullPage: true });
 
+  // Phase D: phishing email check (local only). A classic phishing sample: spoofed display name,
+  // DMARC fail, a link that shows paypal.com but goes to an IP, and a double-extension attachment.
+  const phish = [
+    'Authentication-Results: mx.example.net; spf=softfail smtp.mailfrom=paypa1-secure.example; dkim=none; dmarc=fail header.from=paypa1-secure.example',
+    'From: "service@paypal.com" <alerts@paypa1-secure.example>',
+    'Reply-To: recover.account@gmail.com',
+    'Subject: =?UTF-8?B?' + Buffer.from('تنبيه: تم إيقاف حسابك').toString('base64') + '?=',
+    'Date: Mon, 21 Sep 2026 08:00:00 +0000',
+    'MIME-Version: 1.0',
+    'Content-Type: multipart/mixed; boundary="B1"',
+    '',
+    '--B1',
+    'Content-Type: text/html; charset=utf-8',
+    '',
+    '<p>Dear customer <a href="http://192.0.2.10/login">https://www.paypal.com/signin</a></p>',
+    '--B1',
+    'Content-Type: application/octet-stream; name="invoice.pdf.exe"',
+    'Content-Disposition: attachment; filename="invoice.pdf.exe"',
+    'Content-Transfer-Encoding: base64',
+    '',
+    Buffer.from('not really a program').toString('base64'),
+    '--B1--',
+    '',
+  ].join('\r\n');
+  await win.locator('.nav-item', { hasText: 'افحص رسالة بريد' }).click();
+  await win.getByRole('textbox', { name: '…أو الصق مصدر الرسالة' }).fill(phish);
+  await win.getByRole('button', { name: 'افحص هذه الرسالة' }).click();
+  await win.getByText('علامات تحذير — غالبًا تصيّد').waitFor({ timeout: 30000 });
+  await win.getByText('اسم المرسل يظهر «service@paypal.com»', { exact: false }).waitFor();
+  await win.getByText('يُظهر موقعًا مختلفًا').first().waitFor();
+  await win.getByText('امتداد مزدوج').first().waitFor();
+  await win.waitForTimeout(300);
+  await win.screenshot({ path: join(out, '31-email-check-ar.png'), fullPage: true });
+  // "Analyze" hands the attachment to File Analyzer (saved under a non-executable name, never opened).
+  await win.getByRole('button', { name: 'حلّل' }).first().click();
+  await win.getByText('سبب هذه النتيجة').waitFor({ timeout: 240000 });
+  await win.getByText('.blazma-attachment', { exact: false }).first().waitFor();
+
   // 6) Hash Lab identify (Arabic)
   await win.locator('.nav-item', { hasText: 'مختبر الهاشات' }).click();
   await win.getByRole('tab', { name: 'تعرّف' }).click();
@@ -362,7 +400,7 @@ try {
   await win.getByRole('button', { name: 'الوضع البسيط' }).click();
   await win.locator('.nav-item', { hasText: 'افحص رابطًا أو موقعًا' }).waitFor();
   const simpleItems = await win.locator('.nav-item').count();
-  assert.ok(simpleItems <= 8 && simpleItems < expertItems, `simple mode should show only the essentials (${simpleItems} vs ${expertItems})`);
+  assert.ok(simpleItems <= 9 && simpleItems < expertItems, `simple mode should show only the essentials (${simpleItems} vs ${expertItems})`);
   await win.locator('.nav-item', { hasText: 'لوحة التحكم' }).click();
   await win.locator('.hero').getByRole('button', { name: 'افحص ملفًا' }).waitFor();
   // Drag a file anywhere: the drop overlay appears; a file without a real path is refused honestly.

@@ -71,6 +71,12 @@ const api: BlazmaApi = {
     remove: (id) => invoke('yara:remove', id),
     scan: (target, recursive, taskId) => invoke('yara:scan', target, recursive, taskId),
   },
+  email: {
+    pick: () => invoke('email:pick'),
+    analyzeFile: (path) => invoke('email:analyzeFile', path),
+    analyzeText: (source) => invoke('email:analyzeText', source),
+    extractAttachment: (token, index) => invoke('email:extractAttachment', token, index),
+  },
   device: {
     security: (force) => invoke('device:security', force === true),
     openSettings: (link) => invoke('device:openSettings', link),
