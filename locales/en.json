@@ -1335,7 +1335,11 @@
     "notFoundHint": "Try a larger wordlist or a different pattern.",
     "stopped": "Stopped",
     "newSession": "New recovery",
-    "reveal": "Recovered password"
+    "reveal": "Recovered password",
+    "officialSite": "Official site",
+    "setup1": "Download one engine from its official site: John the Ripper \"jumbo\" (best for ZIP, 7z, RAR, PDF and Office files) or hashcat (fast with a graphics card).",
+    "setup2": "Unzip it into a folder of your choice (for example C:\\Tools). There is nothing to install.",
+    "setup3": "Click \"Choose John the Ripper…\" or \"Choose hashcat…\" and select john.exe or hashcat.exe inside that folder."
   },
   "cases": {
     "title": "Cases",

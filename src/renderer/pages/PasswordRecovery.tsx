@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Cpu, FileLock2, KeyRound, Lock, Pause, Play, RotateCcw, ShieldAlert, ShieldCheck, Square } from 'lucide-react';
+import { Cpu, ExternalLink, FileLock2, KeyRound, Lock, Pause, Play, RotateCcw, ShieldAlert, ShieldCheck, Square } from 'lucide-react';
 import type { EncryptionInfo } from '../../core/encrypted';
 import type { RecoveryEngineInfo, RecoveryEngineKind, RecoveryEventMsg, RecoveryMode, RecoveryProgress } from '../../shared/api';
 import { Badge, Card, CopyButton, ErrorState, FileDrop, IconTile, Ltr, Notice, Progress, type Tone } from '../components/ui';
@@ -9,6 +9,9 @@ import { formatBytes, formatDuration } from '../format';
 
 type Detected = { encryption: EncryptionInfo; name: string; sizeBytes: number; path: string };
 type ModeType = RecoveryMode['type'];
+
+/** Official download pages (opened in the browser; Blazma never downloads engines itself). */
+const ENGINE_SITES: Record<RecoveryEngineKind, string> = { john: 'https://www.openwall.com/john/', hashcat: 'https://hashcat.net/hashcat/' };
 
 const STRENGTH_TONE: Record<string, Tone> = { strong: 'green', weak: 'amber', unknown: 'gray' };
 
@@ -34,6 +37,7 @@ function EnginePicker({ engines, onChange }: { engines: Record<RecoveryEngineKin
                 {e?.available && <span className="tiny dim"><Ltr mono breakAll>{e.path}</Ltr></span>}
               </div>
               <div className="row">
+                {!e?.available && <button className="btn sm ghost" onClick={() => void window.blazma.app.openLink(ENGINE_SITES[k])}><ExternalLink size={12} /> {t('recovery.officialSite')}</button>}
                 <button className="btn sm" onClick={() => void pick(k)}>{t(k === 'john' ? 'recovery.chooseJohn' : 'recovery.chooseHashcat')}</button>
                 {e?.available && <button className="btn sm ghost" onClick={async () => { await window.blazma.recovery.clearEngine(k); onChange(); }}>{t('common.remove')}</button>}
               </div>
@@ -41,6 +45,13 @@ function EnginePicker({ engines, onChange }: { engines: Record<RecoveryEngineKin
           );
         })}
         <div className="small muted">{t('recovery.engineHelp')}</div>
+        {!engines.john?.available && !engines.hashcat?.available && (
+          <ol className="small muted" style={{ margin: 0, paddingInlineStart: 20 }}>
+            <li>{t('recovery.setup1')}</li>
+            <li>{t('recovery.setup2')}</li>
+            <li>{t('recovery.setup3')}</li>
+          </ol>
+        )}
       </div>
     </Card>
   );

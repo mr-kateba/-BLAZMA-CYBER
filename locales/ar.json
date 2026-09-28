@@ -1335,7 +1335,11 @@
     "notFoundHint": "جرّب قائمة كلمات أكبر أو نمطًا مختلفًا.",
     "stopped": "أُوقفت",
     "newSession": "استعادة جديدة",
-    "reveal": "كلمة المرور المستعادة"
+    "reveal": "كلمة المرور المستعادة",
+    "officialSite": "الموقع الرسمي",
+    "setup1": "نزّل محركًا واحدًا من موقعه الرسمي: John the Ripper نسخة «jumbo» (الأفضل لملفات ZIP و7z وRAR وPDF وOffice) أو hashcat (سريع مع كرت الشاشة).",
+    "setup2": "فكّ الضغط في مجلد تختاره (مثلًا C:\\Tools). لا يحتاج تثبيت.",
+    "setup3": "اضغط «اختر John the Ripper…» أو «اختر hashcat…» واختر ملف john.exe أو hashcat.exe داخل ذلك المجلد."
   },
   "cases": {
     "title": "القضايا",
