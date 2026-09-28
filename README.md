@@ -121,6 +121,7 @@ adapters rather than re-implementing them.
 | ![Dashboard English](docs/screenshots/03-dashboard-en.png) | ![Privacy Center](docs/screenshots/08-privacy-ar.png) |
 | ![Network traffic](docs/screenshots/38-network-traffic-ar.png) | ![Service scan (Nmap)](docs/screenshots/40-service-scan-ar.png) |
 | ![File integrity](docs/screenshots/43-file-integrity-ar.png) | ![Smart search](docs/screenshots/42-smart-search-ar.png) |
+| ![Full checkup](docs/screenshots/44-checkup-ar.png) | ![Open ports](docs/screenshots/45-open-ports-ar.png) |
 | ![Light theme](docs/screenshots/41-light-theme-en.png) | |
 
 ## Installation (development build)
