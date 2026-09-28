@@ -584,6 +584,26 @@ try {
   await win.waitForTimeout(300);
   await win.screenshot({ path: join(out, '31b-email-msg-ar.png'), fullPage: true });
 
+  // QR check: the image is decoded in the renderer; links are never opened, secrets never shown.
+  await win.locator('.nav-item', { hasText: 'افحص رمز QR' }).click();
+  await stubOpen(join(root, 'tests/fixtures/qr-link.png'));
+  await win.getByRole('button', { name: 'اختر صورة…' }).click();
+  await win.getByText('علامات تحذير — لا تستخدمه').waitFor({ timeout: 30000 });
+  await win.getByText('عنوان IP مجرد', { exact: false }).waitFor();
+  await win.getByText('http://192.0.2.10/parking-fine').first().waitFor();
+  await win.getByRole('button', { name: 'استعلم عن عنوان IP هذا' }).waitFor();
+  await win.waitForTimeout(300);
+  await win.screenshot({ path: join(out, '47-qr-check-ar.png'), fullPage: true });
+  // From the clipboard: a Wi-Fi login code — the password must not appear anywhere on the page.
+  await win.getByRole('button', { name: 'افحص رمزًا آخر' }).click();
+  await app.evaluate(async ({ clipboard, ClipboardItem }, png) => {
+    await clipboard.write([new ClipboardItem({ 'image/png': new Blob([Buffer.from(png, 'base64')], { type: 'image/png' }) })]);
+  }, readFileSync(join(root, 'tests/fixtures/qr-wifi.png')).toString('base64'));
+  await win.getByRole('button', { name: 'الصق صورة من الحافظة' }).click();
+  await win.getByText('دخول شبكة Wi-Fi').waitFor({ timeout: 30000 });
+  await win.getByText('موجودة في الرمز (مخفية)').waitFor();
+  assert.ok(!(await win.content()).includes('not-shown-123'), 'Wi-Fi password must never be shown');
+
   // Phase D2: "Was my password leaked?" — local observations while typing; the check itself is an
   // external request, so Offline Mode (default) blocks it; the field is cleared either way.
   await win.locator('.nav-item', { hasText: 'هل تسرّبت كلمة مروري؟' }).click();
@@ -704,7 +724,7 @@ try {
   await win.getByRole('button', { name: 'الوضع البسيط' }).click();
   await win.locator('.nav-item', { hasText: 'افحص رابطًا أو موقعًا' }).waitFor();
   const simpleItems = await win.locator('.nav-item').count();
-  assert.ok(simpleItems <= 13 && simpleItems < expertItems, `simple mode should show only the essentials (${simpleItems} vs ${expertItems})`);
+  assert.ok(simpleItems <= 14 && simpleItems < expertItems, `simple mode should show only the essentials (${simpleItems} vs ${expertItems})`);
   await win.locator('.nav-item', { hasText: 'لوحة التحكم' }).click();
   await win.locator('.hero').getByRole('button', { name: 'افحص ملفًا' }).waitFor();
   // Drag a file anywhere: the drop overlay appears; a file without a real path is refused honestly.

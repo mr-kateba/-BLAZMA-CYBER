@@ -1,11 +1,11 @@
 import {
   Activity, BadgeCheck, Crosshair, Earth, FileClock, MemoryStick, MailWarning, FileSearch, FolderOpen, Hash, KeyRound, KeySquare, Languages, Link2, MonitorCog, Network, Palette, Plug,
-  Puzzle, ScanSearch, ScrollText, ShieldCheck, ShieldHalf, SquareTerminal, UserSearch, LayoutDashboard, Cpu, Scale, Wifi, Radar, FolderCheck, Stethoscope, DoorOpen, Power, type LucideIcon,
+  Puzzle, ScanSearch, ScrollText, ShieldCheck, ShieldHalf, SquareTerminal, UserSearch, LayoutDashboard, Cpu, Scale, Wifi, Radar, FolderCheck, Stethoscope, DoorOpen, Power, QrCode, type LucideIcon,
 } from 'lucide-react';
 
 export type PageId =
   | 'dashboard' | 'checkup' | 'device-security'
-  | 'ip-intel' | 'domain-intel' | 'email-check' | 'password-check' | 'osint' | 'reputation'
+  | 'ip-intel' | 'domain-intel' | 'email-check' | 'qr-check' | 'password-check' | 'osint' | 'reputation'
   | 'security-center' | 'file-analyzer' | 'browser-extensions' | 'startup-apps' | 'yara' | 'hash-lab' | 'file-integrity'
   | 'password-recovery'
   | 'wifi' | 'network-traffic' | 'service-scan' | 'open-ports'
@@ -49,6 +49,7 @@ export const NAV: NavSection[] = [
       { id: 'ip-intel', labelKey: 'nav.ipIntel', icon: Earth },
       { id: 'domain-intel', simple: true, simpleLabelKey: 'nav.simple.checkLink', labelKey: 'nav.domainIntel', icon: Link2 },
       { id: 'email-check', simple: true, labelKey: 'nav.emailCheck', icon: MailWarning },
+      { id: 'qr-check', simple: true, labelKey: 'nav.qrCheck', icon: QrCode },
       { id: 'password-check', simple: true, labelKey: 'nav.passwordCheck', icon: KeySquare },
       { id: 'osint', labelKey: 'nav.osint', icon: UserSearch },
       { id: 'reputation', labelKey: 'nav.reputation', icon: Scale },

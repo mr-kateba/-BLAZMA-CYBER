@@ -29,6 +29,7 @@ const Reports = lazy(() => import('./pages/Reports').then((m) => ({ default: m.R
 const ThreatHunting = lazy(() => import('./pages/ThreatHunting').then((m) => ({ default: m.ThreatHunting })));
 const DeviceSecurity = lazy(() => import('./pages/DeviceSecurity').then((m) => ({ default: m.DeviceSecurity })));
 const EmailCheck = lazy(() => import('./pages/EmailCheck').then((m) => ({ default: m.EmailCheck })));
+const QrCheck = lazy(() => import('./pages/QrCheck').then((m) => ({ default: m.QrCheck })));
 const BrowserExtensions = lazy(() => import('./pages/BrowserExtensions').then((m) => ({ default: m.BrowserExtensions })));
 const MemoryScan = lazy(() => import('./pages/MemoryScan').then((m) => ({ default: m.MemoryScan })));
 const WifiCenter = lazy(() => import('./pages/WifiCenter').then((m) => ({ default: m.WifiCenter })));
@@ -64,6 +65,8 @@ function Page({ id }: { id: PageId }) {
       return <DomainIntel />;
     case 'email-check':
       return <EmailCheck />;
+    case 'qr-check':
+      return <QrCheck />;
     case 'password-check':
       return <PasswordCheck />;
     case 'browser-extensions':

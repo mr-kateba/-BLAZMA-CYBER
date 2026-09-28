@@ -16,6 +16,7 @@ and are included with distributed builds.
 | Electron (includes Chromium, Node.js) | 44.4.5 | MIT (Chromium: BSD-3-Clause and others; packaged builds include `LICENSE.electron.txt` and `LICENSES.chromium.html`) | Desktop runtime | https://github.com/electron/electron |
 | React / React DOM | 19.3.0 | MIT | UI library (bundled into the renderer by Vite) | https://github.com/facebook/react |
 | lucide-react | 1.48.0 | ISC | Icons | https://github.com/lucide-icons/lucide |
+| jsQR | 1.4.0 | Apache-2.0 (`engines/licenses/jsqr.txt`, shipped as `resources/licenses/jsqr.txt`) | QR Code Check: decodes the QR code in a local image, inside the sandboxed renderer (bundled by Vite, no dependencies) | https://github.com/cozmo/jsQR |
 | IBM Plex Sans Arabic (via @fontsource) | 5.3.0 | SIL Open Font License 1.1 | Arabic + Latin UI font, bundled locally (no web font requests) | https://github.com/IBM/plex |
 | JetBrains Mono (via @fontsource) | 5.3.0 | SIL Open Font License 1.1 | Monospace font for hashes/paths | https://github.com/JetBrains/JetBrainsMono |
 

@@ -1127,6 +1127,14 @@ export interface BlazmaApi {
     remove(id: string): Promise<Result<YaraRuleFile[]>>;
     scan(target: string, recursive: boolean, taskId: string): Promise<Result<YaraScanResult>>;
   };
+  qr: {
+    /** Lets the user choose an image that contains a QR code; returns its path or null. */
+    pick(): Promise<string | null>;
+    /** Image bytes (PNG/JPEG/GIF/BMP/WebP, ≤ 20 MB) for decoding in the renderer. */
+    readImage(path: string): Promise<Result<Uint8Array>>;
+    /** The image currently on the clipboard, as PNG bytes. */
+    clipboardImage(): Promise<Result<Uint8Array>>;
+  };
   email: {
     /** Lets the user choose a saved email (.eml or Outlook .msg); returns its path or null. */
     pick(): Promise<string | null>;

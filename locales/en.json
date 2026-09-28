@@ -57,6 +57,7 @@
       "checkLink": "Check a link or website"
     },
     "emailCheck": "Check an email",
+    "qrCheck": "QR Code Check",
     "passwordCheck": "Was my password leaked?",
     "extensions": "Browser extensions",
     "eventLogs": "Event log hunting",
@@ -786,7 +787,11 @@
     "not_checked": "Not checked",
     "no_browsers": "No supported browser found for this user",
     "no_watches": "No folders watched yet",
-    "wlan_unavailable": "Windows Wi-Fi information could not be read"
+    "wlan_unavailable": "Windows Wi-Fi information could not be read",
+    "qr_not_image": "This file isn't a supported image (PNG, JPEG, GIF, BMP or WebP).",
+    "qr_image_too_large": "The image is too large to check (over 20 MB or 50 megapixels).",
+    "qr_clipboard_empty": "There is no image on the clipboard. Copy a screenshot or an image first (for example Win+Shift+S).",
+    "qr_decode_failed": "The image couldn't be read."
   },
   "defender": {
     "status": {
@@ -2183,6 +2188,117 @@
     "hopBy": "Received by",
     "preview": "Message text",
     "previewSub": "Plain text only — images, scripts and formatting are not loaded."
+  },
+  "qr": {
+    "title": "QR Code Check",
+    "subtitle": "Before you scan a QR code with your phone: see exactly what it contains and where it leads.",
+    "localOnly": "The image is read on this computer only. Nothing in the code is opened, visited or sent anywhere.",
+    "dropTitle": "Drop a picture or screenshot of a QR code here",
+    "dropHint": "or browse for the image — you can also paste one with Ctrl+V",
+    "dropActive": "Drop the image to read its QR code",
+    "pickImage": "Choose an image…",
+    "paste": "Paste image from clipboard",
+    "decoding": "Reading the QR code…",
+    "notFound": "No QR code was found in this image.",
+    "notFoundHint": "Crop the picture around the code, make sure it is sharp and well lit, and try again.",
+    "another": "Check another code",
+    "verdictTitle": "Is this QR code safe to use?",
+    "contentTitle": "What the code contains",
+    "raw": "Full content",
+    "secretHidden": "This code contains a secret. It is not shown here, and Blazma does not store it.",
+    "actionsTitle": "Check it further",
+    "actionsHint": "The tool opens with the value filled in — nothing is looked up until you start it.",
+    "disclaimer": "Scammers stick fake QR codes on parking meters, posters, parcels and letters (“quishing”). If the code came from somewhere unexpected, reach the company through its official app or website instead.",
+    "level": {
+      "risky": "Warning signs — don’t use it",
+      "caution": "Be careful",
+      "no_red_flags": "No warning signs found"
+    },
+    "kind": {
+      "url": "Link",
+      "wifi": "Wi-Fi network login",
+      "otp": "Two-factor (2FA) setup code",
+      "payment": "Cryptocurrency payment request",
+      "email": "Email to write",
+      "phone": "Phone number",
+      "sms": "Text message (SMS) to send",
+      "geo": "Map location",
+      "contact": "Contact card",
+      "event": "Calendar event",
+      "text": "Plain text"
+    },
+    "field": {
+      "host": "Website",
+      "ssid": "Network name",
+      "security": "Security",
+      "hidden": "Hidden network",
+      "password": "Password",
+      "issuer": "Service",
+      "account": "Account",
+      "currency": "Currency",
+      "address": "Wallet address",
+      "amount": "Amount",
+      "label": "Note",
+      "to": "To",
+      "subject": "Subject",
+      "number": "Number",
+      "message": "Message",
+      "coordinates": "Coordinates",
+      "name": "Name",
+      "summary": "Event"
+    },
+    "fieldValue": {
+      "open": "Open (no password)",
+      "yes": "Yes",
+      "present": "Included in the code (hidden)"
+    },
+    "signal": {
+      "link": {
+        "script": "The code runs a script or opens a local file instead of a website ({{host}}).",
+        "userinfo": "The link hides the real website behind a user name (text before “@”): it really goes to {{host}}.",
+        "ip": "The link goes to a bare IP address ({{host}}) instead of a named website.",
+        "mismatch": "The link shows one website but goes to another ({{host}}).",
+        "punycode": "The website name uses look-alike international characters ({{host}}); it may imitate a well-known site.",
+        "shortener": "The link uses a URL shortener ({{host}}), so the real destination is hidden.",
+        "http": "The link is not encrypted (http, not https) — don’t enter anything on that page.",
+        "checkFirst": "The code opens {{host}}. Make sure this is the website you expect before entering anything."
+      },
+      "wifi": {
+        "joins": "Scanning this code connects your device to the Wi-Fi network “{{ssid}}”. Only join networks you trust.",
+        "open": "The network is open (no password): others nearby can see unencrypted traffic.",
+        "wep": "The network uses WEP, which is broken and easy to break into."
+      },
+      "otp": {
+        "secret": "This is a two-factor setup code: anyone who scans it can generate your login codes. Never share it or scan one you didn’t create yourself."
+      },
+      "payment": {
+        "irreversible": "This asks for a cryptocurrency payment. Such payments can’t be reversed — scams often use QR codes for them."
+      },
+      "email": {
+        "compose": "The code prepares an email; nothing is sent until you press Send."
+      },
+      "phone": {
+        "call": "The code prepares a phone call to this number."
+      },
+      "sms": {
+        "sends": "The code prepares a text message. Check the number and the text before you send it.",
+        "shortCode": "The number is a short code — texts to it may be charged or sign you up for paid services."
+      },
+      "geo": {
+        "location": "The code shows a place on a map."
+      },
+      "contact": {
+        "adds": "The code adds a contact to your phone.",
+        "hasLink": "The contact card contains a link — check it before opening it."
+      },
+      "event": {
+        "adds": "The code adds an event to your calendar."
+      },
+      "text": {
+        "looksLikeLink": "The text looks like a website address; your phone may offer to open it.",
+        "containsLink": "The text contains a link; check where it goes before opening it."
+      }
+    }
   },
   "pwned": {
     "title": "Was my password leaked?",

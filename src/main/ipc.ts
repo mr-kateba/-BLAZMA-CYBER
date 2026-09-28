@@ -1,4 +1,4 @@
-import { app, dialog, ipcMain, Notification, safeStorage, shell, type BrowserWindow, type IpcMainInvokeEvent } from 'electron';
+import { app, clipboard, dialog, ipcMain, Notification, safeStorage, shell, type BrowserWindow, type IpcMainInvokeEvent } from 'electron';
 import { rmSync, mkdirSync } from 'node:fs';
 import type { ClearTarget, Result } from '../shared/api';
 import { identifyHash } from '../core/hash-id';
@@ -21,6 +21,7 @@ import { accountProfileUrl, accountSiteCounts, checkUsernameAccounts } from './s
 import { bundledEngine, bundledRulePack } from './services/bundled';
 import { runCapa, runDie } from './services/static-engines';
 import { analyzeEmailFile, analyzeEmailText, EmailError, extractAttachment } from './services/email';
+import { checkQrImage, MAX_QR_IMAGE_BYTES, QrError, readQrImage } from './services/qr';
 import { openTerminal, TerminalError } from './services/terminal';
 import { systemFetch } from './services/net-fetch';
 import { checkPwnedPassword, PwnedError } from './services/pwned';
@@ -62,7 +63,7 @@ function fail(error: string, detail?: string): Result<never> {
 }
 
 function errorCode(e: unknown): string {
-  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError || e instanceof RecoveryError || e instanceof CaseError || e instanceof ReportError || e instanceof TerminalError || e instanceof DeviceSecurityError || e instanceof EmailError || e instanceof PwnedError || e instanceof EventHuntError || e instanceof MemoryScanError || e instanceof UpdateError || e instanceof WifiError || e instanceof TrafficError || e instanceof NmapError || e instanceof FimError) return e.code;
+  if (e instanceof AnalysisError || e instanceof QuarantineError || e instanceof DefenderError || e instanceof YaraError || e instanceof IntelError || e instanceof forensics.ForensicsError || e instanceof NetToolsError || e instanceof RecoveryError || e instanceof CaseError || e instanceof ReportError || e instanceof TerminalError || e instanceof DeviceSecurityError || e instanceof EmailError || e instanceof PwnedError || e instanceof EventHuntError || e instanceof MemoryScanError || e instanceof UpdateError || e instanceof WifiError || e instanceof TrafficError || e instanceof NmapError || e instanceof FimError || e instanceof QrError) return e.code;
   if (e instanceof OfflineModeError) return 'offline_mode';
   return 'internal_error';
 }
@@ -479,6 +480,27 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
     const r = await intel.reputation(kind, value, services);
     history.record({ kind: 'reputation_lookup', subject: String(value).trim().slice(0, 80), summaryKey: 'activity.summary.looked_up' });
     return { ok: true, data: r };
+  });
+
+  // ---- QR check (local only): bytes go to the sandboxed renderer, which decodes them ----
+  handle('qr:pick', async () => {
+    const win = getWindow();
+    const opts = { properties: ['openFile' as const], filters: [{ name: 'Image', extensions: ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'] }, { name: '*', extensions: ['*'] }] };
+    const r = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts);
+    return r.canceled ? null : (r.filePaths[0] ?? null);
+  });
+  handle('qr:readImage', async (path: unknown) => ({ ok: true, data: await readQrImage(path) }));
+  handle('qr:clipboardImage', async () => {
+    for (const item of await clipboard.read()) {
+      const type = item.types.find((x) => x === 'image/png');
+      if (!type) continue;
+      const blob = (await item.getType(type)) as Blob;
+      if (blob.size > MAX_QR_IMAGE_BYTES) return { ok: false, error: 'qr_image_too_large' };
+      const bytes = new Uint8Array(await blob.arrayBuffer());
+      checkQrImage(bytes);
+      return { ok: true, data: bytes };
+    }
+    return { ok: false, error: 'qr_clipboard_empty' };
   });
 
   // ---- Email check (local only) ----

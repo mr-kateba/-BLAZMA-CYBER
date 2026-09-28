@@ -20,6 +20,8 @@ for (const l of ['en', 'ar']) for (const k of dotted(load(l))) problems.push(`ke
 for (const k of Object.keys(en)) if (!(k in ar)) problems.push(`missing in ar: ${k}`);
 for (const k of Object.keys(ar)) if (!(k in en)) problems.push(`missing in en: ${k}`);
 for (const k of Object.keys(en)) if (k in ar && ph(en[k]) !== ph(ar[k])) problems.push(`placeholder mismatch: ${k}`);
+// t() only fills {{name}}; a single-brace {name} would be shown to the user as-is.
+for (const [l, d] of [['en', en], ['ar', ar]]) for (const [k, v] of Object.entries(d)) if (/(?<!\{)\{\s*\w+\s*\}(?!\})/.test(v)) problems.push(`single-brace placeholder (use {{name}}): ${l}:${k}`);
 
 if (problems.length) {
   console.error(problems.join('\n'));

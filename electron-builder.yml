@@ -22,13 +22,15 @@ asar: true
 extraResources:
   - from: engines/rules
     to: rules
-  # License texts of data compiled into the app (ATT&CK table, WhatsMyName site list).
+  # License texts of data and code compiled into the app (ATT&CK table, WhatsMyName site list, OUI table, jsQR).
   - from: engines/licenses/mitre-attack.txt
     to: licenses/mitre-attack.txt
   - from: engines/licenses/whatsmyname.txt
     to: licenses/whatsmyname.txt
   - from: engines/licenses/oui-data.txt
     to: licenses/oui-data.txt
+  - from: engines/licenses/jsqr.txt
+    to: licenses/jsqr.txt
   # Window/taskbar icon (the .exe carries it too).
   - from: build/icon.ico
     to: icon.ico
