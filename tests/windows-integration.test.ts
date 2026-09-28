@@ -250,3 +250,22 @@ describe.runIf(WIN)('Wi-Fi Center on real Windows', () => {
     if (!r.available) expect(r.reason).toBe('no_wifi_adapter');
   }, 180_000);
 });
+
+describe.runIf(WIN)('Startup programs and open ports on real Windows', () => {
+  it('reviews the real startup list with real signatures', async () => {
+    const { reviewStartup, startupProgram } = await import('../src/core/startup-review');
+    const rows = (await forensics.startup()).rows;
+    const paths = rows.map((r) => startupProgram(r.command)).filter((p): p is string => !!p);
+    const sigs = paths.length ? await forensics.signatures(paths) : [];
+    const items = reviewStartup(rows, sigs);
+    expect(items).toHaveLength(rows.length);
+    // Every program Blazma extracted that exists on disk got a signature answer.
+    for (const i of items) if (i.program && existsSync(i.program)) expect(i.signature, i.program).not.toBeNull();
+  }, 300_000);
+
+  it('lists real listening programs, SMB/RPC included', async () => {
+    const { listeningServices } = await import('../src/core/listening');
+    const list = listeningServices((await forensics.connections()).rows);
+    expect(list.some((s) => s.port === 135 || s.port === 445)).toBe(true);
+  }, 120_000);
+});
