@@ -19,7 +19,7 @@ import { basename } from 'node:path';
 import { cpus } from 'node:os';
 import type { RecoveryEngineKind, RecoveryMode, RecoveryPerformance, RecoveryProgress, RecoverySessionInfo, RecoveryStartResult } from '../../shared/api';
 import { validateAbsolutePath } from '../../core/validation';
-import { detectEncryption } from '../../core/encrypted';
+import { detectEncryption, sevenZipNextHeaderRange } from '../../core/encrypted';
 import { open as fsOpen } from 'node:fs/promises';
 
 export class RecoveryError extends Error {
@@ -300,10 +300,21 @@ export async function detectFileEncryption(rawPath: unknown) {
   const fh = await fsOpen(v.path, 'r').catch(() => null);
   if (!fh) throw new RecoveryError('access_denied');
   try {
-    const size = Math.min(st.size, 4 * 1024 * 1024);
+    // OLE documents (legacy Office, encrypted OOXML) are read whole so their streams can be checked.
+    const sig = Buffer.alloc(8);
+    await fh.read(sig, 0, 8, 0);
+    const ole = sig.equals(Buffer.from([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]));
+    const size = Math.min(st.size, ole ? 64 * 1024 * 1024 : 4 * 1024 * 1024);
     const buf = Buffer.alloc(size);
     await fh.read(buf, 0, size, 0);
-    return { encryption: detectEncryption(buf.subarray(0, 64), buf), name: basename(v.path), sizeBytes: st.size };
+    // 7z keeps its index (and so the encryption facts) at the end of the archive.
+    let index: Buffer | undefined;
+    const range = sevenZipNextHeaderRange(buf.subarray(0, 32));
+    if (range && range.offset + range.size <= st.size) {
+      index = Buffer.alloc(range.size);
+      await fh.read(index, 0, range.size, range.offset);
+    }
+    return { encryption: detectEncryption(buf.subarray(0, 64), buf, index), name: basename(v.path), sizeBytes: st.size };
   } finally {
     await fh.close();
   }

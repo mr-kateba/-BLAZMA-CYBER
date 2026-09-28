@@ -119,7 +119,7 @@ export function PasswordRecovery() {
   };
 
   const engineForFile = engines.john?.available ? 'john' : engines.hashcat?.available ? 'hashcat' : null;
-  const canStart = !!file && file.encryption.encrypted && !!engineForFile && authorized && (mode === 'mask' ? mask.trim().length > 0 : mode === 'wordlist' ? !!wordlist : true);
+  const canStart = !!file && (file.encryption.encrypted || !!file.encryption.undetermined) && !!engineForFile && authorized && (mode === 'mask' ? mask.trim().length > 0 : mode === 'wordlist' ? !!wordlist : true);
 
   const start = async () => {
     if (!file || !engineForFile) return;
@@ -159,7 +159,7 @@ export function PasswordRecovery() {
             title={<Ltr breakAll>{file.name}</Ltr>}
             subtitle={formatBytes(t, file.sizeBytes)}
             icon={FileLock2}
-            tone={file.encryption.encrypted ? 'blue' : 'gray'}
+            tone={file.encryption.encrypted ? 'blue' : file.encryption.undetermined ? 'amber' : 'gray'}
             actions={<button className="btn sm" onClick={reset}>{t('recovery.newSession')}</button>}
           >
             <dl className="kv">
@@ -168,17 +168,19 @@ export function PasswordRecovery() {
               <dd>
                 {file.encryption.encrypted ? (
                   <span className="row"><Ltr mono>{file.encryption.scheme}</Ltr><Badge tone={STRENGTH_TONE[file.encryption.strength]}>{t(`recovery.strength.${file.encryption.strength}`)}</Badge></span>
+                ) : file.encryption.undetermined ? (
+                  <Badge tone="amber">{t('recovery.undetermined')}</Badge>
                 ) : (
                   <Badge tone="gray">{t('recovery.notEncrypted')}</Badge>
                 )}
               </dd>
             </dl>
             {file.encryption.notes.map((n) => <div key={n} style={{ marginTop: 8 }}><Notice tone="gray">{t(n)}</Notice></div>)}
-            {!file.encryption.encrypted && <div style={{ marginTop: 10 }}><Notice tone="gray">{t('recovery.notEncrypted')}</Notice></div>}
+            {!file.encryption.encrypted && !file.encryption.undetermined && <div style={{ marginTop: 10 }}><Notice tone="gray">{t('recovery.notEncrypted')}</Notice></div>}
           </Card>
         )}
 
-        {file?.encryption.encrypted && !session && !result && (
+        {file && (file.encryption.encrypted || file.encryption.undetermined) && !session && !result && (
           <>
             {!engineForFile && <Notice tone="amber" icon={Cpu}>{t('errors.engine_not_configured')}</Notice>}
             <Card title={t('recovery.mode')} icon={KeyRound} tone="purple">

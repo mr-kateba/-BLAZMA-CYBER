@@ -1307,7 +1307,12 @@
       "rar4": "RAR4 uses an older scheme.",
       "pdfAes": "PDF with AES encryption.",
       "pdfRc4": "PDF with legacy RC4 encryption.",
-      "officeAgile": "Office document with AES (agile) encryption."
+      "officeAgile": "Office document with AES (agile) encryption.",
+      "namesEncrypted": "File names are encrypted too — the list of files can’t be read without the password.",
+      "notChecked": "Couldn’t read the archive’s entries to confirm whether it is encrypted (the file may be damaged or incomplete).",
+      "officeStandard": "Office document with AES (standard) encryption.",
+      "officeLegacy": "Office 97-2003 document with legacy RC4/XOR protection.",
+      "sevenZipCompressedIndex": "This 7z archive keeps its file list compressed, so Blazma can’t tell from the file alone whether the contents are password-protected. If 7-Zip asks for a password when you open a file inside, it is — you can still continue."
     },
     "engine": "Engine",
     "engineReady": "{{engine}} {{version}} is ready",
@@ -1375,7 +1380,8 @@
       "auto": "Let hashcat choose — it uses the graphics card when there is one, which is much faster.",
       "gpu": "Force the graphics card. Fastest, if you have a dedicated GPU with up-to-date drivers.",
       "cpu": "Use the processor only. Slower, but works on any computer."
-    }
+    },
+    "undetermined": "Couldn’t confirm"
   },
   "cases": {
     "title": "Cases",
