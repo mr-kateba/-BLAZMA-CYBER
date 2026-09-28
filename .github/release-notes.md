@@ -1,14 +1,14 @@
 <div dir="rtl">
 
-## Blazma Cyber 1.1.2
+## Blazma Cyber 1.1.3
 
 منصة أمن سيبراني دفاعي لـ Windows 10/11، محلية أولًا، بالعربي والإنجليزي. الشرح الكامل: [README.ar.md](https://github.com/mr-kateba/Blazma-Cyber/blob/claude/vibrant-sagan-xxz92l/README.ar.md)
 
-### الجديد في 1.1.2
-- **افحص رمز QR قبل أن تمسحه:** أفلت صورة أو لقطة شاشة أو الصقها (Ctrl+V) لترى ماذا يحتوي الرمز: رابط (عنوان IP، موقع مقلّد أو مختصر، غير مشفّر)، دخول شبكة واي فاي، رمز تحقق بخطوتين، طلب دفع بعملة رقمية، رسالة SMS مدفوعة. لا يُفتح أي شيء، ولا تُعرض كلمات مرور الواي فاي ولا أسرار التحقق.
-- **ملفات Outlook ‏‎.msg في «افحص رسالة بريد»:** اسحب الرسالة من Outlook وأفلتها — نفس فحص التصيّد (الترويسات، الروابط، المرفقات، الرسائل المرفقة).
-- **تقرير الفحص الشامل:** احفظ النتيجة PDF أو HTML.
-- **إصلاح تعطّل:** فحص الحسابات باسم المستخدم (OSINT) كان يُظهر خطأ «A JavaScript error occurred in the main process» إذا أرسل أحد المواقع ترويسة فيها رموز تعبيرية أو حروف عربية. صار يتعامل معها بشكل صحيح.
+### الجديد في 1.1.3
+- **التعرّف على ملفات RAR المحمية بكلمة مرور:** ملف RAR تحتاج ملفاته كلمة مرور لكن أسماءها ظاهرة (الافتراضي في WinRAR) كان يظهر «غير مشفّر». صار البرنامج يقرأ محتويات الأرشيف نفسها — RAR5 وRAR القديم، مع تشفير الأسماء أو بدونه — وكذلك 7z ومستندات Office 97-2003. وإذا تعذّر التأكد تخبرك الصفحة وتسمح لك بالمتابعة.
+- **إصلاح:** ملفات Office القديمة وملفات التثبيت ورسائل Outlook كانت تظهر خطأً «مشفّرة» في محلل الملفات.
+
+سابقًا في 1.1.2: فحص رموز QR، ملفات Outlook ‏‎.msg، تقرير الفحص الشامل، وإصلاح تعطّل فحص الحسابات.
 
 ### التثبيت
 1. نزّل `Blazma-Cyber-*-x64-setup.exe`.
@@ -18,8 +18,8 @@
 **بدون تثبيت:** `Blazma-Cyber-*-x64-portable.zip` — فكّ الضغط وشغّل `Blazma Cyber.exe`؛ البيانات في `Blazma-data` بجانبه.
 
 ### التحقق من الملف
-- **مصدر البناء:** `gh attestation verify Blazma-Cyber-1.1.2-x64-setup.exe -R mr-kateba/Blazma-Cyber`
-- **SHA-256:** قارن `Get-FileHash .\Blazma-Cyber-1.1.2-x64-setup.exe -Algorithm SHA256` بملف `SHA256SUMS.txt`.
+- **مصدر البناء:** `gh attestation verify Blazma-Cyber-1.1.3-x64-setup.exe -R mr-kateba/Blazma-Cyber`
+- **SHA-256:** قارن `Get-FileHash .\Blazma-Cyber-1.1.3-x64-setup.exe -Algorithm SHA256` بملف `SHA256SUMS.txt`.
 
 ### الحالة بصدق
 - مُتحقَّق منه آليًا على Windows حقيقي: النظام، Defender، التوقيع الرقمي، التحليل الجنائي، الشبكة، pktmon، الواي فاي، الواجهة كاملة، وبناء المثبّت.
@@ -29,18 +29,18 @@
 
 ---
 
-## Blazma Cyber 1.1.2
+## Blazma Cyber 1.1.3
 
 Privacy-first, local-first, bilingual (Arabic/English) defensive cybersecurity workbench for Windows 10/11.
 
-**New in 1.1.2**
-- **QR Code Check:** drop, browse or paste (Ctrl+V) a picture of a QR code and see what it contains before scanning it — link warnings (IP address, look-alike or shortened site, unencrypted), Wi-Fi logins, 2FA setup codes, crypto payment requests, premium SMS. Nothing is opened; Wi-Fi passwords and 2FA secrets are never shown.
-- **Outlook `.msg` files in "Check an email":** drag a message out of Outlook and drop it — the same phishing analysis (headers, links, attachments, attached emails).
-- **Full checkup report:** save the result as PDF or HTML.
-- **Crash fix:** the OSINT username check could show "A JavaScript error occurred in the main process" when a site sent an emoji or Arabic text in a response header; such headers are now handled correctly.
+**New in 1.1.3**
+- **Password-protected RAR files are recognized:** a RAR whose files need a password but whose names are visible (WinRAR's default) was shown as "not encrypted". Blazma now reads the archive's own entries — RAR5 and RAR 1.5–4, with or without encrypted names — and 7z archives and Office 97-2003 documents too. When a file can't confirm either way, the page says so and still lets you continue.
+- **Fix:** old-format Office files, installers and Outlook messages were wrongly shown as "encrypted" in the File Analyzer.
+
+Earlier in 1.1.2: QR Code Check, Outlook `.msg` files, checkup report, OSINT crash fix.
 
 - **Portable:** `Blazma-Cyber-*-x64-portable.zip` runs without installing; data stays in `Blazma-data` next to it.
 - **Unsigned** (no certificate yet): SmartScreen → **More info → Run anyway**. Per-user install, no admin.
-- **Verify provenance:** `gh attestation verify Blazma-Cyber-1.1.2-x64-setup.exe -R mr-kateba/Blazma-Cyber`.
+- **Verify provenance:** `gh attestation verify Blazma-Cyber-1.1.3-x64-setup.exe -R mr-kateba/Blazma-Cyber`.
 - **Verify integrity:** compare `Get-FileHash <file> -Algorithm SHA256` with `SHA256SUMS.txt`.
 - Verified automatically on real Windows in CI; not yet hand-tested: Wi-Fi hardware, Nmap on Windows, install/uninstall, Defender quick/full scans, real John/hashcat.

@@ -22,6 +22,7 @@ By **[mr-kateba](https://github.com/mr-kateba)**
 ---
 
 ## Table of contents
+- [What's new in 1.1.3](#whats-new-in-113)
 - [What's new in 1.1.2](#whats-new-in-112)
 - [What's new in 1.1.1](#whats-new-in-111)
 - [Why Blazma Cyber](#why-blazma-cyber)
@@ -35,6 +36,15 @@ By **[mr-kateba](https://github.com/mr-kateba)**
 - [License](#license)
 
 ---
+
+## What's new in 1.1.3
+- **Password-protected RAR files are recognized.** A RAR whose files need a password but whose file
+  names are visible (WinRAR's default) was shown as "not encrypted". Blazma now reads the archive's
+  entries: RAR5 and RAR 1.5–4, with or without encrypted file names. 7z archives and Office
+  97-2003 documents are read the same way, and when a file can't confirm it either way the page
+  says so and still lets you continue.
+- **Fix:** old-format Office files, installers and Outlook messages were wrongly shown as
+  "encrypted" in the File Analyzer.
 
 ## What's new in 1.1.2
 - **Check a QR code before you scan it.** Drop a photo or screenshot, or paste one (Ctrl+V), and
@@ -260,7 +270,7 @@ Optional, **user-installed** (Blazma never downloads or runs them by itself):
 ---
 
 ## Project status
-**v1.1.2 (stable).** Verified automatically on real Windows (Server 2025, the Windows 11 24H2 code
+**v1.1.3 (stable).** Verified automatically on real Windows (Server 2025, the Windows 11 24H2 code
 base) in CI: PowerShell facts, Defender status & EICAR file scan, Authenticode, forensics, the
 network tools, a real pktmon capture, the Wi-Fi reader, startup/signature review, the full UI
 end-to-end, and the NSIS installer build.

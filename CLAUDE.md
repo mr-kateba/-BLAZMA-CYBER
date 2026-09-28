@@ -145,7 +145,7 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
   capture), Wi-Fi Center, Nmap service scan (user-installed), light theme, smart search (Ctrl+K),
   file integrity monitor.
 - Latest audit: docs/AUDIT-REPORT.md (3 bugs found and fixed; weaknesses and proposed features listed).
-- Released: v1.0.0, v1.0.1, v1.1.0 (Phase G), v1.1.1 (Phase H: recovery resource control, new-device watch, icon/stop-early fixes), v1.1.2 (Phase I: checkup report, Outlook .msg, QR Code Check) — 2026-09. NOT YET: signed installer.
+- Released: v1.0.0, v1.0.1, v1.1.0 (Phase G), v1.1.1 (Phase H: recovery resource control, new-device watch, icon/stop-early fixes), v1.1.2 (Phase I: checkup report, Outlook .msg, QR Code Check), v1.1.3 (encrypted-file detection reads RAR/7z/Office structures) — 2026-09. NOT YET: signed installer.
 - Verified on Linux (Xvfb) locally and on real Windows (Server 2025, build 26100) in CI: PowerShell
   facts, Defender status + EICAR file scan, Authenticode, forensics, network, full UI E2E, NSIS build.
   Not yet verified: Windows 10/11 desktop specifics (title-bar overlay, launcher, installer
@@ -202,4 +202,5 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
 | 2026-09 | Password-recovery resource setting maps to the engines' own flags (John --fork=<cores>, hashcat -w/-D); fork count computed in main from os.cpus, never the renderer; speed only | Let the user's own engine use their hardware without Blazma reimplementing anything |
 | 2026-09 | Known-device watch stores MACs the discovery already found; 'new' is a memory aid, never 'infected'; cleared with activity | A new device is usually a guest; flag it honestly without alarming verdicts |
 | 2026-09 | Outlook .msg = own read-only CFB parser (src/core/cfb.ts) → MIME (src/core/msg.ts) → the unchanged email analysis; no transport headers = honest "can't verify" notice | No dependency for a small, well-specified format; one analysis path for .eml and .msg |
+| 2026-09 | Encryption detection reads the container's own structures (RAR blocks, 7z index, OLE streams); when the file can't confirm either way it is `undetermined` (never a guessed yes/no) and the user may still continue | A signature alone says nothing about a password; the owner of a protected RAR must not be told it isn't protected |
 | 2026-09 | QR decoding runs in the sandboxed renderer (jsQR, Apache-2.0, bundled); main only reads bytes with size/signature/pixel limits; Wi-Fi passwords and 2FA secrets are never returned; links are never opened | Untrusted image parsing stays out of the main process; a QR code must never act by itself |

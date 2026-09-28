@@ -135,6 +135,9 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE check-locales rejects single-brace placeholders
 - DONE Fix: manual-redirect transport crashed the main process on non-Latin-1 response headers (emoji/Arabic) — headers converted losslessly, Location percent-encoded, callback errors become rejections (reproduced in Electron)
 
+## v1.1.3 — DONE
+- DONE Fix: encrypted-file detection reads the file's own structures — RAR5 file encryption records / archive encryption header, RAR 1.5-4 password flags, 7z index (AES coder; compressed index = undetermined), Office (EncryptionInfo agile/standard, Word FIB, Excel FILEPASS, PowerPoint EncryptedSummary); no more "every OLE file is encrypted"; tested on the 51 rarfile archives + real 7z/docx fixtures
+
 ## Phase 7 — Polish
 - DONE Terminal: opens the regular Windows terminal (Windows Terminal, else PowerShell) in its own window — no in-app terminal by decision (the GUI never runs commands from user input)
 - DONE Packaging config (electron-builder.yml): per-user NSIS (asInvoker, no elevation, Arabic + English installer), asar, hardened Electron fuses (RunAsNode off, NODE_OPTIONS/inspect off, asar integrity, only-load-from-asar), no publish/auto-update; app icon generated from the logo SVG (scripts/make-icon.mjs)
