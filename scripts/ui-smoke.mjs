@@ -445,7 +445,8 @@ try {
   await win.locator('h1', { hasText: 'ما يبدأ مع Windows' }).waitFor();
   await win.getByText(process.platform === 'win32' ? /برنامج يبدأ تلقائيًا/ : 'متاح على Windows فقط.').first().waitFor({ timeout: 120000 });
   await win.waitForTimeout(300);
-  await win.screenshot({ path: join(out, '46-startup-ar.png') });
+  // Only the real Windows list is worth a screenshot (elsewhere it would just show "Windows only").
+  if (process.platform === 'win32') await win.screenshot({ path: join(out, '46-startup-ar.png') });
 
   // Open ports on this PC: listening programs from the real connection table (read-only).
   const portSrv = createServer(() => {});
