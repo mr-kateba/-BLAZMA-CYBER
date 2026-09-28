@@ -22,6 +22,7 @@ By **[mr-kateba](https://github.com/mr-kateba)**
 ---
 
 ## Table of contents
+- [What's new in 1.1.4](#whats-new-in-114)
 - [What's new in 1.1.3](#whats-new-in-113)
 - [What's new in 1.1.2](#whats-new-in-112)
 - [What's new in 1.1.1](#whats-new-in-111)
@@ -36,6 +37,13 @@ By **[mr-kateba](https://github.com/mr-kateba)**
 - [License](#license)
 
 ---
+
+## What's new in 1.1.4
+- **Password recovery actually runs now.** John and hashcat can't read an archive directly — they
+  need the file's "hash" extracted first. Blazma now does that automatically with John's own
+  `rar2john`/`zip2john` tools, then runs the engine on the result. Before, every run finished in
+  0.0s finding nothing. (7z/PDF/Office need John's Perl/Python extractors installed; RAR and ZIP
+  work out of the box.)
 
 ## What's new in 1.1.3
 - **Password-protected RAR files are recognized.** A RAR whose files need a password but whose file
@@ -270,7 +278,7 @@ Optional, **user-installed** (Blazma never downloads or runs them by itself):
 ---
 
 ## Project status
-**v1.1.3 (stable).** Verified automatically on real Windows (Server 2025, the Windows 11 24H2 code
+**v1.1.4 (stable).** Verified automatically on real Windows (Server 2025, the Windows 11 24H2 code
 base) in CI: PowerShell facts, Defender status & EICAR file scan, Authenticode, forensics, the
 network tools, a real pktmon capture, the Wi-Fi reader, startup/signature review, the full UI
 end-to-end, and the NSIS installer build.

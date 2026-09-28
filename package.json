@@ -1,7 +1,7 @@
 {
   "name": "blazma-cyber",
   "productName": "Blazma Cyber",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "Privacy-first, local-first bilingual (Arabic/English) Windows cybersecurity workbench.",
   "private": true,
   "license": "GPL-3.0-or-later",

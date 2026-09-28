@@ -145,7 +145,7 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
   capture), Wi-Fi Center, Nmap service scan (user-installed), light theme, smart search (Ctrl+K),
   file integrity monitor.
 - Latest audit: docs/AUDIT-REPORT.md (3 bugs found and fixed; weaknesses and proposed features listed).
-- Released: v1.0.0, v1.0.1, v1.1.0 (Phase G), v1.1.1 (Phase H: recovery resource control, new-device watch, icon/stop-early fixes), v1.1.2 (Phase I: checkup report, Outlook .msg, QR Code Check), v1.1.3 (encrypted-file detection reads RAR/7z/Office structures) — 2026-09. NOT YET: signed installer.
+- Released: v1.0.0, v1.0.1, v1.1.0 (Phase G), v1.1.1 (Phase H: recovery resource control, new-device watch, icon/stop-early fixes), v1.1.2 (Phase I: checkup report, Outlook .msg, QR Code Check), v1.1.3 (encrypted-file detection reads RAR/7z/Office structures), v1.1.4 (recovery extracts the hash with *2john before running the engine) — 2026-09. NOT YET: signed installer.
 - Verified on Linux (Xvfb) locally and on real Windows (Server 2025, build 26100) in CI: PowerShell
   facts, Defender status + EICAR file scan, Authenticode, forensics, network, full UI E2E, NSIS build.
   Not yet verified: Windows 10/11 desktop specifics (title-bar overlay, launcher, installer
