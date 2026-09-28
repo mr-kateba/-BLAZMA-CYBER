@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { BadgeCheck, CircleCheck, CircleDashed, DoorOpen, FolderCheck, Loader2, Puzzle, RefreshCw, ShieldAlert, ShieldCheck, Stethoscope, TriangleAlert, Wifi, type LucideIcon } from 'lucide-react';
-import { deviceArea, extensionsArea, foldersArea, overall, portsArea, tamperArea, wifiArea, type AreaResult, type AreaState, type CheckupArea, type CheckupSummary, type Part } from '../../core/checkup';
+import { BadgeCheck, CircleCheck, CircleDashed, DoorOpen, FolderCheck, Power, Loader2, Puzzle, RefreshCw, ShieldAlert, ShieldCheck, Stethoscope, TriangleAlert, Wifi, type LucideIcon } from 'lucide-react';
+import { deviceArea, extensionsArea, foldersArea, overall, portsArea, startupArea, tamperArea, wifiArea, type AreaResult, type AreaState, type CheckupArea, type CheckupSummary, type Part } from '../../core/checkup';
 import type { ConnectionRow, ForensicsResult, Result } from '../../shared/api';
 import { listeningServices } from '../../core/listening';
+import { loadStartupReview } from './StartupApps';
 import { Badge, Card, IconTile, Notice, type Tone } from '../components/ui';
 import { useApp } from '../components/AppContext';
 import { useI18n } from '../i18n/I18nProvider';
@@ -12,6 +13,7 @@ import type { PageId } from '../nav';
 const AREAS: Array<{ area: CheckupArea; icon: LucideIcon; page: PageId }> = [
   { area: 'device', icon: BadgeCheck, page: 'device-security' },
   { area: 'tamper', icon: ShieldAlert, page: 'device-security' },
+  { area: 'startup', icon: Power, page: 'startup-apps' },
   { area: 'extensions', icon: Puzzle, page: 'browser-extensions' },
   { area: 'wifi', icon: Wifi, page: 'wifi' },
   { area: 'ports', icon: DoorOpen, page: 'open-ports' },
@@ -39,6 +41,9 @@ export function Checkup() {
     put(deviceArea(part(await window.blazma.device.security(true))));
     setCurrent('tamper');
     put(tamperArea(part(await window.blazma.device.tamper())));
+    setCurrent('startup');
+    const st = await loadStartupReview();
+    put(startupArea('error' in st ? { error: st.error } : { data: st.items }));
     setCurrent('extensions');
     put(extensionsArea(part(await window.blazma.extensions.audit())));
     setCurrent('wifi');

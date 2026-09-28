@@ -7,7 +7,7 @@
 export type CheckStatus = 'pass' | 'warn' | 'fail' | 'unknown';
 
 /** Fixed Windows settings pages a check may open (resolved to URIs in the main process). */
-export type SettingsLink = 'virus' | 'firewall' | 'update' | 'remote' | 'deviceSecurity';
+export type SettingsLink = 'virus' | 'firewall' | 'update' | 'remote' | 'deviceSecurity' | 'startupApps';
 
 export interface DeviceCheck {
   id: string;
@@ -156,4 +156,5 @@ export const SETTINGS_URIS: Record<SettingsLink, string> = {
   update: 'ms-settings:windowsupdate',
   remote: 'ms-settings:remotedesktop',
   deviceSecurity: 'windowsdefender://devicesecurity',
+  startupApps: 'ms-settings:startupapps',
 };

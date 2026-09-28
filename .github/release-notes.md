@@ -8,6 +8,7 @@
 - **الواي فاي:** أمان اتصالك الحالي بكلام بسيط (WPA3/WPA2/مفتوحة)، قوة الإشارة والقناة والسرعة، الشبكات القريبة مع كشف **الشبكة المنتحِلة (Evil Twin)** وازدحام القنوات، ومراجعة الشبكات المحفوظة (المفتوحة التي تتصل تلقائيًا، الضعيفة، المخفية) — **بدون قراءة كلمات المرور أبدًا**.
 - **حركة الشبكة:** حلّل ملفات Wireshark (pcap/pcapng) أو سجّل من 15 ثانية إلى 5 دقائق بأداة pktmon المدمجة في Windows (نافذة UAC واحدة) أو بـ Wireshark إن كان مثبّتًا: الأجهزة وشركاتها المصنّعة، المحادثات، DNS، مواقع HTTPS، تسجيلات الدخول غير المشفّرة، وأنماط مثل فحص المنافذ وانتحال ARP وخادم DHCP دخيل وTLS قديم. الكوكيز وكلمات المرور ومحتوى الصفحات لا تدخل التقرير.
 - **فحص الخدمات (Nmap):** إذا ثبّتّ Nmap من nmap.org: من المتصل بشبكتك وما الخدمات المفتوحة على كل جهاز (100 أو 1000 منفذ) مع شرح الخطورة (Telnet، قواعد بيانات مكشوفة، VNC، سطح المكتب البعيد…). لشبكاتك أنت فقط، وبعد تأكيد التصريح.
+- **ما يبدأ مع Windows:** برامج بدء التشغيل مع من وقّعها (التوقيع الرقمي) وأين توجد، وتنبيه للبرامج غير الموقّعة في مجلدات المستخدم ولما يعمل عبر PowerShell أو rundll32 أو mshta — والإيقاف من صفحة Windows نفسها.
 - **المنافذ المفتوحة على جهازك:** أي البرامج تنتظر اتصالات، وهل يصل إليها جهازك فقط أم الشبكة، مع اسم مفهوم لكل منفذ معروف وتنبيه لخدمات الوصول البعيد ومشاركة الملفات وقواعد البيانات المكشوفة.
 - **مراقبة سلامة الملفات:** خذ بصمة SHA-256 لمجلد ثم اعرف بدقة ما أُضيف أو حُذف أو تغيّر — حتى لو أُعيد التاريخ القديم للملف لإخفاء التعديل. أماكن مقترحة: مجلدات بدء التشغيل، ملف hosts، ملفات PowerShell.
 - **فحص شامل بضغطة واحدة:** أمان الجهاز، علامات العبث، إضافات المتصفح، الواي فاي والمجلدات المراقَبة — بنتيجة واحدة واضحة ورابط لتفاصيل كل قسم.
@@ -44,6 +45,7 @@ Privacy-first, local-first, bilingual (Arabic/English) defensive cybersecurity w
 - **Wi-Fi:** current connection security in plain words, signal/band/channel/speed, nearby networks with an **evil-twin** check and a channel chart, and an audit of saved networks — passwords are never read.
 - **Network traffic:** analyse .pcap/.pcapng files or record 15 s – 5 min with built-in Windows pktmon (one UAC prompt) or Wireshark's dumpcap: devices with manufacturers, conversations, DNS, HTTPS sites, unencrypted logins, and measured patterns (port scan, ARP conflict, rogue DHCP, outdated TLS…). Cookies, passwords and page contents never enter the report.
 - **Service scan (Nmap):** with your own Nmap install, who is online and which services each device exposes, with plain-language risks — your own networks only, after an authorization confirmation.
+- **What starts with Windows:** startup programs with their signer and location; unsigned programs in user folders and script launchers are highlighted.
 - **Open ports on this PC:** which programs wait for connections and whether only this PC or the network can reach them, with plain names for well-known ports.
 - **File integrity monitor:** fingerprint a folder (SHA-256), then see exactly what was added, removed or changed — including edits that restored the old timestamp.
 - **Full checkup:** one click — device security, signs of tampering, browser extensions, Wi-Fi and watched folders, one plain verdict.

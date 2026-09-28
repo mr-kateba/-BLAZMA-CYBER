@@ -1,12 +1,12 @@
 import {
   Activity, BadgeCheck, Crosshair, Earth, FileClock, MemoryStick, MailWarning, FileSearch, FolderOpen, Hash, KeyRound, KeySquare, Languages, Link2, MonitorCog, Network, Palette, Plug,
-  Puzzle, ScanSearch, ScrollText, ShieldCheck, ShieldHalf, SquareTerminal, UserSearch, LayoutDashboard, Cpu, Scale, Wifi, Radar, FolderCheck, Stethoscope, DoorOpen, type LucideIcon,
+  Puzzle, ScanSearch, ScrollText, ShieldCheck, ShieldHalf, SquareTerminal, UserSearch, LayoutDashboard, Cpu, Scale, Wifi, Radar, FolderCheck, Stethoscope, DoorOpen, Power, type LucideIcon,
 } from 'lucide-react';
 
 export type PageId =
   | 'dashboard' | 'checkup' | 'device-security'
   | 'ip-intel' | 'domain-intel' | 'email-check' | 'password-check' | 'osint' | 'reputation'
-  | 'security-center' | 'file-analyzer' | 'browser-extensions' | 'yara' | 'hash-lab' | 'file-integrity'
+  | 'security-center' | 'file-analyzer' | 'browser-extensions' | 'startup-apps' | 'yara' | 'hash-lab' | 'file-integrity'
   | 'password-recovery'
   | 'wifi' | 'network-traffic' | 'service-scan' | 'open-ports'
   | 'windows-forensics' | 'network-toolkit' | 'threat-hunting' | 'event-logs' | 'memory-scan' | 'terminal'
@@ -60,6 +60,7 @@ export const NAV: NavSection[] = [
       { id: 'security-center', simple: true, labelKey: 'nav.securityCenter', icon: ShieldHalf },
       { id: 'file-analyzer', simple: true, simpleLabelKey: 'nav.simple.scanFile', labelKey: 'nav.fileAnalyzer', icon: FileSearch },
       { id: 'browser-extensions', simple: true, labelKey: 'nav.extensions', icon: Puzzle },
+      { id: 'startup-apps', labelKey: 'nav.startupApps', icon: Power },
       { id: 'yara', labelKey: 'nav.yara', icon: ScanSearch },
       { id: 'hash-lab', labelKey: 'nav.hashLab', icon: Hash },
       { id: 'file-integrity', labelKey: 'nav.fileIntegrity', icon: FolderCheck },

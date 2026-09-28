@@ -66,7 +66,8 @@
     "serviceScan": "Service scan (Nmap)",
     "fileIntegrity": "File integrity",
     "checkup": "Full checkup",
-    "openPorts": "Open ports"
+    "openPorts": "Open ports",
+    "startupApps": "Startup programs"
   },
   "topbar": {
     "search": "Search tools, or paste an IP, hash, link or file path…",
@@ -1523,7 +1524,8 @@
     "noItems": "No autostart entries found",
     "flag": {
       "userFolder": "Runs from a user or temporary folder",
-      "outsideSystem": "Runs from outside Windows / Program Files"
+      "outsideSystem": "Runs from outside Windows / Program Files",
+      "scriptHost": "Started through a script or system launcher"
     },
     "kind": {
       "startup": "Startup",
@@ -1959,6 +1961,10 @@
     "open_ports": {
       "title": "What is an open (listening) port?",
       "text": "A program that accepts connections \"listens\" on a numbered port. If it listens only on 127.0.0.1 (this PC only), nothing else can reach it. If it listens on all addresses, devices on your network may connect — unless Windows Firewall blocks them. Remote access, file sharing and databases deserve a look because attackers try them first."
+    },
+    "startup_apps": {
+      "title": "Why check startup programs?",
+      "text": "Malware wants to survive a restart, so it adds itself to the programs Windows starts at sign-in. A digital signature tells you who published a program; an unsigned program running from AppData or Temp, or a script started through PowerShell, rundll32 or mshta, is a common malware habit — though some small legitimate tools do the same."
     }
   },
   "mode": {
@@ -2895,6 +2901,13 @@
         "ok": "{{network}} program(s) reachable from the network, none risky",
         "attention": "{{n}} remote-access, file-sharing or database service(s) reachable from the network",
         "problem": "{{n}} risky service(s)"
+      },
+      "startup": {
+        "title": "Startup programs",
+        "what": "Programs that start with Windows and who signed them",
+        "ok": "{{total}} program(s), nothing unusual",
+        "attention": "{{n}} of {{total}} start from a user folder unsigned or through a script launcher",
+        "problem": "A startup program's signature is broken"
       }
     },
     "lastAt": "Last checkup {{date}}"
@@ -2962,5 +2975,32 @@
       "mongodb": "MongoDB database",
       "rpc_dynamic": "Windows RPC (dynamic port)"
     }
+  },
+  "startup": {
+    "title": "What starts with Windows",
+    "subtitle": "Programs that start automatically when you sign in, who made them, and where they live.",
+    "intro": "Most startup programs are normal (cloud storage, drivers, chat apps). Blazma checks each program's digital signature and location. To turn one off, use Windows' own Startup apps page — Blazma never changes it.",
+    "listTitle": "{{n}} startup program(s)",
+    "attentionSub": "{{n}} worth a look",
+    "allFine": "Nothing unusual found",
+    "openSettings": "Windows Startup apps",
+    "refresh": "Refresh",
+    "none": "No startup programs listed",
+    "signedBy": "Signed: {{publisher}}",
+    "sig": {
+      "valid": "Signed",
+      "not_signed": "Not signed",
+      "hash_mismatch": "Signature broken (file changed after signing)",
+      "not_trusted": "Signed, but not trusted",
+      "unknown_error": "Signature could not be checked",
+      "other": "Signature status unclear",
+      "unchecked": "Signature not checked"
+    },
+    "scope": {
+      "user": "Your account",
+      "all_users": "All users"
+    },
+    "analyze": "Analyze",
+    "howToDisable": "To turn a program off: Windows Settings → Apps → Startup (or Task Manager → Startup apps). If you do not recognise an unsigned program, analyze it first."
   }
 }

@@ -32,6 +32,7 @@ const EmailCheck = lazy(() => import('./pages/EmailCheck').then((m) => ({ defaul
 const BrowserExtensions = lazy(() => import('./pages/BrowserExtensions').then((m) => ({ default: m.BrowserExtensions })));
 const MemoryScan = lazy(() => import('./pages/MemoryScan').then((m) => ({ default: m.MemoryScan })));
 const WifiCenter = lazy(() => import('./pages/WifiCenter').then((m) => ({ default: m.WifiCenter })));
+const StartupApps = lazy(() => import('./pages/StartupApps').then((m) => ({ default: m.StartupApps })));
 const OpenPorts = lazy(() => import('./pages/OpenPorts').then((m) => ({ default: m.OpenPorts })));
 const Checkup = lazy(() => import('./pages/Checkup').then((m) => ({ default: m.Checkup })));
 const FileIntegrity = lazy(() => import('./pages/FileIntegrity').then((m) => ({ default: m.FileIntegrity })));
@@ -83,6 +84,8 @@ function Page({ id }: { id: PageId }) {
       return <Checkup />;
     case 'open-ports':
       return <OpenPorts />;
+    case 'startup-apps':
+      return <StartupApps />;
     case 'osint':
       return <Osint />;
     case 'reputation':

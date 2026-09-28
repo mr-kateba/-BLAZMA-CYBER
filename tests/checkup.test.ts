@@ -63,3 +63,14 @@ describe('remembered checkup summary (from the untrusted renderer)', () => {
     }
   });
 });
+
+describe('startup area', () => {
+  it('flags attention entries and broken signatures', async () => {
+    const { startupArea } = await import('../src/core/checkup');
+    const item = (attention: boolean, signature: 'valid' | 'hash_mismatch' | null = 'valid') => ({ name: 'x', command: '', location: '', user: null, program: null, scope: 'user' as const, signature, publisher: null, flags: [], attention });
+    expect(startupArea({ data: [item(false), item(false)] })).toMatchObject({ state: 'ok', vars: { total: 2 } });
+    expect(startupArea({ data: [item(true), item(false)] })).toMatchObject({ state: 'attention', count: 1 });
+    expect(startupArea({ data: [item(true, 'hash_mismatch')] }).state).toBe('problem');
+    expect(startupArea({ error: 'unsupported_platform' }).state).toBe('unavailable');
+  });
+});

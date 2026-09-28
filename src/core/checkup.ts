@@ -6,10 +6,11 @@ import type { DeviceSecurityReport } from './device-security';
 import type { ExtensionAudit } from './extensions';
 import type { FimDiff } from './fim';
 import type { ListeningService } from './listening';
+import type { StartupItem } from './startup-review';
 import type { TamperReport } from './tamper';
 import type { WifiFinding } from './wifi';
 
-export type CheckupArea = 'device' | 'tamper' | 'extensions' | 'wifi' | 'ports' | 'folders';
+export type CheckupArea = 'device' | 'tamper' | 'startup' | 'extensions' | 'wifi' | 'ports' | 'folders';
 export type AreaState = 'ok' | 'attention' | 'problem' | 'unavailable';
 
 export interface AreaResult {
@@ -66,6 +67,15 @@ export function wifiArea(p: Part<{ available: boolean; reason: string | null; fi
   return { area: 'wifi', state: high ? 'problem' : medium ? 'attention' : 'ok', count: high + medium };
 }
 
+/** Programs that start with Windows: unsigned ones from user folders and script hosts are worth a look. */
+export function startupArea(p: Part<StartupItem[]>): AreaResult {
+  if (!p) return unavailable('startup', 'not_checked');
+  if ('error' in p) return unavailable('startup', p.error);
+  const bad = p.data.filter((i) => i.signature === 'hash_mismatch').length;
+  const n = p.data.filter((i) => i.attention).length;
+  return { area: 'startup', state: bad ? 'problem' : n ? 'attention' : 'ok', count: n, vars: { total: p.data.length } };
+}
+
 /** Programs reachable from the network that offer remote access, file sharing or a database. */
 export function portsArea(p: Part<ListeningService[]>): AreaResult {
   if (!p) return unavailable('ports', 'not_checked');
@@ -98,7 +108,7 @@ export interface CheckupSummary {
   areas: Array<{ area: CheckupArea; state: AreaState; count: number }>;
 }
 
-const AREA_IDS: CheckupArea[] = ['device', 'tamper', 'extensions', 'wifi', 'ports', 'folders'];
+const AREA_IDS: CheckupArea[] = ['device', 'tamper', 'startup', 'extensions', 'wifi', 'ports', 'folders'];
 const STATES: AreaState[] = ['ok', 'attention', 'problem', 'unavailable'];
 
 /** Validates a summary coming from the (untrusted) renderer. */
