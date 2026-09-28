@@ -80,6 +80,11 @@ docs/                    ARCHITECTURE, ROADMAP, DEVELOPMENT, screenshots/
   Notice, EmptyState, ErrorState, Skeleton, Toggle, Tabs, Ltr). Don't invent one-off styles.
 - Every module must degrade gracefully: missing engine / non-Windows / access denied → clear state.
 
+## Working with the owner
+
+- **Always talk to the owner (mr-kateba) in Arabic** — every chat reply, status update and summary.
+  Code, commit messages and docs stay in English as they are.
+
 ## Localization
 
 - Arabic is first-class, not a translation afterthought. Write both strings when adding a key.
