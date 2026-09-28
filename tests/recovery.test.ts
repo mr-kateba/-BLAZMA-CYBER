@@ -25,6 +25,9 @@ describe('recovery input validation', () => {
     // A path with shell metacharacters stays a single, unmodified argv element.
     const tricky = buildEngineArgs('hashcat', '/t/h', { type: 'wordlist', path: '/t/a b; ls.txt' });
     expect(tricky).toContain('/t/a b; ls.txt');
+    // hashcat gets the hash type via -m; John autodetects it from the hash file.
+    expect(buildEngineArgs('hashcat', '/t/h.hash', { type: 'wordlist', path: '/t/w.txt' }, undefined, 1, 13000).slice(0, 3)).toEqual(['-m', '13000', '-a']);
+    expect(buildEngineArgs('hashcat', '/t/h.hash', { type: 'mask', mask: '?d' }, undefined, 1, null).join(' ')).not.toContain('-m');
   });
 
   it('adds resource flags for the chosen performance, and validates them', () => {
@@ -72,9 +75,13 @@ describe('recovery session runner', () => {
     const engine = join(dir, 'engine.js');
     copyFileSync(join(__dirname, 'fixtures', 'fake-engine.js'), engine);
     chmodSync(engine, 0o755);
+    // John's zip2john extractor sits next to the engine; a real ZIP local-file header so the format is detected.
+    const extractor = join(dir, 'zip2john');
+    copyFileSync(join(__dirname, 'fixtures', 'fake-2john.js'), extractor);
+    chmodSync(extractor, 0o755);
     const target = join(dir, 'target.zip');
     const wordlist = join(dir, 'w.txt');
-    writeFileSync(target, 'data');
+    writeFileSync(target, Buffer.from([0x50, 0x4b, 0x03, 0x04, 0x14, 0x00, 0x01, 0x00, 0x63, 0x00]));
     writeFileSync(wordlist, 'a');
     const svc = new RecoveryService(() => engine);
 

@@ -14,12 +14,15 @@
 
 import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
 import { existsSync } from 'node:fs';
-import { stat } from 'node:fs/promises';
-import { basename } from 'node:path';
+import { mkdir, rm, stat, writeFile } from 'node:fs/promises';
+import { basename, dirname, join } from 'node:path';
 import { cpus } from 'node:os';
+import { randomUUID } from 'node:crypto';
 import type { RecoveryEngineKind, RecoveryMode, RecoveryPerformance, RecoveryProgress, RecoverySessionInfo, RecoveryStartResult } from '../../shared/api';
 import { validateAbsolutePath } from '../../core/validation';
-import { detectEncryption, sevenZipNextHeaderRange } from '../../core/encrypted';
+import { detectEncryption, sevenZipNextHeaderRange, type EncryptedFormat } from '../../core/encrypted';
+import { extractorFor, firstHashLine, hashcatHash, hashcatMode, johnHashLine } from '../../core/recovery-format';
+import { subDir } from './paths';
 import { open as fsOpen } from 'node:fs/promises';
 
 export class RecoveryError extends Error {
@@ -73,6 +76,7 @@ export function buildEngineArgs(
   mode: RecoveryMode,
   perf: RecoveryPerformance = { intensity: 'balanced', device: 'auto' },
   logicalCores = 1,
+  hashcatMode?: number | null,
 ): string[] {
   const args: string[] = [];
   if (kind === 'john') {
@@ -83,7 +87,8 @@ export function buildEngineArgs(
     if (cores > 1) args.push(`--fork=${cores}`);
     args.push(targetPath);
   } else {
-    // hashcat: user pre-extracts the hash; -a 0 wordlist, -a 3 mask. Engine autodetects the type.
+    // hashcat needs the hash type; -a 0 wordlist, -a 3 mask.
+    if (typeof hashcatMode === 'number') args.push('-m', String(hashcatMode));
     if (mode.type === 'wordlist' || mode.type === 'candidates') args.push('-a', '0', targetPath, mode.path);
     else args.push('-a', '3', targetPath, mode.mask);
     // Workload profile: 2 = balanced default, 4 = use the machine fully (less responsive desktop).
@@ -137,6 +142,36 @@ interface Session {
   progress: RecoveryProgress;
   paused: boolean;
   onEvent: (id: string, ev: RecoveryEvent) => void;
+  /** The extracted-hash file to crack and clean up (never the original archive). */
+  hashFile: string;
+  hashcatMode: number | null;
+}
+
+/** Runs a short-lived helper process and returns its combined output (used for hash extraction). */
+function runCapture(exe: string, args: string[], timeoutMs: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const p = spawn(exe, args, { windowsHide: true });
+    let out = '';
+    let size = 0;
+    const timer = setTimeout(() => {
+      p.kill();
+      reject(new RecoveryError('hash_extract_failed'));
+    }, timeoutMs);
+    const take = (b: Buffer) => {
+      size += b.length;
+      if (size <= 8 * 1024 * 1024) out += b.toString('utf8'); // a hash is tiny; ignore runaway output
+    };
+    p.stdout.on('data', take);
+    p.stderr.on('data', take);
+    p.on('error', () => {
+      clearTimeout(timer);
+      reject(new RecoveryError('hash_extract_failed'));
+    });
+    p.on('close', () => {
+      clearTimeout(timer);
+      resolve(out);
+    });
+  });
 }
 
 export type RecoveryEvent =
@@ -180,6 +215,47 @@ export class RecoveryService {
     return [...this.sessions.values()].map((s) => s.info);
   }
 
+  /** Reads the file's own header to decide its format (the renderer is untrusted). */
+  private async detectFormat(path: string): Promise<EncryptedFormat> {
+    const fh = await fsOpen(path, 'r').catch(() => null);
+    if (!fh) throw new RecoveryError('access_denied');
+    try {
+      const buf = Buffer.alloc(64);
+      await fh.read(buf, 0, 64, 0);
+      return detectEncryption(buf).format;
+    } finally {
+      await fh.close();
+    }
+  }
+
+  /**
+   * Turns an encrypted file into the hash file the engine cracks, using John's `*2john` extractor for
+   * that format (they live next to john.exe). Returns the temp hash-file path and, for hashcat, the
+   * hash type. The extracted hash and any candidate never leave the machine.
+   */
+  private async extractHash(format: EncryptedFormat, targetPath: string, kind: RecoveryEngineKind): Promise<{ hashFile: string; hashcatMode: number | null }> {
+    const spec = extractorFor(format);
+    if (!spec) throw new RecoveryError('engine_unsupported_file');
+    // The extractors ship with John, so we locate them from John's configured path (even for hashcat).
+    const johnPath = this.enginePath('john');
+    if (!johnPath) throw new RecoveryError('hash_extractor_needs_john');
+    if (!spec.compiled) throw new RecoveryError('hash_extractor_script'); // 7z/PDF/Office need Perl/Python
+    const exe = spec.files.map((f) => join(dirname(johnPath), f)).find(existsSync);
+    if (!exe) throw new RecoveryError('hash_extractor_missing');
+
+    const out = await runCapture(exe, [targetPath], 120_000);
+    const line = firstHashLine(out);
+    if (!line) throw new RecoveryError('hash_extract_failed');
+    const mode = kind === 'hashcat' ? hashcatMode(hashcatHash(line)) : null;
+    if (kind === 'hashcat' && mode === null) throw new RecoveryError('hashcat_type_unsupported');
+
+    const dir = join(subDir('temp'), 'recovery');
+    await mkdir(dir, { recursive: true, mode: 0o700 });
+    const hashFile = join(dir, `${randomUUID().slice(0, 8)}.hash`);
+    await writeFile(hashFile, `${kind === 'john' ? johnHashLine(line) : hashcatHash(line)}\n`, { mode: 0o600 });
+    return { hashFile, hashcatMode: mode };
+  }
+
   /** Starts a recovery session. `authorized` must be true (the UI collects an explicit confirmation). */
   async start(
     kind: RecoveryEngineKind,
@@ -200,14 +276,18 @@ export class RecoveryService {
     if ((mode.type === 'wordlist' || mode.type === 'candidates') && !existsSync(mode.path)) throw new RecoveryError('wordlist_not_found');
     const perf = validatePerformance(rawPerf);
 
+    // John and hashcat can't read the archive directly: extract its hash with John's `*2john` tool.
+    const format = await this.detectFormat(v.path);
+    const { hashFile, hashcatMode: hcMode } = await this.extractHash(format, v.path, kind);
+
     const id = `rec-${Date.now().toString(36)}-${++SESSION_SEQ}`;
-    const args = buildEngineArgs(kind, v.path, mode, perf, Math.max(1, cpus().length));
-    const proc = spawn(engine.path, args, { windowsHide: true, env: { ...process.env } });
+    const args = buildEngineArgs(kind, hashFile, mode, perf, Math.max(1, cpus().length), hcMode);
+    const proc = spawn(engine.path, args, { windowsHide: true, env: { ...process.env }, cwd: dirname(hashFile) });
 
     const info: RecoverySessionInfo = { id, engine: kind, target: basename(v.path), mode: mode.type, startedAt: new Date().toISOString() };
     const progress: RecoveryProgress = { id, tried: 0, total: null, rate: null, recovered: false, elapsedMs: 0 };
     const started = Date.now();
-    const session: Session = { id, proc, info, progress, paused: false, onEvent };
+    const session: Session = { id, proc, info, progress, paused: false, onEvent, hashFile, hashcatMode: hcMode };
     this.sessions.set(id, session);
 
     let found: string | null = null;
@@ -225,6 +305,7 @@ export class RecoveryService {
 
     proc.on('error', () => {
       this.sessions.delete(id);
+      void rm(hashFile, { force: true });
       onEvent(id, { type: 'error', error: 'engine_run_failed' });
     });
     proc.on('close', async () => {
@@ -232,23 +313,24 @@ export class RecoveryService {
       this.sessions.delete(id);
       // The recovered secret is fetched via the engine's own "show" output and passed to the UI once,
       // then dropped. It is never logged.
-      found = await this.reveal(kind, engine.path!, v.path).catch(() => null);
+      found = await this.reveal(kind, engine.path!, hashFile, hcMode).catch(() => null);
+      void rm(hashFile, { force: true });
       onEvent(id, { type: 'done', found: !!found, password: found });
     });
 
     return { id, info };
   }
 
-  /** Asks the engine to print the recovered secret for this target (John --show / hashcat --show). */
-  private reveal(kind: RecoveryEngineKind, enginePath: string, target: string): Promise<string | null> {
+  /** Asks the engine to print the recovered secret for the extracted hash (John/hashcat `--show`). */
+  private reveal(kind: RecoveryEngineKind, enginePath: string, hashFile: string, mode: number | null): Promise<string | null> {
     return new Promise((resolve) => {
-      const args = kind === 'john' ? ['--show', target] : ['--show', target];
-      const p = spawn(enginePath, args, { windowsHide: true });
+      const args = kind === 'john' ? ['--show', hashFile] : ['-m', String(mode ?? 0), '--show', hashFile];
+      const p = spawn(enginePath, args, { windowsHide: true, cwd: dirname(hashFile) });
       let out = '';
       const timer = setTimeout(() => {
         p.kill();
         resolve(null);
-      }, 10_000);
+      }, 15_000);
       p.stdout.on('data', (b) => (out += b));
       p.on('error', () => {
         clearTimeout(timer);
@@ -256,9 +338,16 @@ export class RecoveryService {
       });
       p.on('close', () => {
         clearTimeout(timer);
-        // John: "target:PASSWORD:..." ; take the field after the first colon of a data line.
-        const line = out.split(/\r?\n/).find((l) => l.includes(':') && !/password hash/i.test(l));
-        resolve(line ? line.split(':')[1] ?? null : null);
+        for (const l of out.split(/\r?\n/)) {
+          if (kind === 'john') {
+            // John: "target:PASSWORD" (login fixed to "target" when the hash file was written).
+            if (l.startsWith('target:')) return resolve(l.slice('target:'.length) || null);
+          } else if (l.includes(':') && l.startsWith('$')) {
+            // hashcat: "HASH:PASSWORD"; the hash contains no ':', so split on the first one.
+            return resolve(l.slice(l.indexOf(':') + 1) || null);
+          }
+        }
+        resolve(null);
       });
     });
   }
@@ -269,6 +358,7 @@ export class RecoveryService {
     if (!s) return;
     this.sessions.delete(id);
     s.proc.kill('SIGKILL');
+    void rm(s.hashFile, { force: true });
     s.onEvent(id, { type: 'stopped' });
   }
 

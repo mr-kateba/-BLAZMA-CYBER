@@ -791,7 +791,12 @@
     "qr_not_image": "This file isn't a supported image (PNG, JPEG, GIF, BMP or WebP).",
     "qr_image_too_large": "The image is too large to check (over 20 MB or 50 megapixels).",
     "qr_clipboard_empty": "There is no image on the clipboard. Copy a screenshot or an image first (for example Win+Shift+S).",
-    "qr_decode_failed": "The image couldn't be read."
+    "qr_decode_failed": "The image couldn't be read.",
+    "hash_extract_failed": "Couldn’t read the hash from this file. Make sure it is a complete, valid archive/document.",
+    "hash_extractor_missing": "John’s hash extractor for this file type wasn’t found next to john.exe (e.g. rar2john.exe). Re-extract the John \"jumbo\" download so its run/ folder is complete, then pick john.exe again.",
+    "hash_extractor_needs_john": "To recover this file, also set the path to John the Ripper: its hash extractors (rar2john, zip2john…) are needed to prepare the file — even when hashcat does the work.",
+    "hash_extractor_script": "This file type (7z / PDF / Office) needs a script extractor that requires Perl or Python. Install it, or extract the hash yourself and open the hash file instead.",
+    "hashcat_type_unsupported": "hashcat can’t be mapped to this file’s hash type automatically. Use John the Ripper for this file instead."
   },
   "defender": {
     "status": {

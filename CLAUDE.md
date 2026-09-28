@@ -174,6 +174,7 @@ API keys only via Electron `safeStorage` (DPAPI) — refuse to store if encrypti
 | 2026-09 | Locale-independent sources: CIM/Get-* objects, SIDs (S-1-5-32-544), Test-Connection | ping.exe/tracert/group names are localized on Arabic Windows |
 | 2026-09 | Port check / discovery need an explicit authorization checkbox; discovery limited to attached private /24 | Authorized-use only; prevents accidental scanning of others |
 | 2026-09 | Password recovery = orchestration only; engine is user-installed John/hashcat | Spec: don't reimplement cracking engines; keeps Blazma auditable and license-clean |
+| 2026-09 | Recovery extracts the file's hash with John's own `*2john` tools (rar2john/zip2john next to john.exe) into a temp hash file, then runs the chosen engine on that — never the archive; hashcat gets `-m` from the hash prefix, else defer to John | John/hashcat can't read an archive directly; the earlier build passed the archive itself and always found nothing in 0.0s |
 | 2026-09 | Recovered secrets reach the UI once, never logs/history | Secrets must not persist on disk |
 | 2026-09 | Reports: every value HTML-escaped, no scripts, `default-src 'none'` CSP; PDF rendered in a hidden sandboxed window with JavaScript disabled | Evidence strings come from malware/untrusted sources; a report must never become an attack vector |
 | 2026-09 | OSINT pivot links are re-derived in main from (type, value, id); the renderer never passes a URL to open | A compromised renderer must not be able to open arbitrary URLs/protocols via shell.openExternal |

@@ -791,7 +791,12 @@
     "qr_not_image": "هذا الملف ليس صورة مدعومة (PNG أو JPEG أو GIF أو BMP أو WebP).",
     "qr_image_too_large": "الصورة أكبر من أن تُفحص (أكثر من 20 ميغابايت أو 50 ميغابكسل).",
     "qr_clipboard_empty": "لا توجد صورة في الحافظة. انسخ لقطة شاشة أو صورة أولًا (مثلًا Win+Shift+S).",
-    "qr_decode_failed": "تعذّرت قراءة الصورة."
+    "qr_decode_failed": "تعذّرت قراءة الصورة.",
+    "hash_extract_failed": "تعذّرت قراءة الهاش من هذا الملف. تأكد أنه أرشيف/مستند كامل وسليم.",
+    "hash_extractor_missing": "لم يُعثر على أداة استخراج الهاش الخاصة بـ John لهذا النوع بجانب john.exe (مثل rar2john.exe). أعد فكّ ضغط نسخة John «jumbo» ليكتمل مجلد run/‎، ثم اختر john.exe من جديد.",
+    "hash_extractor_needs_john": "لاستعادة هذا الملف، حدّد أيضًا مسار John the Ripper: أدوات استخراج الهاش (rar2john وzip2john…) لازمة لتجهيز الملف — حتى لو كان hashcat هو من يعمل.",
+    "hash_extractor_script": "هذا النوع (7z أو PDF أو Office) يحتاج أداة استخراج بلغة سكربت تتطلب Perl أو Python. ثبّتها، أو استخرج الهاش بنفسك وافتح ملف الهاش بدلًا منه.",
+    "hashcat_type_unsupported": "لا يمكن ربط hashcat تلقائيًا بنوع هاش هذا الملف. استخدم John the Ripper لهذا الملف بدلًا منه."
   },
   "defender": {
     "status": {

@@ -4,7 +4,11 @@
 // It performs no recovery; it prints fixed hashcat-style status lines and a fixed result.
 const a = process.argv.slice(2);
 if (a.includes('--version')) { process.stdout.write('6.2.6\n'); process.exit(0); }
-if (a.includes('--show')) { process.stdout.write('target:REVEALED-SECRET:x\n'); process.exit(0); }
+if (a.includes('--show')) {
+  // hashcat prints "HASH:PASSWORD"; John prints "target:PASSWORD" (fixed login in the hash file).
+  process.stdout.write(a.includes('-m') ? '$zip2$abc:REVEALED-SECRET\n' : 'target:REVEALED-SECRET\n');
+  process.exit(0);
+}
 let n = 0;
 const i = setInterval(() => {
   n++;
