@@ -5,10 +5,11 @@
 import type { DeviceSecurityReport } from './device-security';
 import type { ExtensionAudit } from './extensions';
 import type { FimDiff } from './fim';
+import type { ListeningService } from './listening';
 import type { TamperReport } from './tamper';
 import type { WifiFinding } from './wifi';
 
-export type CheckupArea = 'device' | 'tamper' | 'extensions' | 'wifi' | 'folders';
+export type CheckupArea = 'device' | 'tamper' | 'extensions' | 'wifi' | 'ports' | 'folders';
 export type AreaState = 'ok' | 'attention' | 'problem' | 'unavailable';
 
 export interface AreaResult {
@@ -63,6 +64,14 @@ export function wifiArea(p: Part<{ available: boolean; reason: string | null; fi
   const high = p.data.findings.filter((f) => f.severity === 'high').length;
   const medium = p.data.findings.filter((f) => f.severity === 'medium').length;
   return { area: 'wifi', state: high ? 'problem' : medium ? 'attention' : 'ok', count: high + medium };
+}
+
+/** Programs reachable from the network that offer remote access, file sharing or a database. */
+export function portsArea(p: Part<ListeningService[]>): AreaResult {
+  if (!p) return unavailable('ports', 'not_checked');
+  if ('error' in p) return unavailable('ports', p.error);
+  const n = p.data.filter((s) => s.attention).length;
+  return { area: 'ports', state: n ? 'attention' : 'ok', count: n, vars: { network: p.data.filter((s) => s.reach === 'network').length } };
 }
 
 /** Watched folders: `checks` are the results of checking every watch now. */

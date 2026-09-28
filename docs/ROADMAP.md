@@ -117,6 +117,7 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE G6 Smart search (Ctrl+K): paste an indicator or path → the right tool, pre-filled; refangs hxxp/[.]
 - DONE G7 File integrity monitor: folder fingerprints (SHA-256), added/removed/modified, hidden-timestamp edits, runnable files highlighted, suggested Windows persistence folders
 - DONE G8 Full checkup: one click runs device security, tampering, extensions, Wi-Fi and watched folders (read-only) and gives one plain verdict; unavailable areas never count as ok
+- DONE G9 Open ports on this PC: listening programs from the read-only connection table, who can reach them (this PC / network), plain names for well-known ports, remote access / file sharing / databases on the network flagged; part of the full checkup
 - TODO Verify on a real Wi-Fi PC and with Nmap installed on Windows (not available in CI)
 
 ## Phase 7 — Polish

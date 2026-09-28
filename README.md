@@ -77,6 +77,9 @@ adapters rather than re-implementing them.
   device exposes (100 / 1,000 ports), with plain-language risks (telnet, open databases, VNC, RDP…).
   Only your own networks, after an authorization confirmation.
 
+- **Open ports on this PC** — which programs wait for connections, whether only this PC or the
+  network can reach them, and what each well-known port usually is.
+
 **Forensics & network tools**
 - **Windows Forensics** — read-only collectors: processes, connections, services, drivers,
   startup, scheduled tasks, users, software, USB history, events (Linux `/proc` fallbacks).

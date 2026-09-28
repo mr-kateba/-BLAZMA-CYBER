@@ -423,10 +423,20 @@ try {
   await win.locator('.nav-item', { hasText: 'فحص شامل' }).click();
   await win.getByRole('button', { name: 'ابدأ الفحص الشامل' }).click();
   await win.getByText(/^فُحص /).waitFor({ timeout: 180000 });
-  assert.equal(await win.locator('.devsec-row').count(), 5, 'five checkup areas');
+  assert.equal(await win.locator('.devsec-row').count(), 6, 'six checkup areas');
   if (process.platform !== 'win32') await win.locator('.devsec-row', { hasText: 'أمان الجهاز' }).getByText('متاح على Windows فقط.').waitFor();
   await win.waitForTimeout(300);
   await win.screenshot({ path: join(out, '44-checkup-ar.png') });
+
+  // Open ports on this PC: listening programs from the real connection table (read-only).
+  const portSrv = createServer(() => {});
+  await new Promise((r) => portSrv.listen(0, '0.0.0.0', r));
+  await win.locator('.nav-item', { hasText: 'المنافذ المفتوحة' }).click();
+  await win.locator('h1', { hasText: 'المنافذ المفتوحة على جهازك' }).waitFor();
+  await win.getByText(`${portSrv.address().port}/tcp`).waitFor({ timeout: 60000 });
+  await win.waitForTimeout(300);
+  await win.screenshot({ path: join(out, '45-open-ports-ar.png') });
+  portSrv.close();
 
   // Smart search: Ctrl+K, paste a (defanged) indicator, pick the suggested tool — it opens pre-filled.
   await win.keyboard.press('Control+K');

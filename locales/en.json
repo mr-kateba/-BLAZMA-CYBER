@@ -65,7 +65,8 @@
     "wifi": "Wi-Fi",
     "serviceScan": "Service scan (Nmap)",
     "fileIntegrity": "File integrity",
-    "checkup": "Full checkup"
+    "checkup": "Full checkup",
+    "openPorts": "Open ports"
   },
   "topbar": {
     "search": "Search tools, or paste an IP, hash, link or file path…",
@@ -1944,6 +1945,10 @@
     "file_integrity": {
       "title": "What is file integrity monitoring?",
       "text": "A fingerprint is the SHA-256 of every file in a folder. Changing even one byte changes a file's SHA-256, so comparing fingerprints shows exactly what changed — even when the date was faked. Watch places where malware plants itself (Startup folders, the hosts file) or anything you want to keep unchanged."
+    },
+    "open_ports": {
+      "title": "What is an open (listening) port?",
+      "text": "A program that accepts connections \"listens\" on a numbered port. If it listens only on 127.0.0.1 (this PC only), nothing else can reach it. If it listens on all addresses, devices on your network may connect — unless Windows Firewall blocks them. Remote access, file sharing and databases deserve a look because attackers try them first."
     }
   },
   "mode": {
@@ -2873,7 +2878,78 @@
         "ok": "{{folders}} folder(s), nothing changed",
         "attention": "{{n}} change(s) in {{folders}} folder(s)",
         "problem": "{{n}} change(s), including edits that hid their date"
+      },
+      "ports": {
+        "title": "Open ports",
+        "what": "Programs waiting for connections from the network",
+        "ok": "{{network}} program(s) reachable from the network, none risky",
+        "attention": "{{n}} remote-access, file-sharing or database service(s) reachable from the network",
+        "problem": "{{n}} risky service(s)"
       }
+    }
+  },
+  "ports": {
+    "title": "Open ports on this PC",
+    "subtitle": "Programs on this computer that wait for incoming connections, and who can reach them.",
+    "intro": "A listening port is normal: Windows and many apps use them. What matters is which ones are reachable from the network and whether you expect them. Windows Firewall may still block a port listed here.",
+    "statTotal": "Listening",
+    "statNetwork": "Reachable from the network",
+    "statLocal": "This computer only",
+    "statAttention": "Worth a look",
+    "attentionTitle": "Worth a look",
+    "listTitle": "All listening programs",
+    "notElevated": "Some program names need administrator rights to read.",
+    "showUdp": "Include UDP",
+    "refresh": "Refresh",
+    "filter": "Filter by port or program…",
+    "none": "Nothing is listening",
+    "pid": "PID {{pid}}",
+    "colPort": "Port",
+    "colProgram": "Program",
+    "colWhat": "Usually",
+    "colReach": "Who can connect",
+    "colAddress": "Address",
+    "unknownPort": "Not a well-known port",
+    "reach": {
+      "network": "Network",
+      "local": "This PC only"
+    },
+    "firewallNote": "\"Network\" means the program accepts connections on a network address; whether other devices really get through also depends on Windows Firewall and your router.",
+    "attention": {
+      "file_sharing": "File sharing is open to the network (port {{port}}, {{program}})",
+      "remote_desktop": "Remote Desktop accepts connections (port {{port}}, {{program}})",
+      "remote_admin": "Remote access service on port {{port}} ({{program}})",
+      "database": "A database accepts network connections (port {{port}}, {{program}})"
+    },
+    "advice": {
+      "file_sharing": "Normal if you share folders or printers at home. On public Wi-Fi, set the network to Public so Windows blocks it.",
+      "remote_desktop": "Keep it only if you use it; use a strong password and never expose it to the internet.",
+      "remote_admin": "Remote shells should use strong passwords or keys. Turn the service off if you do not use it.",
+      "database": "Databases on a desktop usually only need this computer. Bind it to 127.0.0.1 unless other devices must reach it."
+    },
+    "known": {
+      "ftp": "FTP file transfer",
+      "ssh": "SSH remote shell",
+      "telnet": "Telnet (unencrypted)",
+      "http": "Web server",
+      "rpc": "Windows RPC",
+      "netbios": "Windows file sharing (NetBIOS)",
+      "https": "Web server (HTTPS)",
+      "smb": "Windows file sharing (SMB)",
+      "mssql": "SQL Server database",
+      "hyperv": "Hyper-V",
+      "mysql": "MySQL database",
+      "rdp": "Remote Desktop",
+      "cdp": "Windows Connected Devices",
+      "wsd": "Network device discovery (WSD)",
+      "postgres": "PostgreSQL database",
+      "vnc": "VNC remote control",
+      "winrm": "Windows Remote Management",
+      "redis": "Redis database",
+      "delivery": "Windows Update delivery optimization",
+      "http_alt": "Web server (alternate port)",
+      "mongodb": "MongoDB database",
+      "rpc_dynamic": "Windows RPC (dynamic port)"
     }
   }
 }

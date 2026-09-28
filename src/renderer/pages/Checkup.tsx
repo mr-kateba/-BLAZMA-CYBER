@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { BadgeCheck, CircleCheck, CircleDashed, FolderCheck, Loader2, Puzzle, RefreshCw, ShieldAlert, ShieldCheck, Stethoscope, TriangleAlert, Wifi, type LucideIcon } from 'lucide-react';
-import { deviceArea, extensionsArea, foldersArea, overall, tamperArea, wifiArea, type AreaResult, type AreaState, type CheckupArea, type Part } from '../../core/checkup';
-import type { Result } from '../../shared/api';
+import { BadgeCheck, CircleCheck, CircleDashed, DoorOpen, FolderCheck, Loader2, Puzzle, RefreshCw, ShieldAlert, ShieldCheck, Stethoscope, TriangleAlert, Wifi, type LucideIcon } from 'lucide-react';
+import { deviceArea, extensionsArea, foldersArea, overall, portsArea, tamperArea, wifiArea, type AreaResult, type AreaState, type CheckupArea, type Part } from '../../core/checkup';
+import type { ConnectionRow, ForensicsResult, Result } from '../../shared/api';
+import { listeningServices } from '../../core/listening';
 import { Badge, Card, IconTile, Notice, type Tone } from '../components/ui';
 import { useApp } from '../components/AppContext';
 import { useI18n } from '../i18n/I18nProvider';
@@ -13,6 +14,7 @@ const AREAS: Array<{ area: CheckupArea; icon: LucideIcon; page: PageId }> = [
   { area: 'tamper', icon: ShieldAlert, page: 'device-security' },
   { area: 'extensions', icon: Puzzle, page: 'browser-extensions' },
   { area: 'wifi', icon: Wifi, page: 'wifi' },
+  { area: 'ports', icon: DoorOpen, page: 'open-ports' },
   { area: 'folders', icon: FolderCheck, page: 'file-integrity' },
 ];
 const TONE: Record<AreaState, Tone> = { ok: 'green', attention: 'amber', problem: 'red', unavailable: 'gray' };
@@ -39,6 +41,9 @@ export function Checkup() {
     put(extensionsArea(part(await window.blazma.extensions.audit())));
     setCurrent('wifi');
     put(wifiArea(part(await window.blazma.wifi.report())));
+    setCurrent('ports');
+    const conns = await window.blazma.forensics.collect('connections');
+    put(portsArea(conns.ok ? { data: listeningServices((conns.data as ForensicsResult<ConnectionRow>).rows) } : { error: conns.error }));
     setCurrent('folders');
     const watches = await window.blazma.fim.list();
     if (!watches.ok) put(foldersArea({ error: watches.error }));
