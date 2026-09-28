@@ -114,7 +114,7 @@ Get-WinEvent -FilterHashtable $filter -MaxEvents ([int]$env:BLAZMA_ARG_MAX) -Err
   // Batch Authenticode check: paths come from a temp file (one per line), never the script text.
   signatures: wrap(`
 Get-Content -LiteralPath $env:BLAZMA_ARG_LIST -Encoding UTF8 -ErrorAction Stop | Where-Object { $_ } | ForEach-Object {
-  $p = $_
+  $p = [string]$_
   try {
     $s = Get-AuthenticodeSignature -LiteralPath $p -ErrorAction Stop
     $c = $s.SignerCertificate

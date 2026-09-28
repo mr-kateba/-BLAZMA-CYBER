@@ -262,8 +262,10 @@ describe.runIf(WIN)('Startup programs and open ports on real Windows', () => {
     const onDisk = items.filter((i) => i.program && existsSync(i.program));
     const unmatched = onDisk.filter((i) => i.signature === null);
     console.log('Startup review:', JSON.stringify({ rows: rows.length, onDisk: onDisk.length, unmatched: unmatched.map((i) => ({ command: i.command, program: i.program })), sigPaths: sigs.map((s) => s.path) }));
-    // Programs on disk get a real signature answer (unmatched ones are shown as "not checked", never guessed).
-    if (onDisk.length) expect(onDisk.length - unmatched.length).toBeGreaterThan(0);
+    // Each signature row carries the path it was asked about (Windows PowerShell 5.1 once serialized
+    // Get-Content lines as objects, which emptied every path), so every program on disk is matched.
+    for (const s of sigs) expect(paths.map((p) => p.toLowerCase())).toContain(s.path.toLowerCase());
+    expect(unmatched).toEqual([]);
   }, 300_000);
 
   it('lists real listening programs, SMB/RPC included', async () => {
