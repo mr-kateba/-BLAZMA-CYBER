@@ -9,6 +9,7 @@
 - **حركة الشبكة:** حلّل ملفات Wireshark (pcap/pcapng) أو سجّل من 15 ثانية إلى 5 دقائق بأداة pktmon المدمجة في Windows (نافذة UAC واحدة) أو بـ Wireshark إن كان مثبّتًا: الأجهزة وشركاتها المصنّعة، المحادثات، DNS، مواقع HTTPS، تسجيلات الدخول غير المشفّرة، وأنماط مثل فحص المنافذ وانتحال ARP وخادم DHCP دخيل وTLS قديم. الكوكيز وكلمات المرور ومحتوى الصفحات لا تدخل التقرير.
 - **فحص الخدمات (Nmap):** إذا ثبّتّ Nmap من nmap.org: من المتصل بشبكتك وما الخدمات المفتوحة على كل جهاز (100 أو 1000 منفذ) مع شرح الخطورة (Telnet، قواعد بيانات مكشوفة، VNC، سطح المكتب البعيد…). لشبكاتك أنت فقط، وبعد تأكيد التصريح.
 - **مراقبة سلامة الملفات:** خذ بصمة SHA-256 لمجلد ثم اعرف بدقة ما أُضيف أو حُذف أو تغيّر — حتى لو أُعيد التاريخ القديم للملف لإخفاء التعديل. أماكن مقترحة: مجلدات بدء التشغيل، ملف hosts، ملفات PowerShell.
+- **فحص شامل بضغطة واحدة:** أمان الجهاز، علامات العبث، إضافات المتصفح، الواي فاي والمجلدات المراقَبة — بنتيجة واحدة واضحة ورابط لتفاصيل كل قسم.
 - **البحث الذكي (Ctrl+K):** الصق IP أو هاش أو نطاقًا أو رابطًا أو بريدًا أو @اسم مستخدم أو مسار ملف (حتى المكتوب بصيغة `hxxp` و`[.]`) وانتقل مباشرة للأداة المناسبة والقيمة جاهزة.
 - **أسماء الشركات المصنّعة للأجهزة** (من سجل IEEE، بدون إنترنت) في جيران الشبكة واكتشاف الأجهزة.
 - **سمة فاتحة** وخيار «مثل إعداد Windows» (أزرار النافذة تتبع السمة).
@@ -43,6 +44,7 @@ Privacy-first, local-first, bilingual (Arabic/English) defensive cybersecurity w
 - **Network traffic:** analyse .pcap/.pcapng files or record 15 s – 5 min with built-in Windows pktmon (one UAC prompt) or Wireshark's dumpcap: devices with manufacturers, conversations, DNS, HTTPS sites, unencrypted logins, and measured patterns (port scan, ARP conflict, rogue DHCP, outdated TLS…). Cookies, passwords and page contents never enter the report.
 - **Service scan (Nmap):** with your own Nmap install, who is online and which services each device exposes, with plain-language risks — your own networks only, after an authorization confirmation.
 - **File integrity monitor:** fingerprint a folder (SHA-256), then see exactly what was added, removed or changed — including edits that restored the old timestamp.
+- **Full checkup:** one click — device security, signs of tampering, browser extensions, Wi-Fi and watched folders, one plain verdict.
 - **Smart search (Ctrl+K):** paste an IP, hash, domain, link, e-mail, @username or file path (defanged `hxxp`/`[.]` too) and jump to the right tool, pre-filled.
 - **Device manufacturers** (offline IEEE registry) in neighbors and discovery; **light theme** and *match Windows*.
 

@@ -1837,7 +1837,7 @@ table.data tbody tr:hover td {
   color: var(--text-3);
   background: var(--sunken);
   pointer-events: none;
-  direction: ltr;
+  unicode-bidi: isolate;
 }
 .search-results .search-value {
   display: block;
@@ -1869,4 +1869,23 @@ table.data tbody tr:hover td {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   background: var(--sunken);
+}
+
+/* Full checkup: verdict banner */
+.checkup-mark {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  color: var(--tone, var(--primary));
+  background: color-mix(in srgb, var(--tone, var(--primary)) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tone, var(--primary)) 35%, transparent);
+}
+.checkup-hero.tone-green { --tone: var(--green); }
+.checkup-hero.tone-amber { --tone: var(--amber); }
+.checkup-hero.tone-red { --tone: var(--red); }
+.checkup-hero.tone-gray { --tone: var(--text-3); }
+.checkup-verdict {
+  font-size: 19px;
 }

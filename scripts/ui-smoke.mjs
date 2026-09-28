@@ -419,6 +419,15 @@ try {
   await win.screenshot({ path: join(out, '43-file-integrity-ar.png'), fullPage: true });
   rmSync(fimDir, { recursive: true, force: true });
 
+  // Full checkup: runs every read-only area one after another and gives one plain verdict.
+  await win.locator('.nav-item', { hasText: 'فحص شامل' }).click();
+  await win.getByRole('button', { name: 'ابدأ الفحص الشامل' }).click();
+  await win.getByText(/^فُحص /).waitFor({ timeout: 180000 });
+  assert.equal(await win.locator('.devsec-row').count(), 5, 'five checkup areas');
+  if (process.platform !== 'win32') await win.locator('.devsec-row', { hasText: 'أمان الجهاز' }).getByText('متاح على Windows فقط.').waitFor();
+  await win.waitForTimeout(300);
+  await win.screenshot({ path: join(out, '44-checkup-ar.png') });
+
   // Smart search: Ctrl+K, paste a (defanged) indicator, pick the suggested tool — it opens pre-filled.
   await win.keyboard.press('Control+K');
   await win.keyboard.type('evil[.]example');
@@ -638,7 +647,7 @@ try {
   await win.getByRole('button', { name: 'الوضع البسيط' }).click();
   await win.locator('.nav-item', { hasText: 'افحص رابطًا أو موقعًا' }).waitFor();
   const simpleItems = await win.locator('.nav-item').count();
-  assert.ok(simpleItems <= 12 && simpleItems < expertItems, `simple mode should show only the essentials (${simpleItems} vs ${expertItems})`);
+  assert.ok(simpleItems <= 13 && simpleItems < expertItems, `simple mode should show only the essentials (${simpleItems} vs ${expertItems})`);
   await win.locator('.nav-item', { hasText: 'لوحة التحكم' }).click();
   await win.locator('.hero').getByRole('button', { name: 'افحص ملفًا' }).waitFor();
   // Drag a file anywhere: the drop overlay appears; a file without a real path is refused honestly.

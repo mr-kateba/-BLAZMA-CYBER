@@ -99,6 +99,8 @@ adapters rather than re-implementing them.
   file anywhere to scan it.
 
 **Everywhere**
+- **Full checkup** — one click: device security, signs of tampering, browser extensions, Wi-Fi and
+  watched folders, with one plain verdict and a link to each area's evidence.
 - **Smart search (Ctrl+K)** — paste an IP, hash, domain, link, e-mail, @username or file path
   (defanged `hxxp`/`[.]` too) and jump straight to the tool that examines it, pre-filled.
 - **Themes** — deep navy, midnight black, light, or match Windows.

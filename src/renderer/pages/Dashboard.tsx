@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  Activity, Radar, FolderCheck, ChevronRight, Cpu, Earth, Mail, FileSearch, FolderPlus, Globe, HardDrive, Hash, KeyRound, Link2, MemoryStick,
+  Activity, Radar, FolderCheck, Stethoscope, ChevronRight, Cpu, Earth, Mail, FileSearch, FolderPlus, Globe, HardDrive, Hash, KeyRound, Link2, MemoryStick,
   Monitor, MonitorCog, Network, RefreshCw, Router, ScanSearch, ScrollText, ShieldCheck, Wifi, ArrowLeft, ArrowRight, type LucideIcon,
 } from 'lucide-react';
 import type { ActivityEntry, SecurityStatus, SystemSnapshot } from '../../shared/api';
@@ -196,6 +196,7 @@ function SecurityHero() {
       <div className="hero-actions">
         <button className="btn primary big" onClick={() => navigate('file-analyzer')}><FileSearch size={18} /> {t('dashboard.hero.scanFile')}</button>
         <button className="btn big" onClick={() => navigate('domain-intel')}><Link2 size={18} /> {t('dashboard.hero.checkLink')}</button>
+        <button className="btn big" onClick={() => navigate('checkup')}><Stethoscope size={18} /> {t('dashboard.hero.checkup')}</button>
         <div className="tiny dim">{t('dashboard.hero.hint')}</div>
       </div>
     </div>

@@ -1,10 +1,10 @@
 import {
   Activity, BadgeCheck, Crosshair, Earth, FileClock, MemoryStick, MailWarning, FileSearch, FolderOpen, Hash, KeyRound, KeySquare, Languages, Link2, MonitorCog, Network, Palette, Plug,
-  Puzzle, ScanSearch, ScrollText, ShieldCheck, ShieldHalf, SquareTerminal, UserSearch, LayoutDashboard, Cpu, Scale, Wifi, Radar, FolderCheck, type LucideIcon,
+  Puzzle, ScanSearch, ScrollText, ShieldCheck, ShieldHalf, SquareTerminal, UserSearch, LayoutDashboard, Cpu, Scale, Wifi, Radar, FolderCheck, Stethoscope, type LucideIcon,
 } from 'lucide-react';
 
 export type PageId =
-  | 'dashboard' | 'device-security'
+  | 'dashboard' | 'checkup' | 'device-security'
   | 'ip-intel' | 'domain-intel' | 'email-check' | 'password-check' | 'osint' | 'reputation'
   | 'security-center' | 'file-analyzer' | 'browser-extensions' | 'yara' | 'hash-lab' | 'file-integrity'
   | 'password-recovery'
@@ -39,6 +39,7 @@ export const NAV: NavSection[] = [
   {
     items: [
       { id: 'dashboard', simple: true, labelKey: 'nav.dashboard', icon: LayoutDashboard },
+      { id: 'checkup', simple: true, labelKey: 'nav.checkup', icon: Stethoscope },
       { id: 'device-security', simple: true, labelKey: 'nav.deviceSecurity', icon: BadgeCheck },
     ],
   },

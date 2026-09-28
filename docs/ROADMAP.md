@@ -116,6 +116,7 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE G5 Light theme and "match Windows" (caption buttons follow the theme)
 - DONE G6 Smart search (Ctrl+K): paste an indicator or path → the right tool, pre-filled; refangs hxxp/[.]
 - DONE G7 File integrity monitor: folder fingerprints (SHA-256), added/removed/modified, hidden-timestamp edits, runnable files highlighted, suggested Windows persistence folders
+- DONE G8 Full checkup: one click runs device security, tampering, extensions, Wi-Fi and watched folders (read-only) and gives one plain verdict; unavailable areas never count as ok
 - TODO Verify on a real Wi-Fi PC and with Nmap installed on Windows (not available in CI)
 
 ## Phase 7 — Polish

@@ -64,7 +64,8 @@
     "networkTraffic": "Network traffic",
     "wifi": "Wi-Fi",
     "serviceScan": "Service scan (Nmap)",
-    "fileIntegrity": "File integrity"
+    "fileIntegrity": "File integrity",
+    "checkup": "Full checkup"
   },
   "topbar": {
     "search": "Search tools, or paste an IP, hash, link or file path…",
@@ -165,7 +166,8 @@
       "details": "See details and how to fix",
       "scanFile": "Scan a file",
       "checkLink": "Check a link or website",
-      "hint": "Files are read, never opened or uploaded."
+      "hint": "Files are read, never opened or uploaded.",
+      "checkup": "Full checkup"
     }
   },
   "status": {
@@ -768,7 +770,11 @@
     "fim_folder_missing": "The watched folder no longer exists or cannot be opened.",
     "fim_not_found": "This watch no longer exists.",
     "fim_too_many": "Too many watched folders (50). Remove one first.",
-    "invalid_path": "Invalid path."
+    "invalid_path": "Invalid path.",
+    "not_checked": "Not checked",
+    "no_browsers": "No supported browser found for this user",
+    "no_watches": "No folders watched yet",
+    "wlan_unavailable": "Windows Wi-Fi information could not be read"
   },
   "defender": {
     "status": {
@@ -2806,5 +2812,68 @@
     "runnable": "Can run code",
     "analyze": "Analyze",
     "listCapped": "Showing {{shown}} of {{total}} changes."
+  },
+  "checkup": {
+    "title": "Full checkup",
+    "subtitle": "One click: device security, signs of tampering, browser extensions, Wi-Fi and watched folders — in plain words.",
+    "ready": "Ready when you are",
+    "readyHint": "Takes about a minute. Nothing is changed, uploaded or deleted.",
+    "start": "Start the checkup",
+    "again": "Check again",
+    "running": "Checking: {{area}}…",
+    "checking": "Checking…",
+    "doneAt": "Checked {{date}}",
+    "open": "Open",
+    "addWatch": "Watch a folder",
+    "readOnly": "The checkup only reads. Each area opens its own page with the evidence and how to fix it yourself.",
+    "verdict": {
+      "ok": "Everything checked looks good",
+      "attention": "A few things deserve a look",
+      "problem": "Some things need your attention",
+      "unavailable": "Nothing could be checked on this computer"
+    },
+    "state": {
+      "ok": "Good",
+      "attention": "Take a look",
+      "problem": "Needs attention",
+      "unavailable": "Not checked"
+    },
+    "area": {
+      "device": {
+        "title": "Device security",
+        "what": "Antivirus, firewall, updates and other protections",
+        "ok": "Score {{score}}/100 — every check passed",
+        "attention": "Score {{score}}/100 — {{n}} setting(s) could be stronger",
+        "problem": "Score {{score}}/100 — {{n}} protection(s) off or weak"
+      },
+      "tamper": {
+        "title": "Signs of tampering",
+        "what": "hosts file, proxy, DNS servers, added root certificates",
+        "ok": "No signs of tampering",
+        "attention": "{{n}} setting(s) changed — check whether you did this",
+        "problem": "{{n}} change(s) typical of spyware or blocked security sites"
+      },
+      "extensions": {
+        "title": "Browser extensions",
+        "what": "What your add-ons may do and how they were installed",
+        "ok": "{{total}} extension(s), none installed in an unusual way",
+        "attention": "{{n}} of {{total}} extension(s) installed outside the store, unsigned or with debugger access",
+        "problem": "{{n}} extension(s) need attention"
+      },
+      "wifi": {
+        "title": "Wi-Fi",
+        "what": "Your connection and saved networks",
+        "ok": "Your Wi-Fi looks fine",
+        "attention": "{{n}} thing(s) could be better",
+        "problem": "{{n}} risk(s), for example an unprotected network"
+      },
+      "folders": {
+        "title": "Watched folders",
+        "what": "Compared with their fingerprints",
+        "ok": "{{folders}} folder(s), nothing changed",
+        "attention": "{{n}} change(s) in {{folders}} folder(s)",
+        "problem": "{{n}} change(s), including edits that hid their date"
+      }
+    }
   }
 }
