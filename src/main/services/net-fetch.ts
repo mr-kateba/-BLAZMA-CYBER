@@ -4,6 +4,7 @@
 // and separate from the UI, requests carry no cookies and nothing is cached on disk.
 
 import { net, session, type Session } from 'electron';
+import { safeHeaders } from '../../core/http-headers';
 import type { FetchLike } from '../../core/network-gate';
 
 let ses: Session | null = null;
@@ -30,10 +31,19 @@ function manualRedirectFetch(url: string, init: RequestInit): Promise<Response> 
     };
     init.signal?.addEventListener('abort', onAbort, { once: true });
     const done = () => init.signal?.removeEventListener('abort', onAbort);
-    req.on('redirect', (status, _method, location) => {
+    // Everything below runs in event callbacks: a throw there would be an uncaught exception in the
+    // main process, so every failure becomes a rejected request instead.
+    const settle = (make: () => Response) => {
       done();
+      try {
+        resolve(make());
+      } catch (e) {
+        reject(e);
+      }
+    };
+    req.on('redirect', (status, _method, location) => {
       req.abort();
-      resolve(new Response(null, { status, headers: { location } }));
+      settle(() => new Response(null, { status, headers: safeHeaders({ location }) }));
     });
     req.on('response', (res) => {
       const chunks: Buffer[] = [];
@@ -48,13 +58,12 @@ function manualRedirectFetch(url: string, init: RequestInit): Promise<Response> 
         }
         chunks.push(c);
       });
-      res.on('end', () => {
-        done();
-        const headers = new Headers();
-        for (const [k, v] of Object.entries(res.headers)) headers.set(k, Array.isArray(v) ? v.join(', ') : v);
-        const body = res.statusCode === 204 || res.statusCode === 304 ? null : Buffer.concat(chunks);
-        resolve(new Response(body, { status: res.statusCode, headers }));
-      });
+      res.on('end', () =>
+        settle(() => {
+          const body = res.statusCode === 204 || res.statusCode === 304 ? null : Buffer.concat(chunks);
+          return new Response(body, { status: res.statusCode, headers: safeHeaders(res.headers) });
+        }),
+      );
       res.on('error', (e: Error) => {
         done();
         reject(e);

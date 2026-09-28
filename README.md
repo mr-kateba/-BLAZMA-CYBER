@@ -46,6 +46,8 @@ By **[mr-kateba](https://github.com/mr-kateba)**
   didn't keep the internet headers (sent items, drafts), the page says so.
 - **Full checkup report.** Save the checkup result as a PDF or HTML report (states and counts only —
   no paths or addresses).
+- **Crash fix.** The OSINT username check no longer crashes when a site sends an emoji or Arabic
+  text in a response header.
 
 ## What's new in 1.1.1
 - **Password recovery — use your hardware.** Choose how hard the (user-installed) engine works on

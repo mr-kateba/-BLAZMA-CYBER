@@ -8,6 +8,7 @@
 - **افحص رمز QR قبل أن تمسحه:** أفلت صورة أو لقطة شاشة أو الصقها (Ctrl+V) لترى ماذا يحتوي الرمز: رابط (عنوان IP، موقع مقلّد أو مختصر، غير مشفّر)، دخول شبكة واي فاي، رمز تحقق بخطوتين، طلب دفع بعملة رقمية، رسالة SMS مدفوعة. لا يُفتح أي شيء، ولا تُعرض كلمات مرور الواي فاي ولا أسرار التحقق.
 - **ملفات Outlook ‏‎.msg في «افحص رسالة بريد»:** اسحب الرسالة من Outlook وأفلتها — نفس فحص التصيّد (الترويسات، الروابط، المرفقات، الرسائل المرفقة).
 - **تقرير الفحص الشامل:** احفظ النتيجة PDF أو HTML.
+- **إصلاح تعطّل:** فحص الحسابات باسم المستخدم (OSINT) كان يُظهر خطأ «A JavaScript error occurred in the main process» إذا أرسل أحد المواقع ترويسة فيها رموز تعبيرية أو حروف عربية. صار يتعامل معها بشكل صحيح.
 
 ### التثبيت
 1. نزّل `Blazma-Cyber-*-x64-setup.exe`.
@@ -36,6 +37,7 @@ Privacy-first, local-first, bilingual (Arabic/English) defensive cybersecurity w
 - **QR Code Check:** drop, browse or paste (Ctrl+V) a picture of a QR code and see what it contains before scanning it — link warnings (IP address, look-alike or shortened site, unencrypted), Wi-Fi logins, 2FA setup codes, crypto payment requests, premium SMS. Nothing is opened; Wi-Fi passwords and 2FA secrets are never shown.
 - **Outlook `.msg` files in "Check an email":** drag a message out of Outlook and drop it — the same phishing analysis (headers, links, attachments, attached emails).
 - **Full checkup report:** save the result as PDF or HTML.
+- **Crash fix:** the OSINT username check could show "A JavaScript error occurred in the main process" when a site sent an emoji or Arabic text in a response header; such headers are now handled correctly.
 
 - **Portable:** `Blazma-Cyber-*-x64-portable.zip` runs without installing; data stays in `Blazma-data` next to it.
 - **Unsigned** (no certificate yet): SmartScreen → **More info → Run anyway**. Per-user install, no admin.

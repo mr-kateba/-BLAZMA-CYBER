@@ -133,6 +133,7 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE Outlook .msg in the email check: read-only CFB parser (bounds-checked, loop-safe) → MIME rebuilt from MAPI properties (original transport headers when present), byte-exact attachments, embedded messages; header values CR/LF-stripped and encoded; tested against a real Outlook file
 - DONE QR Code Check: image read in main (20 MB, signature + header-only 50 MP limit), decoded in the sandboxed renderer (jsQR, Apache-2.0), payload classified (links, Wi-Fi, 2FA, payments, SMS, contacts…); secrets never returned, nothing opened
 - DONE check-locales rejects single-brace placeholders
+- DONE Fix: manual-redirect transport crashed the main process on non-Latin-1 response headers (emoji/Arabic) — headers converted losslessly, Location percent-encoded, callback errors become rejections (reproduced in Electron)
 
 ## Phase 7 — Polish
 - DONE Terminal: opens the regular Windows terminal (Windows Terminal, else PowerShell) in its own window — no in-app terminal by decision (the GUI never runs commands from user input)
