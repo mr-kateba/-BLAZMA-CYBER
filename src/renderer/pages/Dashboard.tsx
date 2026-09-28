@@ -4,6 +4,7 @@ import {
   Monitor, MonitorCog, Network, RefreshCw, Router, ScanSearch, ScrollText, ShieldCheck, Wifi, ArrowLeft, ArrowRight, type LucideIcon,
 } from 'lucide-react';
 import type { ActivityEntry, SecurityStatus, SystemSnapshot } from '../../shared/api';
+import type { CheckupSummary } from '../../core/checkup';
 import { Card, Dot, EmptyState, ErrorState, Gauge, IconTile, Ltr, Progress, Skeleton, Sparkline, usePoll, Badge, type Tone } from '../components/ui';
 import { Constellation } from '../components/Logo';
 import { useApp } from '../components/AppContext';
@@ -160,11 +161,28 @@ const TOOLS: Tool[] = [
 const ACTIVITY_ICON: Record<ActivityEntry['kind'], LucideIcon> = {
   file_analysis: FileSearch, hash_file: Hash, hash_text: Hash, hash_identify: Hash, hash_compare: Hash,
   defender_scan: ShieldCheck, yara_scan: FileSearch, quarantine: ShieldCheck, restore: RefreshCw,
-  ip_lookup: Earth, domain_lookup: Link2, reputation_lookup: Globe, osint_lookup: Globe, email_check: Mail, event_hunt: ScrollText, memory_scan: MemoryStick, traffic_analysis: Activity, nmap_scan: Radar, fim_check: FolderCheck,
+  ip_lookup: Earth, domain_lookup: Link2, reputation_lookup: Globe, osint_lookup: Globe, email_check: Mail, event_hunt: ScrollText, memory_scan: MemoryStick, traffic_analysis: Activity, nmap_scan: Radar, fim_check: FolderCheck, checkup: Stethoscope,
   forensics: MonitorCog, port_check: Network, discovery: Network,
 };
 
 /** Top of the dashboard: device security score + the two actions a regular user needs most. */
+function LastCheckup() {
+  const { t } = useI18n();
+  const [last, setLast] = useState<CheckupSummary | null | undefined>(undefined);
+  useEffect(() => void window.blazma.checkup.last().then((r) => setLast(r.ok ? r.data : null)), []);
+  if (last === undefined) return null;
+  if (!last) return <div className="tiny muted">{t('dashboard.hero.checkupNever')}</div>;
+  const days = Math.floor((Date.now() - new Date(last.at).getTime()) / 86_400_000);
+  const when = days <= 0 ? t('dashboard.hero.today') : t('dashboard.hero.daysAgo', { n: days });
+  const tone = days > 14 ? 'amber' : last.verdict === 'problem' ? 'red' : last.verdict === 'attention' ? 'amber' : last.verdict === 'ok' ? 'green' : 'gray';
+  return (
+    <div className="tiny row" style={{ gap: 6 }}>
+      <Dot tone={tone} />
+      <span className="muted">{days > 14 ? t('dashboard.hero.checkupStale', { when }) : t('dashboard.hero.checkupLast', { verdict: t(`checkup.state.${last.verdict}`), when })}</span>
+    </div>
+  );
+}
+
 function SecurityHero() {
   const { t, dir } = useI18n();
   const { navigate } = useApp();
@@ -197,6 +215,7 @@ function SecurityHero() {
         <button className="btn primary big" onClick={() => navigate('file-analyzer')}><FileSearch size={18} /> {t('dashboard.hero.scanFile')}</button>
         <button className="btn big" onClick={() => navigate('domain-intel')}><Link2 size={18} /> {t('dashboard.hero.checkLink')}</button>
         <button className="btn big" onClick={() => navigate('checkup')}><Stethoscope size={18} /> {t('dashboard.hero.checkup')}</button>
+        <LastCheckup />
         <div className="tiny dim">{t('dashboard.hero.hint')}</div>
       </div>
     </div>

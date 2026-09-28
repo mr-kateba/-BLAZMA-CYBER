@@ -51,3 +51,15 @@ describe('full checkup', () => {
     expect(overall([foldersArea({ data: [diff(2)] }), tamperArea({ data: tamper(['fail']) }), u])).toBe('problem');
   });
 });
+
+describe('remembered checkup summary (from the untrusted renderer)', () => {
+  it('keeps only valid areas, recomputes the verdict and uses its own time', async () => {
+    const { sanitizeCheckupSummary } = await import('../src/core/checkup');
+    const now = new Date('2026-09-28T00:00:00Z');
+    const s = sanitizeCheckupSummary({ at: '1999-01-01', verdict: 'ok', areas: [{ area: 'tamper', state: 'problem', count: 1 }, { area: 'wifi', state: 'unavailable', count: 0 }] }, now);
+    expect(s).toEqual({ at: now.toISOString(), verdict: 'problem', areas: [{ area: 'tamper', state: 'problem', count: 1 }, { area: 'wifi', state: 'unavailable', count: 0 }] });
+    for (const bad of [null, 'x', { areas: 'x' }, { areas: [{ area: 'evil', state: 'ok', count: 0 }] }, { areas: [{ area: 'wifi', state: 'great', count: 0 }] }, { areas: [{ area: 'wifi', state: 'ok', count: -1 }] }, { areas: [{ area: 'wifi', state: 'ok', count: 0 }, { area: 'wifi', state: 'ok', count: 0 }] }]) {
+      expect(sanitizeCheckupSummary(bad)).toBeNull();
+    }
+  });
+});

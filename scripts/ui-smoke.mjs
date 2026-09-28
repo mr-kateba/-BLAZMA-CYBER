@@ -427,6 +427,9 @@ try {
   if (process.platform !== 'win32') await win.locator('.devsec-row', { hasText: 'أمان الجهاز' }).getByText('متاح على Windows فقط.').waitFor();
   await win.waitForTimeout(300);
   await win.screenshot({ path: join(out, '44-checkup-ar.png') });
+  // The dashboard remembers the last checkup (states and counts only).
+  await win.locator('.nav-item', { hasText: 'لوحة التحكم' }).click();
+  await win.getByText(/آخر فحص شامل: .* \(اليوم\)/).waitFor({ timeout: 20000 });
 
   // Open ports on this PC: listening programs from the real connection table (read-only).
   const portSrv = createServer(() => {});

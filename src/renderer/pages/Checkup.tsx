@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BadgeCheck, CircleCheck, CircleDashed, DoorOpen, FolderCheck, Loader2, Puzzle, RefreshCw, ShieldAlert, ShieldCheck, Stethoscope, TriangleAlert, Wifi, type LucideIcon } from 'lucide-react';
-import { deviceArea, extensionsArea, foldersArea, overall, portsArea, tamperArea, wifiArea, type AreaResult, type AreaState, type CheckupArea, type Part } from '../../core/checkup';
+import { deviceArea, extensionsArea, foldersArea, overall, portsArea, tamperArea, wifiArea, type AreaResult, type AreaState, type CheckupArea, type CheckupSummary, type Part } from '../../core/checkup';
 import type { ConnectionRow, ForensicsResult, Result } from '../../shared/api';
 import { listeningServices } from '../../core/listening';
 import { Badge, Card, IconTile, Notice, type Tone } from '../components/ui';
@@ -27,6 +27,8 @@ export function Checkup() {
   const [results, setResults] = useState<Partial<Record<CheckupArea, AreaResult>>>({});
   const [current, setCurrent] = useState<CheckupArea | null>(null);
   const [doneAt, setDoneAt] = useState<string | null>(null);
+  const [last, setLast] = useState<CheckupSummary | null>(null);
+  useEffect(() => void window.blazma.checkup.last().then((r) => r.ok && setLast(r.data)), []);
 
   const run = async () => {
     setResults({});
@@ -59,10 +61,15 @@ export function Checkup() {
     }
     setCurrent(null);
     setDoneAt(new Date().toISOString());
+    setResults((x) => {
+      const areas = Object.values(x).map((a) => ({ area: a.area, state: a.state, count: a.count }));
+      void window.blazma.checkup.save({ areas }).then((r) => r.ok && setLast(r.data));
+      return x;
+    });
   };
 
   const list = AREAS.map((a) => results[a.area]).filter((x): x is AreaResult => !!x);
-  const verdict = doneAt ? overall(list) : null;
+  const verdict = doneAt ? overall(list) : last?.verdict ?? null;
   const running = current !== null;
 
   return (
@@ -82,10 +89,10 @@ export function Checkup() {
             </div>
             <div className="col" style={{ gap: 4, flex: 1, minWidth: 220 }}>
               <strong className="checkup-verdict">{running ? t('checkup.running', { area: t(`checkup.area.${current}.title`) }) : verdict ? t(`checkup.verdict.${verdict}`) : t('checkup.ready')}</strong>
-              <span className="small muted">{doneAt ? t('checkup.doneAt', { date: formatDateTime(locale, doneAt) }) : t('checkup.readyHint')}</span>
+              <span className="small muted">{doneAt ? t('checkup.doneAt', { date: formatDateTime(locale, doneAt) }) : last ? t('checkup.lastAt', { date: formatDateTime(locale, last.at) }) : t('checkup.readyHint')}</span>
             </div>
             <button className="btn primary" disabled={running} onClick={() => void run()}>
-              {doneAt ? <RefreshCw size={15} /> : <Stethoscope size={15} />} {doneAt ? t('checkup.again') : t('checkup.start')}
+              {doneAt || last ? <RefreshCw size={15} /> : <Stethoscope size={15} />} {doneAt || last ? t('checkup.again') : t('checkup.start')}
             </button>
           </div>
         </Card>

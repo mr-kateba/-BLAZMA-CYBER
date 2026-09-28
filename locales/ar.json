@@ -168,7 +168,12 @@
       "scanFile": "افحص ملفًا",
       "checkLink": "افحص رابطًا أو موقعًا",
       "hint": "الملفات تُقرأ فقط، ولا تُفتح ولا تُرفع أبدًا.",
-      "checkup": "فحص شامل"
+      "checkup": "فحص شامل",
+      "checkupNever": "لم تُجرِ فحصًا شاملًا بعد",
+      "today": "اليوم",
+      "daysAgo": "قبل {{n}} يوم",
+      "checkupStale": "آخر فحص شامل {{when}} — حان وقت فحص جديد",
+      "checkupLast": "آخر فحص شامل: {{verdict}} ({{when}})"
     }
   },
   "status": {
@@ -636,7 +641,8 @@
       "memory_scan": "فحص الذاكرة",
       "traffic_analysis": "تحليل حركة الشبكة",
       "nmap_scan": "فحص Nmap",
-      "fim_check": "فحص سلامة"
+      "fim_check": "فحص سلامة",
+      "checkup": "فحص شامل"
     },
     "summary": {
       "hashed": "حُسبت الهاشات",
@@ -654,7 +660,11 @@
       "traffic_analyzed": "حُلّل ملف الالتقاط",
       "traffic_captured": "حُلّل التقاط مباشر",
       "nmap_scanned": "اكتمل الفحص",
-      "fim_checked": "قورن ببصمته"
+      "fim_checked": "قورن ببصمته",
+      "checkup_ok": "فحص شامل: كل شيء جيد",
+      "checkup_attention": "فحص شامل: أشياء تستحق نظرة",
+      "checkup_problem": "فحص شامل: يحتاج انتباهًا",
+      "checkup_unavailable": "فحص شامل: لم يمكن فحص شيء"
     }
   },
   "errors": {
@@ -2886,7 +2896,8 @@
         "attention": "{{n}} خدمة وصول عن بُعد أو مشاركة ملفات أو قاعدة بيانات يمكن الوصول إليها من الشبكة",
         "problem": "{{n}} خدمة خطِرة"
       }
-    }
+    },
+    "lastAt": "آخر فحص {{date}}"
   },
   "ports": {
     "title": "المنافذ المفتوحة على جهازك",

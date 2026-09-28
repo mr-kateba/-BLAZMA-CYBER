@@ -107,6 +107,10 @@ const api: BlazmaApi = {
     tamper: () => invoke('device:tamper'),
     openSettings: (link) => invoke('device:openSettings', link),
   },
+  checkup: {
+    last: () => invoke('checkup:last'),
+    save: (summary) => invoke('checkup:save', summary),
+  },
   fim: {
     list: () => invoke('fim:list'),
     presets: () => invoke('fim:presets'),

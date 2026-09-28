@@ -14,6 +14,7 @@ import { OsintService } from './services/osint';
 import { WifiError, wifiReport } from './services/wifi';
 import { NmapError, nmapInfo, parseNmapRequest, runNmap } from './services/nmap';
 import { FimError, FimService, fimPresets } from './services/fim';
+import { sanitizeCheckupSummary } from '../core/checkup';
 import { TrafficError, analyzeFile as analyzeCapture, captureEnvironment, captureInterfaces, liveCapture, openInWireshark, parseLiveOptions } from './services/traffic';
 import { accountProfileUrl, accountSiteCounts, checkUsernameAccounts } from './services/username-accounts';
 import { bundledEngine, bundledRulePack } from './services/bundled';
@@ -297,7 +298,7 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
     const t = target as ClearTarget;
     switch (t) {
       case 'activity':
-        history.activity.clear();
+        history.clearActivity();
         break;
       case 'network_activity':
         history.network.clear();
@@ -540,6 +541,16 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
       logger.security('nmap_scan', { target: req.target, profile: req.profile, hostsUp: r.run.hostsUp, findings: r.findings.length });
       return r;
     });
+  });
+
+  // ---- Full checkup: only the summary (states + counts) is remembered ----
+  handle('checkup:last', () => ({ ok: true, data: history.lastCheckup() }));
+  handle('checkup:save', (summary: unknown) => {
+    const s = sanitizeCheckupSummary(summary);
+    if (!s) return fail('invalid_input');
+    history.saveCheckup(s);
+    history.record({ kind: 'checkup', subject: '—', summaryKey: `activity.summary.checkup_${s.verdict}` });
+    return { ok: true, data: s };
   });
 
   // ---- File integrity monitoring (read-only hashing of folders the user picks) ----

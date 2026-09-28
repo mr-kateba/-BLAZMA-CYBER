@@ -168,7 +168,12 @@
       "scanFile": "Scan a file",
       "checkLink": "Check a link or website",
       "hint": "Files are read, never opened or uploaded.",
-      "checkup": "Full checkup"
+      "checkup": "Full checkup",
+      "checkupNever": "No full checkup yet",
+      "today": "today",
+      "daysAgo": "{{n}} days ago",
+      "checkupStale": "Last full checkup {{when}} — time for a new one",
+      "checkupLast": "Last full checkup: {{verdict}} ({{when}})"
     }
   },
   "status": {
@@ -636,7 +641,8 @@
       "memory_scan": "Memory scan",
       "traffic_analysis": "Traffic analysis",
       "nmap_scan": "Nmap scan",
-      "fim_check": "Integrity check"
+      "fim_check": "Integrity check",
+      "checkup": "Full checkup"
     },
     "summary": {
       "hashed": "Hashes calculated",
@@ -654,7 +660,11 @@
       "traffic_analyzed": "capture analysed",
       "traffic_captured": "live capture analysed",
       "nmap_scanned": "scan completed",
-      "fim_checked": "Compared with its fingerprint"
+      "fim_checked": "Compared with its fingerprint",
+      "checkup_ok": "Full checkup: all good",
+      "checkup_attention": "Full checkup: a few things to look at",
+      "checkup_problem": "Full checkup: needs attention",
+      "checkup_unavailable": "Full checkup: nothing could be checked"
     }
   },
   "errors": {
@@ -2886,7 +2896,8 @@
         "attention": "{{n}} remote-access, file-sharing or database service(s) reachable from the network",
         "problem": "{{n}} risky service(s)"
       }
-    }
+    },
+    "lastAt": "Last checkup {{date}}"
   },
   "ports": {
     "title": "Open ports on this PC",

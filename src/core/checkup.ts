@@ -90,3 +90,30 @@ const RANK: Record<AreaState, number> = { problem: 3, attention: 2, ok: 1, unava
 export function overall(areas: AreaResult[]): AreaState {
   return areas.reduce<AreaState>((w, a) => (RANK[a.state] > RANK[w] ? a.state : w), 'unavailable');
 }
+
+/** What is remembered of the last checkup (no evidence, only states and counts). */
+export interface CheckupSummary {
+  at: string;
+  verdict: AreaState;
+  areas: Array<{ area: CheckupArea; state: AreaState; count: number }>;
+}
+
+const AREA_IDS: CheckupArea[] = ['device', 'tamper', 'extensions', 'wifi', 'ports', 'folders'];
+const STATES: AreaState[] = ['ok', 'attention', 'problem', 'unavailable'];
+
+/** Validates a summary coming from the (untrusted) renderer. */
+export function sanitizeCheckupSummary(x: unknown, now = new Date()): CheckupSummary | null {
+  if (!x || typeof x !== 'object') return null;
+  const o = x as Record<string, unknown>;
+  if (!Array.isArray(o.areas) || o.areas.length > AREA_IDS.length) return null;
+  const areas: CheckupSummary['areas'] = [];
+  for (const a of o.areas as unknown[]) {
+    const r = (a ?? {}) as Record<string, unknown>;
+    if (!AREA_IDS.includes(r.area as CheckupArea) || !STATES.includes(r.state as AreaState)) return null;
+    if (typeof r.count !== 'number' || !Number.isInteger(r.count) || r.count < 0 || r.count > 1_000_000) return null;
+    if (areas.some((y) => y.area === r.area)) return null;
+    areas.push({ area: r.area as CheckupArea, state: r.state as AreaState, count: r.count });
+  }
+  // The verdict is recomputed, never trusted; the time is the main process's own.
+  return { at: now.toISOString(), verdict: overall(areas.map((a) => ({ ...a }))), areas };
+}

@@ -294,7 +294,7 @@ export interface ActivityEntry {
   kind:
     | 'file_analysis' | 'hash_file' | 'hash_text' | 'hash_identify' | 'hash_compare'
     | 'defender_scan' | 'yara_scan' | 'quarantine' | 'restore'
-    | 'ip_lookup' | 'domain_lookup' | 'reputation_lookup' | 'osint_lookup' | 'email_check' | 'event_hunt' | 'memory_scan' | 'traffic_analysis' | 'nmap_scan' | 'fim_check'
+    | 'ip_lookup' | 'domain_lookup' | 'reputation_lookup' | 'osint_lookup' | 'email_check' | 'event_hunt' | 'memory_scan' | 'traffic_analysis' | 'nmap_scan' | 'fim_check' | 'checkup'
     | 'forensics' | 'port_check' | 'discovery';
   /** Displayable subject, e.g. a filename. Never a secret. */
   subject: string;
@@ -1152,6 +1152,10 @@ export interface BlazmaApi {
     /** Local subnets this computer is attached to (the only networks Nmap may scan). */
     targets(): Promise<Result<Array<{ cidr: string; interface: string; address: string }>>>;
     scan(target: string, profile: NmapProfile, authorized: boolean, taskId: string): Promise<Result<NmapResult>>;
+  };
+  checkup: {
+    last(): Promise<Result<import('../core/checkup').CheckupSummary | null>>;
+    save(summary: { areas: Array<{ area: string; state: string; count: number }> }): Promise<Result<import('../core/checkup').CheckupSummary>>;
   };
   fim: {
     list(): Promise<Result<FimWatch[]>>;

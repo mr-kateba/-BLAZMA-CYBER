@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 import type { ActivityEntry } from '../../shared/api';
 import type { NetworkActivityEntry } from '../../core/network-gate';
+import type { CheckupSummary } from '../../core/checkup';
 import { readJson, writeJson } from './json-store';
 import { subDir } from './paths';
 
@@ -30,7 +31,21 @@ export class HistoryService {
   /** The Network Activity log is always kept (it is a transparency feature), capped at 1000. */
   readonly network = new BoundedLog<NetworkActivityEntry>(join(subDir('state'), 'network-activity.json'), 1000);
 
+  private readonly checkupFile = join(subDir('state'), 'checkup.json');
+
   constructor(private readonly keepHistory: () => boolean) {}
+
+  /** The last full checkup (states and counts only), kept like activity history. */
+  lastCheckup(): CheckupSummary | null {
+    return readJson<CheckupSummary | null>(this.checkupFile, null);
+  }
+  saveCheckup(s: CheckupSummary): void {
+    if (this.keepHistory()) writeJson(this.checkupFile, s);
+  }
+  clearActivity(): void {
+    this.activity.clear();
+    writeJson(this.checkupFile, null);
+  }
 
   record(entry: Omit<ActivityEntry, 'id' | 'timestamp'>): void {
     if (!this.keepHistory()) return;
