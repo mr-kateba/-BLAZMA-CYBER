@@ -1,4 +1,5 @@
 import { app, BrowserWindow, Menu, session, type IpcMainInvokeEvent } from 'electron';
+import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { registerIpc } from './ipc';
@@ -63,6 +64,13 @@ app.on('web-contents-created', (_e, contents) => {
   contents.on('will-attach-webview', (ev) => ev.preventDefault());
 });
 
+/** The Blazma logo for the window/taskbar — also when started from source through electron.exe. */
+function appIcon(): string | undefined {
+  const name = process.platform === 'win32' ? 'icon.ico' : 'icon.png';
+  const p = app.isPackaged ? join(process.resourcesPath, name) : join(__dirname, '..', '..', 'build', name);
+  return existsSync(p) ? p : undefined;
+}
+
 function createWindow() {
   const chrome = windowChrome(new SettingsService().get().theme);
   win = new BrowserWindow({
@@ -72,6 +80,7 @@ function createWindow() {
     minHeight: 700,
     backgroundColor: chrome.background,
     title: 'Blazma Cyber',
+    icon: appIcon(),
     show: false,
     titleBarStyle: 'hidden',
     // Same height as the top bar (--topbar-h) so the caption buttons line up with it.
@@ -92,6 +101,10 @@ function createWindow() {
   if (DEV_URL) void win.loadURL(DEV_URL);
   else void win.loadFile(RENDERER_INDEX);
 }
+
+// Same identity as the installer's shortcuts (electron-builder appId): Windows then shows Blazma's name
+// and logo — not Electron's — on the taskbar and in notifications.
+if (process.platform === 'win32') app.setAppUserModelId('com.blazmacyber.workbench');
 
 app.whenReady().then(() => {
   Menu.setApplicationMenu(null);

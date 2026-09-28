@@ -29,6 +29,11 @@ extraResources:
     to: licenses/whatsmyname.txt
   - from: engines/licenses/oui-data.txt
     to: licenses/oui-data.txt
+  # Window/taskbar icon (the .exe carries it too).
+  - from: build/icon.ico
+    to: icon.ico
+  - from: build/icon.png
+    to: icon.png
 electronLanguages:
   - en-US
   - ar

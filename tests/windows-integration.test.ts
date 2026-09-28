@@ -237,6 +237,18 @@ describe.runIf(WIN)('Network traffic capture on real Windows (pktmon)', () => {
     expect(rep.packets).toBeGreaterThan(0);
     expect(rep.unreadable).toBeLessThan(rep.packets);
   }, 300_000);
+
+  it('"Stop early" really stops the elevated pktmon capture and keeps what was captured', async () => {
+    const { liveCapture } = await import('../src/main/services/traffic');
+    const ac = new AbortController();
+    setTimeout(() => ac.abort(), 6_000);
+    const t0 = Date.now();
+    const r = await liveCapture({ seconds: 60, backend: 'pktmon', iface: null, keep: false }, ac.signal);
+    const ms = Date.now() - t0;
+    console.log('pktmon stop early:', JSON.stringify({ ms, packets: r.report.packets, readError: r.readError }));
+    expect(ms).toBeLessThan(40_000);
+    expect(r.readError).toBeNull();
+  }, 180_000);
 });
 
 describe.runIf(WIN)('Wi-Fi Center on real Windows', () => {

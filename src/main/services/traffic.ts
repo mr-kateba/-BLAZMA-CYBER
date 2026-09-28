@@ -9,7 +9,7 @@
 
 import { execFile } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { createReadStream, existsSync } from 'node:fs';
+import { createReadStream, existsSync, writeFileSync } from 'node:fs';
 import { copyFile, mkdir, rm, stat } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { CaptureReader } from '../../core/traffic/pcap';
@@ -127,8 +127,11 @@ function Q([string]$s) { $sq + $s.Replace($sq, $sq + $sq) + $sq }
 $pk = Q $env:BLAZMA_ARG_PKTMON
 $etl = Q $env:BLAZMA_ARG_ETL
 $out = Q $env:BLAZMA_ARG_OUT
+$stop = Q $env:BLAZMA_ARG_STOP
 $sec = [int]$env:BLAZMA_ARG_SECONDS
-$cmd = '& ' + $pk + ' stop | Out-Null; & ' + $pk + ' start --capture --comp nics --pkt-size 1600 --file-size 256 --file-name ' + $etl + ' | Out-Null; Start-Sleep -Seconds ' + $sec + '; & ' + $pk + ' stop | Out-Null; & ' + $pk + ' etl2pcap ' + $etl + ' --out ' + $out + ' | Out-Null'
+# Waits in 1-second steps so 'Stop early' works: Blazma (unelevated) creates the stop file.
+$wait = '$i = 0; while (($i -lt ' + $sec + ') -and -not (Test-Path -LiteralPath ' + $stop + ')) { Start-Sleep -Seconds 1; $i++ }'
+$cmd = '& ' + $pk + ' stop | Out-Null; & ' + $pk + ' start --capture --comp nics --pkt-size 1600 --file-size 256 --file-name ' + $etl + ' | Out-Null; ' + $wait + '; & ' + $pk + ' stop | Out-Null; & ' + $pk + ' etl2pcap ' + $etl + ' --out ' + $out + ' | Out-Null'
 try {
   $ps = Join-Path $env:SystemRoot 'System32\\WindowsPowerShell\\v1.0\\powershell.exe'
   $p = Start-Process -FilePath $ps -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', $cmd) -Verb RunAs -WindowStyle Hidden -Wait -PassThru
@@ -177,10 +180,14 @@ export async function liveCapture(opts: LiveOptions, signal: AbortSignal, progre
       if (r.code !== 0 && r.code !== -2) throw new TrafficError('capture_failed');
     } else {
       if (!env.pktmon) throw new TrafficError('engine_missing');
+      // Cancel = stop early (the elevated capture sees the stop file within a second) and analyse what was captured.
+      const stopFile = join(work, 'stop');
+      const stopEarly = () => writeFileSync(stopFile, '');
+      signal.addEventListener('abort', stopEarly, { once: true });
       const res = await runPowerShellJson<{ ok: boolean; exitCode?: number; cancelled?: boolean }>(PKTMON_SCRIPT, {
         timeoutMs: (opts.seconds + 180) * 1000,
-        args: { PKTMON: join(sys32(), 'pktmon.exe'), ETL: join(work, 'capture.etl'), OUT: out, SECONDS: String(opts.seconds) },
-      });
+        args: { PKTMON: join(sys32(), 'pktmon.exe'), ETL: join(work, 'capture.etl'), OUT: out, STOP: stopFile, SECONDS: String(opts.seconds) },
+      }).finally(() => signal.removeEventListener('abort', stopEarly));
       if (!res.ok) throw new TrafficError(res.error);
       if (!res.data?.ok) throw new TrafficError(res.data?.cancelled ? 'capture_elevation_cancelled' : 'capture_failed');
     }
