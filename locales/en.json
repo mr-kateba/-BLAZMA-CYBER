@@ -230,6 +230,14 @@
     "yara": {
       "title": "YARA Scanner",
       "desc": "Match files against local YARA-X rules."
+    },
+    "wifi": {
+      "title": "Check my Wi-Fi",
+      "desc": "Connection security, nearby networks, saved networks"
+    },
+    "fileIntegrity": {
+      "title": "Watch a folder",
+      "desc": "See exactly which files were added or changed"
     }
   },
   "planned": {

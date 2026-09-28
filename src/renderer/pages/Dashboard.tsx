@@ -151,6 +151,8 @@ const TOOLS: Tool[] = [
   { id: 'domainLookup', icon: Link2, tone: 'blue', to: 'domain-intel' },
   { id: 'passwordRecovery', icon: KeyRound, tone: 'amber', to: 'password-recovery' },
   { id: 'networkTools', icon: Network, tone: 'green', to: 'network-toolkit' },
+  { id: 'wifi', icon: Wifi, tone: 'cyan', to: 'wifi' },
+  { id: 'fileIntegrity', icon: FolderCheck, tone: 'green', to: 'file-integrity' },
   { id: 'privacy', icon: ShieldCheck, tone: 'cyan', to: 'privacy' },
   { id: 'newCase', icon: FolderPlus, tone: 'purple', to: 'cases' },
 ];
