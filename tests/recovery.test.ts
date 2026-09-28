@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 
 vi.mock('electron', () => ({ app: { getPath: () => tmpdir() }, safeStorage: {} }));
 
-import { buildEngineArgs, parseProgress, validateMode, RecoveryService } from '../src/main/services/recovery';
+import { buildEngineArgs, parseProgress, validateMode, validatePerformance, RecoveryService } from '../src/main/services/recovery';
 import { redact } from '../src/core/redact';
 
 describe('recovery input validation', () => {
@@ -27,6 +27,24 @@ describe('recovery input validation', () => {
     expect(tricky).toContain('/t/a b; ls.txt');
   });
 
+  it('adds resource flags for the chosen performance, and validates them', () => {
+    // Balanced john uses half the cores; max uses all; a single core never forks.
+    expect(buildEngineArgs('john', '/t/h', { type: 'mask', mask: '?d' }, { intensity: 'balanced', device: 'auto' }, 8)).toContain('--fork=4');
+    expect(buildEngineArgs('john', '/t/h', { type: 'mask', mask: '?d' }, { intensity: 'max', device: 'auto' }, 8)).toContain('--fork=8');
+    expect(buildEngineArgs('john', '/t/h', { type: 'mask', mask: '?d' }, { intensity: 'max', device: 'auto' }, 1).join(' ')).not.toContain('--fork');
+    // hashcat: workload profile + device type.
+    const balanced = buildEngineArgs('hashcat', '/t/h', { type: 'mask', mask: '?d' }, { intensity: 'balanced', device: 'auto' }, 8);
+    expect(balanced.join(' ')).toContain('-w 2');
+    expect(balanced.join(' ')).not.toContain('-D');
+    expect(buildEngineArgs('hashcat', '/t/h', { type: 'mask', mask: '?d' }, { intensity: 'max', device: 'gpu' }, 8).join(' ')).toContain('-w 4');
+    expect(buildEngineArgs('hashcat', '/t/h', { type: 'mask', mask: '?d' }, { intensity: 'balanced', device: 'gpu' }, 8).join(' ')).toContain('-D 2');
+    expect(buildEngineArgs('hashcat', '/t/h', { type: 'mask', mask: '?d' }, { intensity: 'balanced', device: 'cpu' }, 8).join(' ')).toContain('-D 1');
+    // Untrusted input from the renderer is normalized to safe values.
+    expect(validatePerformance({ intensity: 'evil', device: 'rm -rf' })).toEqual({ intensity: 'balanced', device: 'auto' });
+    expect(validatePerformance(null)).toEqual({ intensity: 'balanced', device: 'auto' });
+    expect(validatePerformance({ intensity: 'max', device: 'gpu' })).toEqual({ intensity: 'max', device: 'gpu' });
+  });
+
   it('parses progress from hashcat JSON and John lines without leaking candidates', () => {
     expect(parseProgress('{"progress":[1000,5000],"devices":[{"speed":42}],"recovered_hashes":[0,1]}', 'hashcat')).toEqual({ tried: 1000, total: 5000, rate: 42 });
     expect(parseProgress('{"progress":[2,2],"recovered_hashes":[1,1]}', 'hashcat')).toMatchObject({ recovered: true });
@@ -38,7 +56,7 @@ describe('recovery input validation', () => {
 describe('recovery session runner', () => {
   it('requires explicit authorization before starting', async () => {
     const svc = new RecoveryService(() => process.execPath);
-    await expect(svc.start('hashcat', '/tmp/x', { type: 'mask', mask: '?d' }, false, () => {})).rejects.toMatchObject({ code: 'authorization_required' });
+    await expect(svc.start('hashcat', '/tmp/x', { type: 'mask', mask: '?d' }, { intensity: 'balanced', device: 'auto' }, false, () => {})).rejects.toMatchObject({ code: 'authorization_required' });
   });
 
   it('reports engine availability honestly', async () => {
@@ -62,7 +80,7 @@ describe('recovery session runner', () => {
 
     const events: any[] = [];
     await new Promise<void>((resolve) => {
-      void svc.start('hashcat', target, { type: 'wordlist', path: wordlist }, true, (_id, ev) => {
+      void svc.start('hashcat', target, { type: 'wordlist', path: wordlist }, { intensity: 'balanced', device: 'auto' }, true, (_id: string, ev: any) => {
         events.push(ev);
         if (ev.type === 'done' || ev.type === 'error') resolve();
       }).catch((e) => { events.push({ type: 'error', error: (e as Error).message }); resolve(); });

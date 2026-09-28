@@ -1339,7 +1339,29 @@
     "officialSite": "Official site",
     "setup1": "Download one engine from its official site: John the Ripper \"jumbo\" (best for ZIP, 7z, RAR, PDF and Office files) or hashcat (fast with a graphics card).",
     "setup2": "Unzip it into a folder of your choice (for example C:\\Tools). There is nothing to install.",
-    "setup3": "Click \"Choose John the Ripper…\" or \"Choose hashcat…\" and select john.exe or hashcat.exe inside that folder."
+    "setup3": "Click \"Choose John the Ripper…\" or \"Choose hashcat…\" and select john.exe or hashcat.exe inside that folder.",
+    "performance": "How much of the computer to use",
+    "performanceHint": "A stronger setting recovers faster but makes the rest of the computer slower while it runs. It only affects speed, never the result.",
+    "intensity": "Effort",
+    "intensityName": {
+      "balanced": "Balanced",
+      "max": "Maximum"
+    },
+    "intensityDesc": {
+      "balanced": "Uses some CPU cores and leaves the computer usable for other work.",
+      "max": "Uses every CPU core (and, with hashcat, pushes the graphics card fully). The computer will feel slow until it finishes."
+    },
+    "device": "Processor (hashcat)",
+    "deviceName": {
+      "auto": "Automatic",
+      "gpu": "Graphics card",
+      "cpu": "Processor (CPU)"
+    },
+    "deviceDesc": {
+      "auto": "Let hashcat choose — it uses the graphics card when there is one, which is much faster.",
+      "gpu": "Force the graphics card. Fastest, if you have a dedicated GPU with up-to-date drivers.",
+      "cpu": "Use the processor only. Slower, but works on any computer."
+    }
   },
   "cases": {
     "title": "Cases",

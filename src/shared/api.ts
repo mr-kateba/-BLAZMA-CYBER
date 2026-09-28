@@ -1000,6 +1000,16 @@ export type RecoveryMode =
   | { type: 'candidates'; path: string }
   | { type: 'mask'; mask: string };
 
+/**
+ * How much of this computer the (user-installed) engine may use, to work faster on files the user owns.
+ * `intensity` maps to the engine's own workload flags; `device` (hashcat only) chooses the processor:
+ * 'auto' lets the engine pick (usually the graphics card), 'gpu' forces the graphics card, 'cpu' the CPU.
+ */
+export interface RecoveryPerformance {
+  intensity: 'balanced' | 'max';
+  device: 'auto' | 'gpu' | 'cpu';
+}
+
 export interface RecoveryEngineInfo {
   kind: RecoveryEngineKind;
   available: boolean;
@@ -1243,7 +1253,7 @@ export interface BlazmaApi {
     pickEngine(kind: RecoveryEngineKind): Promise<Result<RecoveryEngineInfo | null>>;
     clearEngine(kind: RecoveryEngineKind): Promise<Result<true>>;
     pickWordlist(): Promise<string | null>;
-    start(kind: RecoveryEngineKind, target: string, mode: RecoveryMode, authorized: boolean): Promise<Result<RecoveryStartResult>>;
+    start(kind: RecoveryEngineKind, target: string, mode: RecoveryMode, performance: RecoveryPerformance, authorized: boolean): Promise<Result<RecoveryStartResult>>;
     stop(id: string): Promise<void>;
     setPaused(id: string, paused: boolean): Promise<boolean>;
     onEvent(cb: (ev: RecoveryEventMsg) => void): () => void;

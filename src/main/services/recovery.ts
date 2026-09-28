@@ -16,7 +16,8 @@ import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { basename } from 'node:path';
-import type { RecoveryEngineKind, RecoveryMode, RecoveryProgress, RecoverySessionInfo, RecoveryStartResult } from '../../shared/api';
+import { cpus } from 'node:os';
+import type { RecoveryEngineKind, RecoveryMode, RecoveryPerformance, RecoveryProgress, RecoverySessionInfo, RecoveryStartResult } from '../../shared/api';
 import { validateAbsolutePath } from '../../core/validation';
 import { detectEncryption } from '../../core/encrypted';
 import { open as fsOpen } from 'node:fs/promises';
@@ -38,6 +39,13 @@ export interface EngineInfo {
 const MASK_RE = /^[?A-Za-z0-9ludsahHb ]{1,128}$/; // hashcat/JtR-style masks: literals + ?l ?u ?d ?s ?a ...
 
 /** Validates a user-chosen mode. Wordlist/candidate files must be absolute; masks are charset-limited. */
+export function validatePerformance(perf: unknown): RecoveryPerformance {
+  const p = (perf ?? {}) as Record<string, unknown>;
+  const intensity = p.intensity === 'max' ? 'max' : 'balanced';
+  const device = p.device === 'gpu' || p.device === 'cpu' ? p.device : 'auto';
+  return { intensity, device };
+}
+
 export function validateMode(mode: unknown): RecoveryMode {
   if (!mode || typeof mode !== 'object') throw new RecoveryError('invalid_mode');
   const m = mode as Record<string, unknown>;
@@ -59,16 +67,30 @@ export function validateMode(mode: unknown): RecoveryMode {
  * extracted) target hash file the user's own `*2john`/tooling produced, or the target file directly
  * for engines that accept it. This function does not construct any shell string.
  */
-export function buildEngineArgs(kind: RecoveryEngineKind, targetPath: string, mode: RecoveryMode): string[] {
+export function buildEngineArgs(
+  kind: RecoveryEngineKind,
+  targetPath: string,
+  mode: RecoveryMode,
+  perf: RecoveryPerformance = { intensity: 'balanced', device: 'auto' },
+  logicalCores = 1,
+): string[] {
   const args: string[] = [];
   if (kind === 'john') {
     if (mode.type === 'wordlist' || mode.type === 'candidates') args.push(`--wordlist=${mode.path}`);
     else args.push('--mask=' + mode.mask);
+    // Use several CPU cores in parallel. Balanced leaves headroom; max uses every logical core.
+    const cores = perf.intensity === 'max' ? logicalCores : Math.max(1, Math.floor(logicalCores / 2));
+    if (cores > 1) args.push(`--fork=${cores}`);
     args.push(targetPath);
   } else {
     // hashcat: user pre-extracts the hash; -a 0 wordlist, -a 3 mask. Engine autodetects the type.
     if (mode.type === 'wordlist' || mode.type === 'candidates') args.push('-a', '0', targetPath, mode.path);
     else args.push('-a', '3', targetPath, mode.mask);
+    // Workload profile: 2 = balanced default, 4 = use the machine fully (less responsive desktop).
+    args.push('-w', perf.intensity === 'max' ? '4' : '2');
+    // Device type: 1 = CPU, 2 = GPU. 'auto' lets hashcat use whatever it finds (usually the GPU).
+    if (perf.device === 'gpu') args.push('-D', '2');
+    else if (perf.device === 'cpu') args.push('-D', '1');
     args.push('--status', '--status-json', '--quiet');
   }
   return args;
@@ -163,6 +185,7 @@ export class RecoveryService {
     kind: RecoveryEngineKind,
     rawTarget: unknown,
     rawMode: unknown,
+    rawPerf: unknown,
     authorized: boolean,
     onEvent: (id: string, ev: RecoveryEvent) => void,
   ): Promise<RecoveryStartResult> {
@@ -175,9 +198,10 @@ export class RecoveryService {
     if (!st || !st.isFile()) throw new RecoveryError('file_not_found');
     const mode = validateMode(rawMode);
     if ((mode.type === 'wordlist' || mode.type === 'candidates') && !existsSync(mode.path)) throw new RecoveryError('wordlist_not_found');
+    const perf = validatePerformance(rawPerf);
 
     const id = `rec-${Date.now().toString(36)}-${++SESSION_SEQ}`;
-    const args = buildEngineArgs(kind, v.path, mode);
+    const args = buildEngineArgs(kind, v.path, mode, perf, Math.max(1, cpus().length));
     const proc = spawn(engine.path, args, { windowsHide: true, env: { ...process.env } });
 
     const info: RecoverySessionInfo = { id, engine: kind, target: basename(v.path), mode: mode.type, startedAt: new Date().toISOString() };

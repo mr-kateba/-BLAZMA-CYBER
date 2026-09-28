@@ -785,8 +785,8 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
     const pick = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts);
     return pick.canceled ? null : (pick.filePaths[0] ?? null);
   });
-  handle('recovery:start', async (kind: unknown, target: unknown, mode: unknown, authorized: unknown) => {
-    const info = await recovery.start(engineKind(kind), target, mode, authorized === true, (id, ev) => {
+  handle('recovery:start', async (kind: unknown, target: unknown, mode: unknown, performance: unknown, authorized: unknown) => {
+    const info = await recovery.start(engineKind(kind), target, mode, performance, authorized === true, (id, ev) => {
       // Progress/done events go to the window only. The recovered password is NOT logged here.
       getWindow()?.webContents.send('recovery:event', { id, ...ev });
     });

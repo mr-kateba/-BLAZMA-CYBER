@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Cpu, ExternalLink, FileLock2, KeyRound, Lock, Pause, Play, RotateCcw, ShieldAlert, ShieldCheck, Square } from 'lucide-react';
+import { Cpu, ExternalLink, FileLock2, Gauge, KeyRound, Lock, Pause, Play, RotateCcw, ShieldAlert, ShieldCheck, Square } from 'lucide-react';
 import type { EncryptionInfo } from '../../core/encrypted';
-import type { RecoveryEngineInfo, RecoveryEngineKind, RecoveryEventMsg, RecoveryMode, RecoveryProgress } from '../../shared/api';
+import type { RecoveryEngineInfo, RecoveryEngineKind, RecoveryEventMsg, RecoveryMode, RecoveryPerformance, RecoveryProgress } from '../../shared/api';
 import { Badge, Card, CopyButton, ErrorState, FileDrop, IconTile, Ltr, Notice, Progress, type Tone } from '../components/ui';
 import { useApp } from '../components/AppContext';
 import { useI18n } from '../i18n/I18nProvider';
@@ -84,6 +84,8 @@ export function PasswordRecovery() {
   const [mode, setMode] = useState<ModeType>('wordlist');
   const [wordlist, setWordlist] = useState<string | null>(null);
   const [mask, setMask] = useState('?u?l?l?l?l?d?d');
+  const [intensity, setIntensity] = useState<RecoveryPerformance['intensity']>('balanced');
+  const [device, setDevice] = useState<RecoveryPerformance['device']>('auto');
   const [authorized, setAuthorized] = useState(false);
   const [session, setSession] = useState<{ id: string; progress: RecoveryProgress; paused: boolean } | null>(null);
   const [result, setResult] = useState<{ found: boolean; password: string | null } | null>(null);
@@ -122,9 +124,10 @@ export function PasswordRecovery() {
   const start = async () => {
     if (!file || !engineForFile) return;
     const m: RecoveryMode = mode === 'mask' ? { type: 'mask', mask: mask.trim() } : { type: mode, path: wordlist! };
+    const perf: RecoveryPerformance = { intensity, device: engineForFile === 'hashcat' ? device : 'auto' };
     setResult(null);
     setError(null);
-    const r = await window.blazma.recovery.start(engineForFile, file.path, m, authorized);
+    const r = await window.blazma.recovery.start(engineForFile, file.path, m, perf, authorized);
     if (r.ok) {
       sessionRef.current = r.data.id;
       setSession({ id: r.data.id, progress: { id: r.data.id, tried: 0, total: null, rate: null, recovered: false, elapsedMs: 0 }, paused: false });
@@ -196,6 +199,29 @@ export function PasswordRecovery() {
                   <label>{t('recovery.maskLabel')}</label>
                   <input className="input mono" dir="ltr" value={mask} onChange={(e) => setMask(e.target.value)} />
                   <span className="tiny dim">{t('recovery.maskHelp')}</span>
+                </div>
+              )}
+            </Card>
+            <Card title={t('recovery.performance')} icon={Gauge} tone="amber">
+              <div className="small muted" style={{ marginBottom: 12 }}>{t('recovery.performanceHint')}</div>
+              <div className="field">
+                <label>{t('recovery.intensity')}</label>
+                <div className="row-wrap">
+                  {(['balanced', 'max'] as const).map((v) => (
+                    <button key={v} type="button" className="opt" aria-pressed={intensity === v} onClick={() => setIntensity(v)}>{t(`recovery.intensityName.${v}`)}</button>
+                  ))}
+                </div>
+                <span className="tiny dim">{t(`recovery.intensityDesc.${intensity}`)}</span>
+              </div>
+              {engineForFile === 'hashcat' && (
+                <div className="field" style={{ marginTop: 12 }}>
+                  <label>{t('recovery.device')}</label>
+                  <div className="row-wrap">
+                    {(['auto', 'gpu', 'cpu'] as const).map((v) => (
+                      <button key={v} type="button" className="opt" aria-pressed={device === v} onClick={() => setDevice(v)}>{t(`recovery.deviceName.${v}`)}</button>
+                    ))}
+                  </div>
+                  <span className="tiny dim">{t(`recovery.deviceDesc.${device}`)}</span>
                 </div>
               )}
             </Card>
