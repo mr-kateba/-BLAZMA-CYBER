@@ -1173,6 +1173,8 @@ export interface BlazmaApi {
   checkup: {
     last(): Promise<Result<import('../core/checkup').CheckupSummary | null>>;
     save(summary: { areas: Array<{ area: string; state: string; count: number }> }): Promise<Result<import('../core/checkup').CheckupSummary>>;
+    /** Saves the checkup (states and counts only) as an HTML or PDF report in the Reports list. */
+    report(input: import('../core/checkup-report').CheckupReportInput, language: 'ar' | 'en', format: 'html' | 'pdf'): Promise<Result<ReportRecord>>;
   };
   fim: {
     list(): Promise<Result<FimWatch[]>>;

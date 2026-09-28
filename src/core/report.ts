@@ -28,7 +28,7 @@ export function escapeHtml(v: unknown): string {
 
 const ltr = (v: unknown) => `<bdi dir="ltr" class="ltr">${escapeHtml(v)}</bdi>`;
 
-function fmt(lang: Lang, iso: string | null | undefined): string {
+export function fmt(lang: Lang, iso: string | null | undefined): string {
   if (!iso) return '—';
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '—';
@@ -79,6 +79,35 @@ export function buildJsonReport(c: InvestigationCase, opts: ReportOptions, gener
   };
   return JSON.stringify(payload, null, 2);
 }
+
+/** Shared print-friendly stylesheet for every Blazma HTML report (no remote resources). */
+export const REPORT_STYLE = `<style>
+  :root { color-scheme: light; }
+  body { font-family: 'Segoe UI', 'IBM Plex Sans Arabic', Tahoma, Arial, sans-serif; color: #0f172a; margin: 0; background: #fff; line-height: 1.55; }
+  .page { max-width: 960px; margin: 0 auto; padding: 32px 28px 48px; }
+  header { border-bottom: 3px solid #1d4ed8; padding-bottom: 14px; margin-bottom: 18px; }
+  .brand { font-weight: 800; letter-spacing: .06em; color: #1d4ed8; direction: ltr; unicode-bidi: isolate; }
+  h1 { margin: 6px 0 2px; font-size: 24px; }
+  h2 { font-size: 17px; margin: 26px 0 10px; color: #1e3a8a; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
+  h3 { font-size: 14px; margin: 14px 0 6px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.kv th { width: 30%; text-align: start; color: #475569; font-weight: 600; padding: 5px 8px; vertical-align: top; }
+  table.kv td { padding: 5px 8px; }
+  table.grid th { text-align: start; background: #f1f5f9; padding: 7px 8px; font-size: 12px; color: #334155; }
+  table.grid td { padding: 7px 8px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+  .ltr { direction: ltr; unicode-bidi: isolate; }
+  .mono, .mono .ltr { font-family: Consolas, 'Cascadia Mono', monospace; font-size: 12px; word-break: break-all; }
+  .muted { color: #64748b; font-size: 12px; }
+  .tag { display: inline-block; background: #e0e7ff; color: #3730a3; border-radius: 999px; padding: 1px 9px; font-size: 12px; }
+  .desc { background: #f8fafc; border-inline-start: 3px solid #1d4ed8; padding: 10px 12px; }
+  .note { border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; white-space: pre-wrap; }
+  .details { color: #475569; font-size: 11px; margin-top: 3px; }
+  ul.mono { margin: 0; padding-inline-start: 20px; }
+  ol.timeline { padding-inline-start: 20px; }
+  ol.timeline li { margin-bottom: 6px; }
+  footer { margin-top: 34px; color: #64748b; font-size: 11px; border-top: 1px solid #e2e8f0; padding-top: 10px; }
+  @media print { .page { padding: 0; } h2 { break-after: avoid; } tr { break-inside: avoid; } }
+</style>`;
 
 export function buildHtmlReport(c: InvestigationCase, opts: ReportOptions, t: T, generatedAt: string, machine: MachineInfo | null): string {
   const lang = opts.language;
@@ -144,33 +173,7 @@ export function buildHtmlReport(c: InvestigationCase, opts: ReportOptions, t: T,
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(`${c.id} — ${c.name}`)}</title>
-<style>
-  :root { color-scheme: light; }
-  body { font-family: 'Segoe UI', 'IBM Plex Sans Arabic', Tahoma, Arial, sans-serif; color: #0f172a; margin: 0; background: #fff; line-height: 1.55; }
-  .page { max-width: 960px; margin: 0 auto; padding: 32px 28px 48px; }
-  header { border-bottom: 3px solid #1d4ed8; padding-bottom: 14px; margin-bottom: 18px; }
-  .brand { font-weight: 800; letter-spacing: .06em; color: #1d4ed8; direction: ltr; unicode-bidi: isolate; }
-  h1 { margin: 6px 0 2px; font-size: 24px; }
-  h2 { font-size: 17px; margin: 26px 0 10px; color: #1e3a8a; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
-  h3 { font-size: 14px; margin: 14px 0 6px; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  table.kv th { width: 30%; text-align: start; color: #475569; font-weight: 600; padding: 5px 8px; vertical-align: top; }
-  table.kv td { padding: 5px 8px; }
-  table.grid th { text-align: start; background: #f1f5f9; padding: 7px 8px; font-size: 12px; color: #334155; }
-  table.grid td { padding: 7px 8px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
-  .ltr { direction: ltr; unicode-bidi: isolate; }
-  .mono, .mono .ltr { font-family: Consolas, 'Cascadia Mono', monospace; font-size: 12px; word-break: break-all; }
-  .muted { color: #64748b; font-size: 12px; }
-  .tag { display: inline-block; background: #e0e7ff; color: #3730a3; border-radius: 999px; padding: 1px 9px; font-size: 12px; }
-  .desc { background: #f8fafc; border-inline-start: 3px solid #1d4ed8; padding: 10px 12px; }
-  .note { border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; white-space: pre-wrap; }
-  .details { color: #475569; font-size: 11px; margin-top: 3px; }
-  ul.mono { margin: 0; padding-inline-start: 20px; }
-  ol.timeline { padding-inline-start: 20px; }
-  ol.timeline li { margin-bottom: 6px; }
-  footer { margin-top: 34px; color: #64748b; font-size: 11px; border-top: 1px solid #e2e8f0; padding-top: 10px; }
-  @media print { .page { padding: 0; } h2 { break-after: avoid; } tr { break-inside: avoid; } }
-</style>
+${REPORT_STYLE}
 </head>
 <body><div class="page">
 <header>

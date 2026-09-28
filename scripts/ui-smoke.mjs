@@ -427,6 +427,14 @@ try {
   if (process.platform !== 'win32') await win.locator('.devsec-row', { hasText: 'أمان الجهاز' }).getByText('متاح على Windows فقط.').waitFor();
   await win.waitForTimeout(300);
   await win.screenshot({ path: join(out, '44-checkup-ar.png') });
+  // Save the checkup as a report (states and counts only); opening the file is stubbed in the test.
+  await app.evaluate(({ shell }) => { shell.openPath = async () => ''; });
+  await win.getByRole('button', { name: 'احفظ التقرير (HTML)' }).click();
+  await win.locator('.toast', { hasText: 'حُفظ التقرير' }).first().waitFor({ timeout: 20000 });
+  const reportFiles = readdirSync(join(dataDir, 'reports')).filter((f) => f.startsWith('checkup-ar-') && f.endsWith('.html'));
+  assert.equal(reportFiles.length, 1, 'checkup report written');
+  const reportHtml = readFileSync(join(dataDir, 'reports', reportFiles[0]), 'utf8');
+  assert.ok(reportHtml.includes("default-src 'none'") && !/<script/i.test(reportHtml), 'report is script-free with a strict CSP');
   // The dashboard remembers the last checkup (states and counts only).
   await win.locator('.nav-item', { hasText: 'لوحة التحكم' }).click();
   await win.getByText(/آخر فحص شامل: .* \(اليوم\)/).waitFor({ timeout: 20000 });

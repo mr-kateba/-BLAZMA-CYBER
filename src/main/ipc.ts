@@ -548,6 +548,11 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
 
   // ---- Full checkup: only the summary (states + counts) is remembered ----
   handle('checkup:last', () => ({ ok: true, data: history.lastCheckup() }));
+  handle('checkup:report', async (input: unknown, language: unknown, format: unknown) => {
+    const rec = await reports.generateCheckup(input, language, format);
+    logger.info('checkup_report_saved', { format: rec.format, language: rec.language });
+    return { ok: true, data: rec };
+  });
   handle('checkup:save', (summary: unknown) => {
     const s = sanitizeCheckupSummary(summary);
     if (!s) return fail('invalid_input');

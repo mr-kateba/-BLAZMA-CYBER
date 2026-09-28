@@ -17,6 +17,7 @@ import ar from '../../../locales/ar.json';
 import { readJson, writeJson } from './json-store';
 import { randomUUID } from 'node:crypto';
 import { caseIocs, iocsToCsv, iocsToStix } from '../../core/ioc-export';
+import { buildCheckupHtmlReport, sanitizeCheckupReport } from '../../core/checkup-report';
 import { subDir } from './paths';
 
 export class ReportError extends Error {
@@ -82,6 +83,25 @@ export class ReportService {
     }
     const st = await stat(path);
     const rec: ReportRecord = { id, caseId: c.id, caseName: c.name, format, language, path, createdAt: now, sizeBytes: st.size };
+    this.saveIndex([rec, ...this.index()]);
+    return rec;
+  }
+
+  /** Saves the full-checkup summary (states and counts only) as an HTML or PDF report. */
+  async generateCheckup(rawInput: unknown, rawLang: unknown, rawFormat: unknown): Promise<ReportRecord> {
+    const input = sanitizeCheckupReport(rawInput);
+    if (!input) throw new ReportError('invalid_input');
+    const language: Lang = rawLang === 'ar' ? 'ar' : 'en';
+    const format: ReportFormat = rawFormat === 'pdf' ? 'pdf' : 'html';
+    const t = createTranslator(DICTS[language], DICTS.en);
+    const now = new Date().toISOString();
+    const id = `rep-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+    const path = join(this.dir, `checkup-${language}-${id}.${format}`);
+    const html = buildCheckupHtmlReport(input, t, language, now, app.getVersion());
+    if (format === 'html') await writeFile(path, html, { encoding: 'utf8', mode: 0o600 });
+    else await this.htmlToPdf(html, path);
+    const st = await stat(path);
+    const rec: ReportRecord = { id, caseId: 'checkup', caseName: t('checkup.reportTitle'), format, language, path, createdAt: now, sizeBytes: st.size };
     this.saveIndex([rec, ...this.index()]);
     return rec;
   }

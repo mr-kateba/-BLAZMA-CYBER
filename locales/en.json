@@ -2945,7 +2945,15 @@
         "problem": "A startup program's signature is broken"
       }
     },
-    "lastAt": "Last checkup {{date}}"
+    "lastAt": "Last checkup {{date}}",
+    "reportTitle": "Full checkup report",
+    "reportArea": "Area",
+    "reportState": "Result",
+    "reportDetail": "Details",
+    "reportFooter": "Generated locally by Blazma Cyber. Only results and counts are included — no files, addresses or personal data.",
+    "savePdf": "Save report (PDF)",
+    "saveHtml": "Save report (HTML)",
+    "reportSaved": "Report saved — it is also in Reports."
   },
   "ports": {
     "title": "Open ports on this PC",

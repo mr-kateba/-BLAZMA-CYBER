@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BadgeCheck, CircleCheck, CircleDashed, DoorOpen, FolderCheck, Power, Loader2, Puzzle, RefreshCw, ShieldAlert, ShieldCheck, Stethoscope, TriangleAlert, Wifi, type LucideIcon } from 'lucide-react';
+import { BadgeCheck, CircleCheck, CircleDashed, DoorOpen, FolderCheck, Power, Loader2, Puzzle, RefreshCw, ShieldAlert, ShieldCheck, Stethoscope, TriangleAlert, Wifi, type LucideIcon, FileText } from 'lucide-react';
 import { deviceArea, extensionsArea, foldersArea, overall, portsArea, startupArea, tamperArea, wifiArea, type AreaResult, type AreaState, type CheckupArea, type CheckupSummary, type Part } from '../../core/checkup';
 import type { ConnectionRow, ForensicsResult, Result } from '../../shared/api';
 import { listeningServices } from '../../core/listening';
@@ -24,8 +24,9 @@ const TONE: Record<AreaState, Tone> = { ok: 'green', attention: 'amber', problem
 const part = <T,>(r: Result<T>): Part<T> => (r.ok ? { data: r.data } : { error: r.error });
 
 export function Checkup() {
-  const { t, locale } = useI18n();
-  const { navigate } = useApp();
+  const { t, locale, lang } = useI18n();
+  const { navigate, toast } = useApp();
+  const [saving, setSaving] = useState(false);
   const [results, setResults] = useState<Partial<Record<CheckupArea, AreaResult>>>({});
   const [current, setCurrent] = useState<CheckupArea | null>(null);
   const [doneAt, setDoneAt] = useState<string | null>(null);
@@ -35,7 +36,11 @@ export function Checkup() {
   const run = async () => {
     setResults({});
     setDoneAt(null);
-    const put = (r: AreaResult) => setResults((x) => ({ ...x, [r.area]: r }));
+    const collected: AreaResult[] = [];
+    const put = (r: AreaResult) => {
+      collected.push(r);
+      setResults((x) => ({ ...x, [r.area]: r }));
+    };
     // One area at a time: several of these run PowerShell, and Windows answers faster in sequence.
     setCurrent('device');
     put(deviceArea(part(await window.blazma.device.security(true))));
@@ -66,11 +71,18 @@ export function Checkup() {
     }
     setCurrent(null);
     setDoneAt(new Date().toISOString());
-    setResults((x) => {
-      const areas = Object.values(x).map((a) => ({ area: a.area, state: a.state, count: a.count }));
-      void window.blazma.checkup.save({ areas }).then((r) => r.ok && setLast(r.data));
-      return x;
-    });
+    const areas = collected.map((a) => ({ area: a.area, state: a.state, count: a.count }));
+    void window.blazma.checkup.save({ areas }).then((r) => r.ok && setLast(r.data));
+  };
+
+  const saveReport = async (format: 'pdf' | 'html') => {
+    setSaving(true);
+    const areas = list.map((a) => ({ area: a.area, state: a.state, count: a.count, ...(a.reason ? { reason: a.reason } : {}), ...(a.vars ? { vars: a.vars } : {}) }));
+    const r = await window.blazma.checkup.report({ areas }, lang === 'ar' ? 'ar' : 'en', format);
+    setSaving(false);
+    if (!r.ok) return toast('red', t(`errors.${r.error}`));
+    toast('green', t('checkup.reportSaved'));
+    void window.blazma.reports.open(r.data.id);
   };
 
   const list = AREAS.map((a) => results[a.area]).filter((x): x is AreaResult => !!x);
@@ -100,6 +112,12 @@ export function Checkup() {
               {doneAt || last ? <RefreshCw size={15} /> : <Stethoscope size={15} />} {doneAt || last ? t('checkup.again') : t('checkup.start')}
             </button>
           </div>
+          {doneAt && !running && (
+            <div className="row-wrap" style={{ gap: 8, marginTop: 14 }}>
+              <button className="btn sm" disabled={saving} onClick={() => void saveReport('pdf')}><FileText size={13} /> {t('checkup.savePdf')}</button>
+              <button className="btn sm" disabled={saving} onClick={() => void saveReport('html')}><FileText size={13} /> {t('checkup.saveHtml')}</button>
+            </div>
+          )}
         </Card>
         <Notice icon={ShieldCheck}>{t('checkup.readOnly')}</Notice>
         <div className="col" style={{ gap: 10 }}>

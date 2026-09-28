@@ -110,6 +110,7 @@ const api: BlazmaApi = {
   checkup: {
     last: () => invoke('checkup:last'),
     save: (summary) => invoke('checkup:save', summary),
+    report: (input, language, format) => invoke('checkup:report', input, language, format),
   },
   fim: {
     list: () => invoke('fim:list'),
