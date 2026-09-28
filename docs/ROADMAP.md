@@ -128,6 +128,12 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE Fix: pktmon 'Stop early' actually stops the elevated capture (stop-file, 1s steps)
 - DONE Password recovery page links to official John/hashcat sites + setup steps
 
+## Phase I — v1.1.2 — DONE
+- DONE Full-checkup report: PDF/HTML (states, counts and reason codes only; validated in main; script-free CSP)
+- DONE Outlook .msg in the email check: read-only CFB parser (bounds-checked, loop-safe) → MIME rebuilt from MAPI properties (original transport headers when present), byte-exact attachments, embedded messages; header values CR/LF-stripped and encoded; tested against a real Outlook file
+- DONE QR Code Check: image read in main (20 MB, signature + header-only 50 MP limit), decoded in the sandboxed renderer (jsQR, Apache-2.0), payload classified (links, Wi-Fi, 2FA, payments, SMS, contacts…); secrets never returned, nothing opened
+- DONE check-locales rejects single-brace placeholders
+
 ## Phase 7 — Polish
 - DONE Terminal: opens the regular Windows terminal (Windows Terminal, else PowerShell) in its own window — no in-app terminal by decision (the GUI never runs commands from user input)
 - DONE Packaging config (electron-builder.yml): per-user NSIS (asInvoker, no elevation, Arabic + English installer), asar, hardened Electron fuses (RunAsNode off, NODE_OPTIONS/inspect off, asar integrity, only-load-from-asar), no publish/auto-update; app icon generated from the logo SVG (scripts/make-icon.mjs)

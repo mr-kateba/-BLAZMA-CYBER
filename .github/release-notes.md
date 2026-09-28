@@ -1,15 +1,13 @@
 <div dir="rtl">
 
-## Blazma Cyber 1.1.1
+## Blazma Cyber 1.1.2
 
 منصة أمن سيبراني دفاعي لـ Windows 10/11، محلية أولًا، بالعربي والإنجليزي. الشرح الكامل: [README.ar.md](https://github.com/mr-kateba/Blazma-Cyber/blob/claude/vibrant-sagan-xxz92l/README.ar.md)
 
-### الجديد في 1.1.1
-- **استعادة كلمة المرور — التحكم بموارد الجهاز:** اختر «متوازن» (يترك الجهاز صالحًا للاستخدام) أو «أقصى» (كل أنوية المعالج، ومع hashcat كرت الشاشة بالكامل) ليعمل المحرك أسرع على ملفاتك. ومع hashcat تختار المعالِج: تلقائي / كرت الشاشة / المعالج. يؤثّر على السرعة فقط، والنتيجة تبقى محلية ولا تُسجَّل.
-- **تنبيه الأجهزة الجديدة في شبكتك:** عند اكتشاف الأجهزة، يعلّم البرنامج أي جهاز يظهر لأول مرة (جديد / شوهد سابقًا / موثوق)، ويعرض الأجهزة المحفوظة التي لم ترد. «وثّق كل الأجهزة الحالية» ليبرز الجديد الحقيقي فقط لاحقًا.
-- **إصلاح شعار البرنامج:** يظهر شعار Blazma الآن في شريط المهام والإشعارات (بدل شعار Electron) — سواء ثبّتّه أو شغّلته من الكود المصدري.
-- **زر «إيقاف مبكر» في تسجيل حركة الشبكة (pktmon)** صار يوقف التسجيل فورًا ويحلّل ما سُجّل، بدل الانتظار للنهاية.
-- **صفحة استعادة كلمة المرور:** أزرار مباشرة للمواقع الرسمية لمحركي John the Ripper وhashcat، وخطوات التجهيز.
+### الجديد في 1.1.2
+- **افحص رمز QR قبل أن تمسحه:** أفلت صورة أو لقطة شاشة أو الصقها (Ctrl+V) لترى ماذا يحتوي الرمز: رابط (عنوان IP، موقع مقلّد أو مختصر، غير مشفّر)، دخول شبكة واي فاي، رمز تحقق بخطوتين، طلب دفع بعملة رقمية، رسالة SMS مدفوعة. لا يُفتح أي شيء، ولا تُعرض كلمات مرور الواي فاي ولا أسرار التحقق.
+- **ملفات Outlook ‏‎.msg في «افحص رسالة بريد»:** اسحب الرسالة من Outlook وأفلتها — نفس فحص التصيّد (الترويسات، الروابط، المرفقات، الرسائل المرفقة).
+- **تقرير الفحص الشامل:** احفظ النتيجة PDF أو HTML.
 
 ### التثبيت
 1. نزّل `Blazma-Cyber-*-x64-setup.exe`.
@@ -19,8 +17,8 @@
 **بدون تثبيت:** `Blazma-Cyber-*-x64-portable.zip` — فكّ الضغط وشغّل `Blazma Cyber.exe`؛ البيانات في `Blazma-data` بجانبه.
 
 ### التحقق من الملف
-- **مصدر البناء:** `gh attestation verify Blazma-Cyber-1.1.1-x64-setup.exe -R mr-kateba/Blazma-Cyber`
-- **SHA-256:** قارن `Get-FileHash .\Blazma-Cyber-1.1.1-x64-setup.exe -Algorithm SHA256` بملف `SHA256SUMS.txt`.
+- **مصدر البناء:** `gh attestation verify Blazma-Cyber-1.1.2-x64-setup.exe -R mr-kateba/Blazma-Cyber`
+- **SHA-256:** قارن `Get-FileHash .\Blazma-Cyber-1.1.2-x64-setup.exe -Algorithm SHA256` بملف `SHA256SUMS.txt`.
 
 ### الحالة بصدق
 - مُتحقَّق منه آليًا على Windows حقيقي: النظام، Defender، التوقيع الرقمي، التحليل الجنائي، الشبكة، pktmon، الواي فاي، الواجهة كاملة، وبناء المثبّت.
@@ -30,19 +28,17 @@
 
 ---
 
-## Blazma Cyber 1.1.1
+## Blazma Cyber 1.1.2
 
 Privacy-first, local-first, bilingual (Arabic/English) defensive cybersecurity workbench for Windows 10/11.
 
-**New in 1.1.1**
-- **Password recovery — resource control:** choose Balanced (keeps the computer usable) or Maximum (every CPU core; with hashcat, full graphics-card workload) so the engine works faster on your own files; with hashcat, pick the processor (Automatic / Graphics card / CPU). Speed only — the result stays local and is never logged.
-- **New-device alert on your network:** discovery marks each device New / Seen before / Trusted and lists saved devices that did not answer; "Trust all current devices" so only genuinely new ones stand out next time.
-- **Icon fix:** the Blazma logo now shows on the taskbar and in notifications (not Electron's), whether installed or run from source.
-- **"Stop early" for pktmon captures** now stops the recording immediately and analyses what was captured.
-- **Password recovery page:** direct links to the official John the Ripper and hashcat sites, with setup steps.
+**New in 1.1.2**
+- **QR Code Check:** drop, browse or paste (Ctrl+V) a picture of a QR code and see what it contains before scanning it — link warnings (IP address, look-alike or shortened site, unencrypted), Wi-Fi logins, 2FA setup codes, crypto payment requests, premium SMS. Nothing is opened; Wi-Fi passwords and 2FA secrets are never shown.
+- **Outlook `.msg` files in "Check an email":** drag a message out of Outlook and drop it — the same phishing analysis (headers, links, attachments, attached emails).
+- **Full checkup report:** save the result as PDF or HTML.
 
 - **Portable:** `Blazma-Cyber-*-x64-portable.zip` runs without installing; data stays in `Blazma-data` next to it.
 - **Unsigned** (no certificate yet): SmartScreen → **More info → Run anyway**. Per-user install, no admin.
-- **Verify provenance:** `gh attestation verify Blazma-Cyber-1.1.1-x64-setup.exe -R mr-kateba/Blazma-Cyber`.
+- **Verify provenance:** `gh attestation verify Blazma-Cyber-1.1.2-x64-setup.exe -R mr-kateba/Blazma-Cyber`.
 - **Verify integrity:** compare `Get-FileHash <file> -Algorithm SHA256` with `SHA256SUMS.txt`.
 - Verified automatically on real Windows in CI; not yet hand-tested: Wi-Fi hardware, Nmap on Windows, install/uninstall, Defender quick/full scans, real John/hashcat.

@@ -22,6 +22,7 @@ By **[mr-kateba](https://github.com/mr-kateba)**
 ---
 
 ## Table of contents
+- [What's new in 1.1.2](#whats-new-in-112)
 - [What's new in 1.1.1](#whats-new-in-111)
 - [Why Blazma Cyber](#why-blazma-cyber)
 - [Features](#features)
@@ -34,6 +35,17 @@ By **[mr-kateba](https://github.com/mr-kateba)**
 - [License](#license)
 
 ---
+
+## What's new in 1.1.2
+- **Check a QR code before you scan it.** Drop a photo or screenshot, or paste one (Ctrl+V), and
+  see exactly what the code contains: a link (IP address, look-alike or shortened site, unencrypted,
+  hidden destination), a Wi-Fi login, a two-factor setup code, a crypto payment request, a premium
+  SMS… Nothing is opened; Wi-Fi passwords and 2FA secrets are never shown.
+- **Outlook `.msg` files in "Check an email".** Drag a message out of Outlook and drop it — the same
+  phishing analysis runs on it (original headers, links, attachments, attached emails). If Outlook
+  didn't keep the internet headers (sent items, drafts), the page says so.
+- **Full checkup report.** Save the checkup result as a PDF or HTML report (states and counts only —
+  no paths or addresses).
 
 ## What's new in 1.1.1
 - **Password recovery — use your hardware.** Choose how hard the (user-installed) engine works on
@@ -93,7 +105,7 @@ smart search (Ctrl+K), a light theme, and offline device-manufacturer names. Ful
   Tor exit check, DNS records, SPF/DMARC, TLS certificate, hosting infrastructure.
 - **Reputation Center** — VirusTotal, AbuseIPDB, Shodan and abuse.ch (MalwareBazaar, URLhaus,
   ThreatFox — one free key) with **your own** keys (hashes, never uploads).
-- **Check an email** — local phishing analysis of a saved `.eml` or pasted source: sender spoofing,
+- **Check an email** — local phishing analysis of a saved `.eml`, an Outlook `.msg` or pasted source: sender spoofing,
   SPF/DKIM/DMARC, deceptive links, dangerous attachments (handed to the File Analyzer, never opened).
 - **Was my password leaked?** — Have I Been Pwned via k-anonymity: only 5 characters of the
   password's SHA-1 hash ever leave the computer.
@@ -141,7 +153,9 @@ smart search (Ctrl+K), a light theme, and offline device-manufacturer names. Ful
 ### 👤 For everyone
 - **Full checkup** — one click runs device security, signs of tampering, startup programs, browser
   extensions, Wi-Fi, open ports and watched folders, and gives **one plain verdict** with a link to
-  each area's evidence. The dashboard remembers the last result.
+  each area's evidence. The dashboard remembers the last result; save it as a PDF/HTML report.
+- **QR Code Check** — what a QR code contains before you scan it with your phone: link warnings,
+  Wi-Fi logins, 2FA setup codes, payment requests, premium SMS. Decoded locally; nothing is opened.
 - **Device Security** — a score out of 100 from read-only Windows checks, each explained in plain
   Arabic/English with how to fix it (Blazma never changes settings).
 - **Simple mode** — only the essentials, plain-language verdicts, a "What does this mean?" button on
@@ -157,6 +171,7 @@ smart search (Ctrl+K), a light theme, and offline device-manufacturer names. Ful
 | | |
 |---|---|
 | ![File analyzer](docs/screenshots/05-file-analyzer-ar.png) | ![Full checkup](docs/screenshots/44-checkup-ar.png) |
+| ![QR code check](docs/screenshots/47-qr-check-ar.png) | ![Outlook .msg email check](docs/screenshots/31b-email-msg-ar.png) |
 | ![Network traffic](docs/screenshots/38-network-traffic-ar.png) | ![Service scan (Nmap)](docs/screenshots/40-service-scan-ar.png) |
 | ![File integrity](docs/screenshots/43-file-integrity-ar.png) | ![Open ports](docs/screenshots/45-open-ports-ar.png) |
 | ![Password recovery](docs/screenshots/22-password-recovery-ar.png) | ![Smart search](docs/screenshots/42-smart-search-ar.png) |
@@ -243,7 +258,7 @@ Optional, **user-installed** (Blazma never downloads or runs them by itself):
 ---
 
 ## Project status
-**v1.1.1 (stable).** Verified automatically on real Windows (Server 2025, the Windows 11 24H2 code
+**v1.1.2 (stable).** Verified automatically on real Windows (Server 2025, the Windows 11 24H2 code
 base) in CI: PowerShell facts, Defender status & EICAR file scan, Authenticode, forensics, the
 network tools, a real pktmon capture, the Wi-Fi reader, startup/signature review, the full UI
 end-to-end, and the NSIS installer build.
