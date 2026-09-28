@@ -121,6 +121,13 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 - DONE G10 What starts with Windows: startup entries with the program's Authenticode signature/publisher, scope and location notes; unsigned programs in user folders and script launchers (rundll32, PowerShell, mshta…) are worth a look; opens Windows' Startup apps page to turn one off (Blazma never changes it); part of the full checkup; the dashboard remembers the last checkup
 - TODO Verify on a real Wi-Fi PC and with Nmap installed on Windows (not available in CI)
 
+## Phase H — Post-1.1 (v1.1.1) — DONE
+- DONE Password recovery resource control (John --fork / hashcat -w and -D; fork count from os.cpus in main; re-validated; speed only)
+- DONE New-device network watch: remember devices by MAC, flag never-seen ones on discovery, trust/forget; local baseline, cleared with activity
+- DONE Fix: AppUserModelId + window icon so Windows shows the Blazma logo (taskbar/notifications)
+- DONE Fix: pktmon 'Stop early' actually stops the elevated capture (stop-file, 1s steps)
+- DONE Password recovery page links to official John/hashcat sites + setup steps
+
 ## Phase 7 — Polish
 - DONE Terminal: opens the regular Windows terminal (Windows Terminal, else PowerShell) in its own window — no in-app terminal by decision (the GUI never runs commands from user input)
 - DONE Packaging config (electron-builder.yml): per-user NSIS (asInvoker, no elevation, Arabic + English installer), asar, hardened Electron fuses (RunAsNode off, NODE_OPTIONS/inspect off, asar integrity, only-load-from-asar), no publish/auto-update; app icon generated from the logo SVG (scripts/make-icon.mjs)
