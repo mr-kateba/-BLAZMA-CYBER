@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileSearch, Link2, Mail, MailWarning, Paperclip, Route, ShieldAlert, ShieldCheck, UserRound } from 'lucide-react';
+import { FileSearch, Info, Link2, Mail, MailWarning, Paperclip, Route, ShieldAlert, ShieldCheck, UserRound } from 'lucide-react';
 import type { EmailAnalysis } from '../../shared/api';
 import { Badge, Card, DataTable, ErrorState, FileDrop, IconTile, Ltr, Notice, Progress, type Tone } from '../components/ui';
 import { KV } from '../components/intel';
@@ -7,7 +7,7 @@ import { useApp } from '../components/AppContext';
 import { useI18n } from '../i18n/I18nProvider';
 import { formatBytes, formatDateTime } from '../format';
 
-type Result = EmailAnalysis & { token: string };
+type Result = EmailAnalysis & { token: string; format: 'eml' | 'msg' };
 const LEVEL_TONE: Record<Result['level'], Tone> = { risky: 'red', caution: 'amber', no_red_flags: 'green' };
 const AUTH_TONE = (r: string): Tone => (r === 'pass' ? 'green' : r === 'fail' ? 'red' : r === 'softfail' ? 'amber' : 'gray');
 const RED_LINK = new Set(['mismatch', 'ip', 'userinfo', 'script', 'invalid']);
@@ -52,7 +52,7 @@ export function EmailCheck() {
 
         {!r && !state.loading && (
           <>
-            <FileDrop onFile={(p) => void fromFile(p)} title={t('email.dropTitle')} hint={t('email.dropHint')} activeText={t('email.dropActive')} browseLabel={t('common.browse')} />
+            <FileDrop onFile={(p) => void fromFile(p)} onBrowse={() => void window.blazma.email.pick().then((p) => { if (p) void fromFile(p); })} title={t('email.dropTitle')} hint={t('email.dropHint')} activeText={t('email.dropActive')} browseLabel={t('common.browse')} />
             <div className="small muted">{t('email.howToSave')}</div>
             <Card title={t('email.pasteTitle')} icon={Mail} tone="gray">
               <textarea className="input mono" dir="ltr" rows={6} style={{ width: '100%', resize: 'vertical' }} value={paste} placeholder={t('email.pastePlaceholder')} aria-label={t('email.pasteTitle')} onChange={(e) => setPaste(e.target.value)} />
@@ -66,6 +66,7 @@ export function EmailCheck() {
 
         {r && (
           <>
+            {r.format === 'msg' && r.received.length === 0 && r.auth.length === 0 && <Notice tone="amber" icon={Info}>{t('email.msgNoHeaders')}</Notice>}
             <Card title={t('email.verdictTitle')} icon={r.level === 'risky' ? ShieldAlert : ShieldCheck} tone={LEVEL_TONE[r.level]} actions={<button className="btn sm" onClick={() => setState({})}>{t('email.another')}</button>}>
               <div className="col" style={{ gap: 10 }}>
                 <div className="row" style={{ gap: 10 }}>

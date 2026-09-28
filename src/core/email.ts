@@ -319,8 +319,9 @@ function receivedHops(headers: Map<string, string[]>): ReceivedHop[] {
 
 // ---------------------------------------------------------------- analysis
 
-export function analyzeEmail(raw: Buffer): EmailAnalysis {
-  if (raw.length > MAX_EMAIL_BYTES) throw Object.assign(new Error('email_too_large'), { code: 'email_too_large' });
+/** `maxBytes` is larger only for messages rebuilt from .msg files (attachments grow ~4/3 as base64). */
+export function analyzeEmail(raw: Buffer, maxBytes = MAX_EMAIL_BYTES): EmailAnalysis {
+  if (raw.length > maxBytes) throw Object.assign(new Error('email_too_large'), { code: 'email_too_large' });
   const { head } = splitHeadersBody(raw);
   const headers = parseHeaders(head);
   if (!headers.has('from') && !headers.has('subject') && !headers.has('received')) {

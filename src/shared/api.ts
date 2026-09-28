@@ -1128,10 +1128,10 @@ export interface BlazmaApi {
     scan(target: string, recursive: boolean, taskId: string): Promise<Result<YaraScanResult>>;
   };
   email: {
-    /** Lets the user choose a saved email (.eml); returns its path or null. */
+    /** Lets the user choose a saved email (.eml or Outlook .msg); returns its path or null. */
     pick(): Promise<string | null>;
-    analyzeFile(path: string): Promise<Result<EmailAnalysis & { token: string }>>;
-    analyzeText(source: string): Promise<Result<EmailAnalysis & { token: string }>>;
+    analyzeFile(path: string): Promise<Result<EmailAnalysis & { token: string; format: 'eml' | 'msg' }>>;
+    analyzeText(source: string): Promise<Result<EmailAnalysis & { token: string; format: 'eml' | 'msg' }>>;
     /** Writes attachment #index to Blazma's temp folder (non-executable name) for File Analyzer. */
     extractAttachment(token: string, index: number): Promise<Result<string>>;
   };

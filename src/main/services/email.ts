@@ -1,11 +1,13 @@
-// Phishing email check: reads a local .eml file (or pasted source) and analyzes it with src/core/email.ts.
+// Phishing email check: reads a local .eml / Outlook .msg file (or pasted source) and analyzes it with src/core/email.ts.
 // Entirely local — the message never leaves the machine. Attachments can be handed to File Analyzer:
 // they are written, never opened, into Blazma's temp folder with a non-executable extension.
 
 import { randomUUID } from 'node:crypto';
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { isCfb } from '../../core/cfb';
 import { analyzeEmail, attachmentBytes, MAX_EMAIL_BYTES, type EmailAnalysis } from '../../core/email';
+import { msgToMime } from '../../core/msg';
 import { validateAbsolutePath } from '../../core/validation';
 import { subDir } from './paths';
 
@@ -27,14 +29,18 @@ function remember(raw: Buffer): string {
   return token;
 }
 
-function analyze(raw: Buffer): EmailAnalysis & { token: string } {
-  // Outlook .msg files are OLE compound documents, not MIME text.
-  if (raw.subarray(0, 8).equals(Buffer.from([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]))) throw new EmailError('email_msg_unsupported');
+const KNOWN = new Set(['email_too_large', 'not_an_email', 'email_msg_invalid']);
+
+function analyze(input: Buffer): EmailAnalysis & { token: string; format: 'eml' | 'msg' } {
   try {
-    return { ...analyzeEmail(raw), token: remember(raw) };
+    // Outlook .msg files are OLE compound documents: rebuilt as MIME, then analyzed the same way.
+    const msg = isCfb(input);
+    const raw = msg ? msgToMime(input) : input;
+    const analysis = analyzeEmail(raw, msg ? Math.ceil(MAX_EMAIL_BYTES * 1.4) : MAX_EMAIL_BYTES);
+    return { ...analysis, format: msg ? 'msg' : 'eml', token: remember(raw) };
   } catch (e) {
     const code = (e as { code?: string }).code;
-    throw new EmailError(code === 'email_too_large' || code === 'not_an_email' ? code : 'invalid_input');
+    throw new EmailError(code && KNOWN.has(code) ? code : 'invalid_input');
   }
 }
 

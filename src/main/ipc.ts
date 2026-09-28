@@ -484,7 +484,7 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
   // ---- Email check (local only) ----
   handle('email:pick', async () => {
     const win = getWindow();
-    const opts = { properties: ['openFile' as const], filters: [{ name: 'Email', extensions: ['eml', 'txt'] }, { name: '*', extensions: ['*'] }] };
+    const opts = { properties: ['openFile' as const], filters: [{ name: 'Email', extensions: ['eml', 'msg', 'txt'] }, { name: '*', extensions: ['*'] }] };
     const r = win ? await dialog.showOpenDialog(win, opts) : await dialog.showOpenDialog(opts);
     return r.canceled ? null : (r.filePaths[0] ?? null);
   });

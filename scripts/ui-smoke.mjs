@@ -28,6 +28,7 @@ async function assertClearOfCaptionButtons(win, label) {
 import { createServer } from 'node:net';
 import { createServer as createHttpServer } from 'node:http';
 import { createRequire } from 'node:module';
+import { pathToFileURL } from 'node:url';
 
 const root = resolve(import.meta.dirname, '..');
 const out = join(root, 'docs', 'screenshots');
@@ -554,6 +555,34 @@ try {
   await win.getByRole('button', { name: 'حلّل' }).first().click();
   await win.getByText('سبب هذه النتيجة').waitFor({ timeout: 240000 });
   await win.getByText('.blazma-attachment', { exact: false }).first().waitFor();
+
+  // Outlook .msg: a real compound file (built with the tests' CFB writer) goes through the same
+  // analysis. This one is a draft-style message without internet headers, so the page says so.
+  const { buildSync } = await import('esbuild');
+  const writerJs = join(dataDir, 'cfb-writer.mjs');
+  buildSync({ entryPoints: [join(root, 'tests/helpers/cfb-writer.ts')], outfile: writerJs, format: 'esm', platform: 'node', bundle: true, logLevel: 'silent' });
+  const cfb = await import(pathToFileURL(writerJs).href);
+  const msgPath = join(dataDir, 'phish.msg');
+  writeFileSync(msgPath, cfb.writeCfb([
+    { name: cfb.prop(0x001a, '001F'), data: cfb.u16('IPM.Note') },
+    { name: cfb.prop(0x0037, '001F'), data: cfb.u16('فاتورة متأخرة') },
+    { name: cfb.prop(0x0c1a, '001F'), data: cfb.u16('support@bank.example') },
+    { name: cfb.prop(0x5d01, '001F'), data: cfb.u16('billing@bank-support.example') },
+    { name: cfb.prop(0x1013, '0102'), data: Buffer.from('<a href="http://198.51.100.7/pay">https://bank.example/pay</a>') },
+    { name: '__attach_version1.0_#00000000', children: [
+      { name: cfb.prop(0x3707, '001F'), data: cfb.u16('invoice.pdf.scr') },
+      { name: cfb.prop(0x3701, '0102'), data: Buffer.from('not really a program') },
+    ] },
+  ]));
+  await win.locator('.nav-item', { hasText: 'افحص رسالة بريد' }).click();
+  await stubOpen(msgPath);
+  await win.getByRole('button', { name: 'استعراض…' }).click();
+  await win.getByText('علامات تحذير — غالبًا تصيّد').waitFor({ timeout: 30000 });
+  await win.getByText('لا يحتوي على ترويسات الإنترنت', { exact: false }).waitFor();
+  await win.getByText('invoice.pdf.scr').first().waitFor();
+  await win.getByText('يُظهر موقعًا مختلفًا').first().waitFor();
+  await win.waitForTimeout(300);
+  await win.screenshot({ path: join(out, '31b-email-msg-ar.png'), fullPage: true });
 
   // Phase D2: "Was my password leaked?" — local observations while typing; the check itself is an
   // external request, so Offline Mode (default) blocks it; the field is cleared either way.
