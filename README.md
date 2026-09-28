@@ -5,202 +5,274 @@
 **الأمن • التحليل الجنائي • الاستخبارات**
 
 A privacy-first, local-first, bilingual (العربية / English) Windows cybersecurity workbench.
+One desktop app for defensive security, file analysis, intelligence, forensics, network
+diagnostics, authorized password recovery, cases and reports — **no account, no activation,
+no telemetry.**
 
 By **[mr-kateba](https://github.com/mr-kateba)**
 
-**[الشرح بالعربي — التنزيل والتثبيت والتشغيل](README.ar.md)**
+**[⬇ Download](https://github.com/mr-kateba/Blazma-Cyber/releases/latest)** ·
+**[الشرح بالعربي — التنزيل والتثبيت](README.ar.md)** ·
+[Roadmap](docs/ROADMAP.md) · [Privacy](PRIVACY.md) · [Security](SECURITY.md)
 
 </div>
 
 ![Dashboard (Arabic, RTL)](docs/screenshots/02-dashboard-ar.png)
 
-## Overview
-Blazma Cyber brings defensive security, static file analysis, YARA, hashing, intelligence, OSINT,
-Windows forensics, network diagnostics, authorized password recovery, cases, reports and threat
-hunting into one modern desktop application — without accounts, activation or telemetry. It
-integrates mature engines (Microsoft Defender, YARA-X, John the Ripper / hashcat) through clean
-adapters rather than re-implementing them.
+---
 
-> **Status: v1.1.0 (stable).** "Terminal" opens the regular Windows terminal
-> (Windows Terminal, else PowerShell) in its own window. Verified end-to-end on Linux and, through CI,
-> on real Windows (Server 2025, build 26100 — the Windows 11 24H2 code base): PowerShell queries,
-> Defender status and file scan, Authenticode, forensics, network tools, the full UI and the NSIS
-> installer build. **Not yet verified on a Windows 10/11 desktop:** installing/uninstalling, the
-> title bar, the launcher, Defender quick/full scans. See [docs/ROADMAP.md](docs/ROADMAP.md).
+## Table of contents
+- [What's new in 1.1.1](#whats-new-in-111)
+- [Why Blazma Cyber](#why-blazma-cyber)
+- [Features](#features)
+- [Install](#install)
+- [Build from source](#build-from-source)
+- [Engines](#engines)
+- [Privacy & security](#privacy--security)
+- [Project status](#project-status)
+- [Troubleshooting](#troubleshooting)
+- [License](#license)
+
+---
+
+## What's new in 1.1.1
+- **Password recovery — use your hardware.** Choose how hard the (user-installed) engine works on
+  files you own: **Balanced** (keeps the computer usable) or **Maximum** (every CPU core; with
+  hashcat, the full graphics-card workload). With hashcat you also pick the processor — Automatic,
+  Graphics card, or CPU. Speed only; the result stays local and is never logged.
+- **New-device alert on your network.** A discovery scan now marks each device **New / Seen before /
+  Trusted**, counts the ones seen for the first time, and lists saved devices that did not answer.
+  "Trust all current devices" so only genuinely new ones stand out next time.
+- **Icon fix.** The Blazma logo now shows on the Windows taskbar and in notifications (not
+  Electron's), whether installed or run from source.
+- **"Stop early" for live captures** now stops the elevated pktmon recording immediately and
+  analyses what was captured, instead of waiting out the timer.
+- **Password recovery page** links to the official John the Ripper and hashcat sites with setup steps.
+
+Earlier: **1.1.0** added Wi-Fi Center, network-traffic analysis & capture, the Nmap service scan,
+the file-integrity monitor, "what starts with Windows", open-ports, the one-click full checkup,
+smart search (Ctrl+K), a light theme, and offline device-manufacturer names. Full history in
+[docs/ROADMAP.md](docs/ROADMAP.md).
+
+---
+
+## Why Blazma Cyber
+- **Local-first & private.** Everything runs on your machine. **Offline Mode is on by default**; no
+  external request leaves until you allow it, and every attempt is listed in Network Activity.
+- **Never fabricates results.** When something can't be determined, it says *unavailable* with the
+  reason — never a placeholder number or a fake "clean".
+- **Integrates, doesn't reinvent.** It drives mature engines (Microsoft Defender, YARA-X, capa,
+  Nmap, John/hashcat…) through clean adapters and always says which engine produced a result.
+- **Bilingual, Arabic-first.** Full Arabic (RTL) and English, switchable live; technical values
+  (IPs, hashes, paths) stay left-to-right inside Arabic text.
+- **For everyone.** A Simple mode with plain-language verdicts for everyday users, and the full
+  expert toolset for professionals.
+
+---
 
 ## Features
-**Security & analysis**
-- **Dashboard** — real OS, CPU, memory, disk, network adapters, live gauges, Defender and firewall
-  status (Windows), recent activity. Public IP only on explicit request.
+
+### 🛡️ Security & analysis
+- **Dashboard** — real OS, CPU, memory, disk and network adapters with live gauges, Defender and
+  firewall status (Windows), recent activity, and the last full-checkup verdict. Public IP only on request.
 - **File Analyzer** — streaming MD5/SHA-1/SHA-256/SHA-512, file type by magic bytes, entropy, PE
   headers/sections/imports/exports, embedded IOCs, notable strings, Authenticode (Windows),
-  encrypted-file detection, optional Defender + YARA-X, hash-only reputation (VirusTotal,
-  MalwareBazaar, URLhaus, ThreatFox), and a
-  combined assessment that never claims "clean" when engines are missing. Files are never executed.
-- **Security Center** — Microsoft Defender quick/full/file/folder scans (file/folder scans are
-  report-only), threat history, quarantine.
-- **Quarantine** — neutralized storage, SHA-256-verified restore; nothing is deleted automatically.
-- **YARA scanner** — adapter to the user-installed YARA-X `yr` CLI, rule manager with validation.
-- **Hash Lab** — hash text/files, verify, identify formats (ranked possibilities), compare.
+  encrypted-file detection, optional Defender + YARA-X, hash-only reputation, and a combined
+  assessment that never claims "clean" when engines are missing. **Files are never executed.**
+- **Security Center** — Microsoft Defender quick / full / file / folder scans (file & folder scans
+  are report-only), threat history, quarantine view.
+- **Quarantine** — neutralized (XOR) storage, SHA-256-verified restore; nothing is deleted automatically.
+- **YARA scanner** — adapter to the user-installed YARA-X `yr` CLI with a validating rule manager.
+- **Hash Lab** — hash text/files, verify, identify formats (ranked), and compare.
 - **File integrity monitor** — fingerprint a folder (SHA-256 of every file), then see exactly what
   was added, removed or changed; flags content edits that kept the old timestamp and changed files
   that can run code. Suggested places: Startup folders, the hosts folder, PowerShell profiles.
 
-**Intelligence**
+### 🔎 Intelligence
 - **IP / Domain Intelligence** — reverse DNS, RDAP, Team Cymru ASN, approximate location (ipinfo),
   Tor exit check, DNS records, SPF/DMARC, TLS certificate, hosting infrastructure.
 - **Reputation Center** — VirusTotal, AbuseIPDB, Shodan and abuse.ch (MalwareBazaar, URLhaus,
-  ThreatFox — one free key) with your own keys (hashes, never uploads).
-- **Check an email** — local phishing analysis of a saved .eml or pasted source: sender spoofing,
-  SPF/DKIM/DMARC, deceptive links, dangerous attachments (handed to File Analyzer, never opened).
-- **Event log hunting** — bundled Hayabusa with 4,000+ Sigma/Hayabusa rules over .evtx files or this
-  computer's logs (administrator rights requested only for that scan, with an explanation).
-- **Browser extensions & signs of tampering** — what add-ons may do and how they were installed;
-  hosts file, proxy, DNS and added root certificates. Opt-in **Downloads watcher**.
+  ThreatFox — one free key) with **your own** keys (hashes, never uploads).
+- **Check an email** — local phishing analysis of a saved `.eml` or pasted source: sender spoofing,
+  SPF/DKIM/DMARC, deceptive links, dangerous attachments (handed to the File Analyzer, never opened).
 - **Was my password leaked?** — Have I Been Pwned via k-anonymity: only 5 characters of the
-  password's SHA-1 hash leave the computer.
+  password's SHA-1 hash ever leave the computer.
+- **Event-log hunting** — bundled Hayabusa with 4,000+ Sigma rules over `.evtx` files or this
+  computer's logs (administrator rights requested only for that one scan, with an explanation).
 - **OSINT Workspace** — domain, email, username or URL: Certificate Transparency (crt.sh), Wayback
-  Machine snapshots, GitHub public profile, mail-domain DNS; **accounts with a username** on 301
-  social networks (+338 other sites, optional) using the WhatsMyName rules — found / not found /
-  couldn't check, never guessed; provenance (endpoint + time) on every source; pivot links open in
-  your browser only after confirmation.
+  Machine, GitHub profile, mail-domain DNS; **accounts by username** across 301 social networks
+  (+338 other sites, optional) via WhatsMyName — found / not found / couldn't check, never guessed.
 
-**Network**
+### 🌐 Network
 - **Wi-Fi** — current connection (security in plain words, signal, band/channel, link speed), nearby
-  networks with an evil-twin check and a channel chart, and an audit of saved networks (open networks
-  that join automatically, weak or hidden ones) — read-only, passwords are never read.
-- **Network traffic** — analyse .pcap/.pcapng files or record 15 s – 5 min with Windows pktmon (one
-  UAC prompt) or Wireshark's dumpcap: devices with their manufacturer, conversations, DNS, HTTPS
+  networks with an evil-twin check and a channel chart, and an audit of saved networks — **read-only,
+  passwords are never read.**
+- **Network traffic** — analyse `.pcap`/`.pcapng` files, or record 15 s – 5 min with Windows **pktmon**
+  (one UAC prompt) or Wireshark's **dumpcap**: devices with manufacturers, conversations, DNS, HTTPS
   sites, unencrypted logins, and measured patterns (port scan, ARP conflict, rogue DHCP, outdated
   TLS…). Cookies, passwords and page contents never enter the report.
-- **Service scan (Nmap)** — with your own Nmap install: who is online, and which services each
-  device exposes (100 / 1,000 ports), with plain-language risks (telnet, open databases, VNC, RDP…).
-  Only your own networks, after an authorization confirmation.
-
-- **What starts with Windows** — startup programs with who signed them and where they live; unsigned
-  programs in user folders and script launchers are highlighted.
+- **Service scan (Nmap)** — with **your own** Nmap install: who is online and which services each
+  device exposes (100 / 1,000 ports), with plain-language risks. Only your own networks, after an
+  authorization confirmation.
 - **Open ports on this PC** — which programs wait for connections, whether only this PC or the
   network can reach them, and what each well-known port usually is.
-
-**Forensics & network tools**
-- **Windows Forensics** — read-only collectors: processes, connections, services, drivers,
-  startup, scheduled tasks, users, software, USB history, events (Linux `/proc` fallbacks).
 - **Network Toolkit** — ping, traceroute, DNS, reverse DNS, routes, ARP, adapters; port check and
-  local /24 discovery require an explicit authorization confirmation.
+  local /24 discovery (with **new-device tracking**) require an explicit authorization confirmation.
+
+### 🧪 Forensics & hunting
+- **Windows Forensics** — read-only collectors: processes, connections, services, drivers, startup,
+  scheduled tasks, users, software, USB history, event logs (Linux `/proc` fallbacks).
+- **What starts with Windows** — startup programs with who signed them and where they live; unsigned
+  programs in user folders and script launchers (rundll32, PowerShell, mshta…) are highlighted.
+- **Signs of tampering & browser extensions** — hosts file, proxy, DNS and added root certificates;
+  what each add-on may do and how it was installed. Opt-in **Downloads watcher**.
 - **Threat Hunting** — correlate an IP/domain/hash/text across cases, quarantine, activity, the
   network log, live processes/connections/services/startup and YARA rules; persistence review.
+- **Memory scan** — bundled HollowsHunter looks for code hidden or modified in running programs.
 
-**Recovery & investigations**
-- **Password Recovery** — for files you own or are authorized to recover: encrypted-file detection
-  (ZIP/7z/RAR/PDF/Office) + your own John the Ripper / hashcat. Results are shown once, never logged.
-- **Cases** — `CASE-YYYY-NNN`, evidence vs. notes, automatic timeline, "Add to case" from modules.
+### 🔐 Recovery & investigations
+- **Password Recovery** — for files **you own or are authorized to recover**: encrypted-file
+  detection (ZIP/7z/RAR/PDF/Office) + your own John the Ripper / hashcat, with a **resource control**
+  (Balanced / Maximum, and GPU/CPU for hashcat). Results are shown once and **never logged.**
+- **Cases** — `CASE-YYYY-NNN`, evidence vs. notes, automatic timeline, "Add to case" from any module,
+  IOC export (CSV / STIX 2.1).
 - **Reports** — HTML (escaped, script-free, strict CSP), JSON and PDF, in Arabic (RTL) or English.
 
-**For everyday users**
-- **Device Security** — a score out of 100 from 16 read-only Windows checks, each explained in plain
+### 👤 For everyone
+- **Full checkup** — one click runs device security, signs of tampering, startup programs, browser
+  extensions, Wi-Fi, open ports and watched folders, and gives **one plain verdict** with a link to
+  each area's evidence. The dashboard remembers the last result.
+- **Device Security** — a score out of 100 from read-only Windows checks, each explained in plain
   Arabic/English with how to fix it (Blazma never changes settings).
-- **Simple mode** — only the essentials (device security, scan a file, check a link), plain-language
-  verdicts ("What should I do?"), a "What does this mean?" button on technical terms, and drop a
-  file anywhere to scan it.
-
-**Everywhere**
-- **Full checkup** — one click: device security, signs of tampering, browser extensions, Wi-Fi and
-  watched folders, with one plain verdict and a link to each area's evidence.
+- **Simple mode** — only the essentials, plain-language verdicts, a "What does this mean?" button on
+  technical terms, and drop a file anywhere to scan it.
 - **Smart search (Ctrl+K)** — paste an IP, hash, domain, link, e-mail, @username or file path
-  (defanged `hxxp`/`[.]` too) and jump straight to the tool that examines it, pre-filled.
+  (defanged `hxxp` / `[.]` too) and jump straight to the right tool, pre-filled.
 - **Themes** — deep navy, midnight black, light, or match Windows.
 
-**Privacy & language**
-- **Privacy Center** — Offline Mode (on by default), log of every external request, clear local data.
-- **Arabic & English** — full translation, RTL/LTR switching, technical values kept LTR.
+### 🔒 Privacy & language
+- **Privacy Center** — Offline Mode (on by default), a log of every external request, and clear-data controls.
+- **Arabic & English** — full translation, live RTL/LTR switching, technical values kept LTR.
 
 | | |
 |---|---|
-| ![File analyzer](docs/screenshots/05-file-analyzer-ar.png) | ![Threat hunting](docs/screenshots/25-threat-hunting-ar.png) |
-| ![OSINT](docs/screenshots/26-osint-offline-ar.png) | ![Case report](docs/screenshots/23-case-report-ar.png) |
-| ![Dashboard English](docs/screenshots/03-dashboard-en.png) | ![Privacy Center](docs/screenshots/08-privacy-ar.png) |
+| ![File analyzer](docs/screenshots/05-file-analyzer-ar.png) | ![Full checkup](docs/screenshots/44-checkup-ar.png) |
 | ![Network traffic](docs/screenshots/38-network-traffic-ar.png) | ![Service scan (Nmap)](docs/screenshots/40-service-scan-ar.png) |
-| ![File integrity](docs/screenshots/43-file-integrity-ar.png) | ![Smart search](docs/screenshots/42-smart-search-ar.png) |
-| ![Full checkup](docs/screenshots/44-checkup-ar.png) | ![Open ports](docs/screenshots/45-open-ports-ar.png) |
-| ![Light theme](docs/screenshots/41-light-theme-en.png) | |
+| ![File integrity](docs/screenshots/43-file-integrity-ar.png) | ![Open ports](docs/screenshots/45-open-ports-ar.png) |
+| ![Password recovery](docs/screenshots/22-password-recovery-ar.png) | ![Smart search](docs/screenshots/42-smart-search-ar.png) |
+| ![Dashboard (English)](docs/screenshots/03-dashboard-en.png) | ![Light theme](docs/screenshots/41-light-theme-en.png) |
 
-## Installation (development build)
-Requirements: Windows 10/11 x64, [Node.js 20+](https://nodejs.org).
+---
+
+## Install
+
+### Option A — the installer (easiest)
+1. Open **[Releases](https://github.com/mr-kateba/Blazma-Cyber/releases/latest)** and download
+   `Blazma-Cyber-<version>-x64-setup.exe` from **Assets**.
+2. It is **unsigned** (a code-signing certificate is paid), so SmartScreen shows *"Windows protected
+   your PC"* → **More info → Run anyway**.
+3. Per-user install — **no administrator rights**. Creates Desktop and Start-menu shortcuts.
+
+**No install?** Download `Blazma-Cyber-<version>-x64-portable.zip`, unzip anywhere (a USB stick is
+fine) and run `Blazma Cyber.exe`. All data stays in a `Blazma-data` folder next to it.
+
+**Verify the file:**
+- `Get-FileHash .\Blazma-Cyber-<version>-x64-setup.exe -Algorithm SHA256` → compare with `SHA256SUMS.txt`.
+- `gh attestation verify .\Blazma-Cyber-<version>-x64-setup.exe -R mr-kateba/Blazma-Cyber`
+  (GitHub build-provenance attestation; needs the [GitHub CLI](https://cli.github.com)).
+
+### Option B — from source
+See [Build from source](#build-from-source). Full Arabic walkthrough: **[README.ar.md](README.ar.md)**.
+
+---
+
+## Build from source
+Requirements: Windows 10/11 x64 and [Node.js 20+](https://nodejs.org) (22 LTS recommended).
 
 ```powershell
-git clone <repo-url> Blazma-Cyber
+git clone https://github.com/mr-kateba/Blazma-Cyber.git Blazma-Cyber
 cd Blazma-Cyber
 .\Start-Blazma.ps1 -Install     # first time: installs locked dependencies, builds, launches
 .\Start-Blazma.ps1              # afterwards
 ```
-The launcher checks prerequisites and prints clear errors (English + Arabic). It never installs
-anything unless you pass `-Install`.
 
-## Download the installer
-Get it from **[Releases](https://github.com/mr-kateba/Blazma-Cyber/releases)** (latest release:
-[`Blazma-Cyber-1.0.1-x64-setup.exe`](https://github.com/mr-kateba/Blazma-Cyber/releases/download/v1.0.1/Blazma-Cyber-1.0.1-x64-setup.exe)).
-It is unsigned, so SmartScreen shows "Windows protected your PC" → **More info → Run anyway**.
-Verify it with `SHA256SUMS.txt` or `gh attestation verify <file> -R mr-kateba/Blazma-Cyber`
-(GitHub build provenance). Development builds: **Actions → CI → Artifacts** (sign-in, 14 days).
-Step-by-step in Arabic: [README.ar.md](README.ar.md).
+The launcher checks prerequisites and prints clear errors (English + Arabic) and never installs
+anything unless you pass `-Install`. Build the installer with `npm ci && npm run dist:win`
+(run it **on Windows**). Developer notes: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) · [CLAUDE.md](CLAUDE.md).
 
-## Building the installer
-```powershell
-npm ci
-npm run dist:win   # → release\Blazma-Cyber-<version>-x64-setup.exe
-```
-Per-user NSIS installer (no administrator rights, Arabic + English), hardened Electron fuses, no
-auto-update. Run it **on Windows** (on Linux the NSIS uninstaller step needs Wine). CI builds it on
-Windows and uploads it as an artifact; installing/uninstalling hasn't been tested yet, and builds are unsigned unless you provide a
-certificate through `CSC_LINK` / `CSC_KEY_PASSWORD`. Details: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
-
-## Development
 ```bash
 npm ci
 npm run dev      # hot-reload development
 npm run check    # typecheck + unit tests + locale parity
 ```
-See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) and [CLAUDE.md](CLAUDE.md).
 
-## Privacy model
-No telemetry, no account, no automatic uploads. Offline Mode blocks all external requests before a
-connection is opened; every attempted request is visible in Network Activity. Details:
-[PRIVACY.md](PRIVACY.md).
+---
 
-## Security
-Sandboxed renderer, strict CSP, validated IPC, no shell execution, PowerShell with fixed scripts,
-DPAPI-encrypted API keys, redacted logs, gated and allowlisted external links, hardened packaged
-build (Electron fuses, asar integrity). Details: [SECURITY.md](SECURITY.md) ·
-Architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+## Engines
+Blazma **bundles** these in the Windows installer (fetched from their official releases at build
+time and pinned by SHA-256 — the app itself never downloads anything):
 
-## Supported engines
-| Engine | Status |
-|---|---|
-| Built-in static analyzer (hashes, PE, entropy, IOCs, encrypted files) | Available |
-| Windows Authenticode verification | Available — verified on Windows in CI |
-| Microsoft Defender status & scanning | Available — status, file scan (EICAR) and history verified on Windows in CI; quick/full scans not run in CI |
-| YARA-X (`yr` CLI, user-installed) | Available — tested with yr 1.20.0 |
-| John the Ripper / hashcat (user-installed, authorized recovery) | Available — tested with a stand-in engine; real engines need verification |
-| Nmap (user-installed, local networks only) | Available — tested with Nmap 7.94 (Linux); Windows install not verified in CI |
-| Windows pktmon / Wireshark dumpcap (capture) | pktmon verified on Windows in CI; dumpcap used when Wireshark + Npcap are installed |
+- **YARA-X** + **1,240 ReversingLabs rules** — malware-family detection.
+- **capa** (Mandiant) — "what can this program do?" with MITRE ATT&CK ids.
+- **Detect It Easy** — how a file was built, and whether it is packed.
+- **Hayabusa** (4,000+ Sigma rules) — Windows event-log hunting.
+- **HollowsHunter** — in-memory implant scan.
+
+Optional, **user-installed** (Blazma never downloads or runs them by itself):
+
+| Engine | Use | Setup |
+|---|---|---|
+| Microsoft Defender | File & folder scans | Ships with Windows — nothing to set up |
+| Nmap ([nmap.org](https://nmap.org)) | Service scan of your own network | Install, then open the Service scan page — auto-detected |
+| Wireshark + Npcap | Unelevated network capture; open captures in Wireshark | Install — without it, built-in Windows pktmon is used |
+| John the Ripper ([openwall](https://www.openwall.com/john/)) / hashcat ([hashcat.net](https://hashcat.net/hashcat/)) | Authorized password recovery of your own files | Settings → Engines → pick the executable |
+| VirusTotal / AbuseIPDB / Shodan / abuse.ch keys | Reputation lookups | Settings → API keys (stored DPAPI-encrypted) |
+
+---
+
+## Privacy & security
+- **No telemetry, no account, no automatic uploads.** Offline Mode blocks every external request
+  before a connection opens; each attempt is visible in Network Activity (host + data category only).
+- **The renderer is sandboxed** (contextIsolation, strict CSP, `connect-src 'self'`); every IPC
+  argument is re-validated in the main process; no shell strings; PowerShell runs fixed scripts with
+  arguments passed via environment variables.
+- **Secrets** are stored with Windows DPAPI (`safeStorage`) and logs auto-redact keys/tokens/passwords.
+- **Analyzed files are never executed;** Blazma never disables Defender or changes the firewall.
+- Details: [PRIVACY.md](PRIVACY.md) · [SECURITY.md](SECURITY.md) · [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+---
+
+## Project status
+**v1.1.1 (stable).** Verified automatically on real Windows (Server 2025, the Windows 11 24H2 code
+base) in CI: PowerShell facts, Defender status & EICAR file scan, Authenticode, forensics, the
+network tools, a real pktmon capture, the Wi-Fi reader, startup/signature review, the full UI
+end-to-end, and the NSIS installer build.
+
+**Not yet hand-tested:** Wi-Fi on real Wi-Fi hardware, Nmap on Windows, install/uninstall on a
+Windows 10/11 desktop, Defender quick/full scans, and real John/hashcat runs. Details:
+[docs/ROADMAP.md](docs/ROADMAP.md).
+
+---
 
 ## Troubleshooting
 | Problem | Solution |
 |---|---|
-| “Node.js was not found” | Install Node.js 20+ LTS and reopen PowerShell |
-| “Dependencies are not installed” | Run `.\Start-Blazma.ps1 -Install` |
-| Script execution is disabled | Run `powershell -ExecutionPolicy RemoteSigned -File .\Start-Blazma.ps1` for this session, or `Unblock-File .\Start-Blazma.ps1` |
-| Defender shows “status unavailable” | Another antivirus may manage protection, or Defender is disabled by policy |
-| “Access denied” when analyzing a file | The file is locked or protected; copy it elsewhere or run the specific operation with appropriate rights |
-| Public IP says “Blocked by Offline Mode” | Expected — turn Offline Mode off in the Privacy Center if you want online lookups |
+| "Windows protected your PC" / browser warns about the file | The installer is unsigned → **More info → Run anyway** / keep the file |
+| The app icon looks generic | Windows caches icons — run `ie4uinit.exe -show` or restart; re-pin any old taskbar shortcut |
+| "Node.js was not found" | Install Node.js 20+ and reopen PowerShell (source build only) |
+| Script execution is disabled | `powershell -ExecutionPolicy RemoteSigned -File .\Start-Blazma.ps1` or `Unblock-File .\Start-Blazma.ps1` |
+| "Blocked by Offline Mode" | Expected — turn Offline Mode off in the Privacy Center for online lookups |
+| Defender shows "status unavailable" | Another antivirus may manage protection, or Defender is disabled by policy |
+
+---
 
 ## Authorized use
-Intended for defensive use on systems, networks and files you own or are authorized to assess.
+Intended for **defensive** use on systems, networks and files you own or are authorized to assess.
 
 ## License
 Copyright © 2026 [mr-kateba](https://github.com/mr-kateba).
 
-Blazma Cyber is free software: you can redistribute it and/or modify it under the terms of the
-**GNU General Public License v3.0 or later** ([LICENSE](LICENSE)). It is distributed WITHOUT ANY
-WARRANTY. Anyone who distributes a modified version must publish its source under the same license.
-Third-party components keep their own licenses: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+Blazma Cyber is free software under the **GNU General Public License v3.0 or later**
+([LICENSE](LICENSE)), distributed **WITHOUT ANY WARRANTY**. Anyone who distributes a modified
+version must publish its source under the same license. Third-party components keep their own
+licenses: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
