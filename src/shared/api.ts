@@ -23,6 +23,7 @@ import type { DieSummary } from '../core/die';
 import type { CtSummary, GithubProfile, OsintPivot, OsintTargetType, WaybackSnapshot } from '../core/osint';
 import type { AccountStatus, AccountUnknownReason, UsernameGroup } from '../core/username-check';
 import type { MacKind } from '../core/oui';
+import type { DeviceStatus, KnownDevice } from '../core/known-devices';
 import type { TrafficReport } from '../core/traffic/analyzer';
 import type { SavedProfile, WifiConnection, WifiFinding, WifiNetwork } from '../core/wifi';
 import type { NmapFinding, NmapProfile, NmapRun } from '../core/nmap';
@@ -891,9 +892,15 @@ export interface DiscoveryResult {
   subnet: string;
   interface: string;
   probed: number;
-  alive: Array<{ address: string; mac: string | null; maker: MacMaker | null }>;
+  alive: Array<{ address: string; mac: string | null; maker: MacMaker | null; status?: DeviceStatus; name?: string | null; firstSeen?: string | null }>;
+  /** Devices never seen on this computer's networks before (a memory aid, not a verdict). */
+  newCount: number;
+  /** Known devices that did not answer this scan (may be switched off). */
+  offline: KnownDevice[];
   durationMs: number;
 }
+
+export type { DeviceStatus, KnownDevice } from '../core/known-devices';
 
 // ---------------- Investigations (Phase 6) ----------------
 
@@ -1269,6 +1276,11 @@ export interface BlazmaApi {
     neighbors(): Promise<Result<NeighborRow[]>>;
     subnets(): Promise<Result<Array<{ cidr: string; interface: string; address: string }>>>;
     discover(cidr: string, taskId: string): Promise<Result<DiscoveryResult>>;
+    knownDevices(): Promise<Result<KnownDevice[]>>;
+    /** Mark these MACs as expected/trusted (green). */
+    trustDevices(macs: string[]): Promise<Result<true>>;
+    renameDevice(mac: string, name: string): Promise<Result<true>>;
+    forgetDevice(mac: string): Promise<Result<true>>;
   };
   secrets: {
     status(): Promise<Record<ApiKeyService, boolean>>;

@@ -241,6 +241,11 @@ function DiscoveryTab() {
     const r = await window.blazma.net.discover(cidr, id);
     setS(r.ok ? { r: r.data } : { e: r.error });
   };
+  const trustAll = async () => {
+    const macs = (s.r?.alive ?? []).map((x) => x.mac).filter((m): m is string => !!m);
+    await window.blazma.net.trustDevices(macs);
+    setS((cur) => (cur.r ? { r: { ...cur.r, alive: cur.r.alive.map((x) => ({ ...x, status: x.mac ? 'trusted' : x.status })), newCount: 0 } } : cur));
+  };
   if (!subnets) return <Card><Skeleton h={80} /></Card>;
   return (
     <div className="col" style={{ gap: 12 }}>
@@ -270,14 +275,28 @@ function DiscoveryTab() {
       )}
       {s.e && <Card><ErrorState code={s.e} /></Card>}
       {s.r && (
-        <Card title={t('net.discoverSummary', { alive: s.r.alive.length, probed: s.r.probed })} subtitle={`${s.r.subnet} · ${formatDuration(t, s.r.durationMs)}`} icon={Radar} tone="green">
+        <Card
+          title={t('net.discoverSummary', { alive: s.r.alive.length, probed: s.r.probed })}
+          subtitle={`${s.r.subnet} · ${formatDuration(t, s.r.durationMs)}`}
+          icon={Radar}
+          tone={s.r.newCount ? 'amber' : 'green'}
+          actions={s.r.newCount > 0 ? <button className="btn sm" onClick={() => void trustAll()}>{t('net.watch.trustAll')}</button> : undefined}
+        >
+          {s.r.newCount > 0 && <Notice tone="amber" icon={ShieldAlert}>{t('net.watch.newDevices', { n: s.r.newCount })}</Notice>}
           {s.r.alive.length === 0 ? <EmptyState title={t('net.noHosts')} /> : (
             <DataTable rowKey={(x) => x.address} rows={s.r.alive} columns={[
               { key: 'a', label: t('net.address'), render: (x) => <Ltr mono>{x.address}</Ltr> },
               { key: 'm', label: 'MAC', render: (x) => <Ltr mono>{x.mac ?? '—'}</Ltr> },
               { key: 'v', label: t('net.maker.title'), render: (x) => <DeviceMaker maker={x.maker} /> },
+              { key: 's', label: t('net.watch.status'), render: (x) => (
+                x.status === 'new' ? <Badge tone="amber">{t('net.watch.new')}</Badge>
+                  : x.status === 'trusted' ? <Badge tone="green">{t('net.watch.trusted')}</Badge>
+                  : x.status === 'known' ? <Badge tone="gray">{t('net.watch.known')}</Badge>
+                  : <span className="dim">—</span>
+              ) },
             ]} />
           )}
+          {s.r.offline.length > 0 && <div className="tiny dim" style={{ marginTop: 10 }}>{t('net.watch.offline', { n: s.r.offline.length })}</div>}
         </Card>
       )}
     </div>

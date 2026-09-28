@@ -1266,6 +1266,15 @@
       "broadcast": "Broadcast",
       "unknown": "Not in the registry",
       "vendor": "Manufacturer"
+    },
+    "watch": {
+      "status": "Seen before?",
+      "new": "New",
+      "known": "Seen before",
+      "trusted": "Trusted",
+      "trustAll": "Trust all current devices",
+      "newDevices": "{{n}} device(s) here for the first time. Often just a guest — but if you do not recognise one, check who it is. Trust the devices you know so only truly new ones stand out next time.",
+      "offline": "{{n}} device(s) you have seen before did not answer this scan (they may be switched off)."
     }
   },
   "recovery": {

@@ -14,6 +14,7 @@ import { OsintService } from './services/osint';
 import { WifiError, wifiReport } from './services/wifi';
 import { NmapError, nmapInfo, parseNmapRequest, runNmap } from './services/nmap';
 import { FimError, FimService, fimPresets } from './services/fim';
+import { DeviceWatchService } from './services/device-watch';
 import { sanitizeCheckupSummary } from '../core/checkup';
 import { TrafficError, analyzeFile as analyzeCapture, captureEnvironment, captureInterfaces, liveCapture, openInWireshark, parseLiveOptions } from './services/traffic';
 import { accountProfileUrl, accountSiteCounts, checkUsernameAccounts } from './services/username-accounts';
@@ -84,6 +85,7 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
   const intel = new IntelService({ gate, secret: (svc) => secrets.get(svc) });
   const osint = new OsintService({ intel, gate, openExternal: (url) => shell.openExternal(url) });
   const net = new NetToolsService(gate);
+  const deviceWatch = new DeviceWatchService();
   const cases = new CaseService();
   const reports = new ReportService();
   const recovery = new RecoveryService((kind) => (kind === 'john' ? settings.get().johnPath : settings.get().hashcatPath));
@@ -299,6 +301,7 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
     switch (t) {
       case 'activity':
         history.clearActivity();
+        deviceWatch.clear(); // the remembered network devices are part of local usage state
         break;
       case 'network_activity':
         history.network.clear();
@@ -664,11 +667,31 @@ export function registerIpc(getWindow: () => BrowserWindow | null, isTrustedSend
   handle('net:routes', async () => ({ ok: true, data: await net.routes() }));
   handle('net:neighbors', async () => ({ ok: true, data: await net.neighbors() }));
   handle('net:subnets', () => ({ ok: true, data: net.localSubnets() }));
+  handle('net:knownDevices', () => ({ ok: true, data: deviceWatch.list() }));
+  handle('net:trustDevices', (macs: unknown) => {
+    for (const m of Array.isArray(macs) ? macs : []) deviceWatch.setTrusted(m, true);
+    return { ok: true, data: true };
+  });
+  handle('net:renameDevice', (mac: unknown, name: unknown) => {
+    deviceWatch.rename(mac, name);
+    return { ok: true, data: true };
+  });
+  handle('net:forgetDevice', (mac: unknown) => {
+    deviceWatch.forget(mac);
+    return { ok: true, data: true };
+  });
   handle('net:discover', (cidr: unknown, taskId: unknown) =>
     runTask(taskId, async (signal) => {
       const r = await net.discover(cidr, signal, progress(taskId as string));
+      // Flag devices never seen before, then fold this scan into the saved baseline.
+      const watch = deviceWatch.classify(r.alive);
+      const byAddr = new Map(watch.devices.map((d) => [d.address, d]));
+      r.alive = r.alive.map((d) => ({ ...d, status: byAddr.get(d.address)?.status, name: byAddr.get(d.address)?.name, firstSeen: byAddr.get(d.address)?.firstSeen }));
+      r.newCount = watch.newCount;
+      r.offline = watch.offline;
+      deviceWatch.remember(r.alive);
       history.record({ kind: 'discovery', subject: r.subnet, summaryKey: 'activity.summary.discovered' });
-      logger.security('network_discovery', { subnet: r.subnet, alive: r.alive.length });
+      logger.security('network_discovery', { subnet: r.subnet, alive: r.alive.length, newDevices: watch.newCount });
       return r;
     }),
   );

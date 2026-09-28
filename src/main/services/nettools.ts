@@ -333,6 +333,9 @@ export class NetToolsService {
       alive: [...found]
         .sort((a, b) => Number(a.split('.')[3]) - Number(b.split('.')[3]))
         .map((address) => ({ address, mac: macOf(address), maker: withMaker(macOf(address)) })),
+      // Known-device tracking is applied by the IPC layer (which owns the saved baseline).
+      newCount: 0,
+      offline: [],
       durationMs: Date.now() - started,
     };
   }

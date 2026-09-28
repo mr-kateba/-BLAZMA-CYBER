@@ -209,6 +209,10 @@ const api: BlazmaApi = {
     neighbors: () => invoke('net:neighbors'),
     subnets: () => invoke('net:subnets'),
     discover: (cidr, taskId) => invoke('net:discover', cidr, taskId),
+    knownDevices: () => invoke('net:knownDevices'),
+    trustDevices: (macs) => invoke('net:trustDevices', macs),
+    renameDevice: (mac, name) => invoke('net:renameDevice', mac, name),
+    forgetDevice: (mac) => invoke('net:forgetDevice', mac),
   },
   secrets: {
     status: () => invoke('secrets:status'),
