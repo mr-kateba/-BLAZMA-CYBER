@@ -198,7 +198,7 @@ function SecurityHero() {
     };
   }, []);
   const Arrow = dir === 'rtl' ? ArrowLeft : ArrowRight;
-  const color = state?.grade === 'good' ? '#22c55e' : state?.grade === 'fair' ? '#f59e0b' : state?.grade === 'poor' ? '#ef4444' : '#64748b';
+  const color = state?.grade === 'good' ? '#34d399' : state?.grade === 'fair' ? '#fbbf24' : state?.grade === 'poor' ? '#f87171' : '#64748b';
   return (
     <div className="card hero" style={{ position: 'relative' }}>
       <button className="hero-score" onClick={() => navigate('device-security')} aria-label={t('devsec.title')}>
@@ -396,9 +396,9 @@ export function Dashboard() {
 
         <Card title={t('dashboard.systemOverview')} subtitle={t('dashboard.systemOverviewSub')} icon={MonitorCog} tone="purple">
           <div className="row" style={{ justifyContent: 'space-around', flexWrap: 'wrap', gap: 10 }}>
-            <Gauge value={s?.cpu.usagePercent ?? null} label={t('dashboard.cpuUsage')} color="#2f86ff" />
-            <Gauge value={s?.memory.usedPercent ?? null} label={t('dashboard.ramUsage')} color="#22d3a0" />
-            <Gauge value={s?.disk?.usedPercent ?? null} label={t('dashboard.diskUsage')} color="#8b5cf6" />
+            <Gauge value={s?.cpu.usagePercent ?? null} label={t('dashboard.cpuUsage')} color="#38bdf8" />
+            <Gauge value={s?.memory.usedPercent ?? null} label={t('dashboard.ramUsage')} color="#34d399" />
+            <Gauge value={s?.disk?.usedPercent ?? null} label={t('dashboard.diskUsage')} color="#a78bfa" />
           </div>
           <div style={{ marginTop: 14 }}>
             <div className="row tiny dim" style={{ marginBottom: 4 }}>
@@ -407,7 +407,7 @@ export function Dashboard() {
               {s && s.processCount !== null && <span>{t('dashboard.processes')}: <Ltr>{s.processCount}</Ltr></span>}
               {s && <span>· {t('dashboard.uptime')}: {formatDuration(t, s.uptimeSec * 1000)}</span>}
             </div>
-            <Sparkline values={cpuHist} color="#2f86ff" height={44} />
+            <Sparkline values={cpuHist} color="#38bdf8" height={44} />
           </div>
         </Card>
       </div>

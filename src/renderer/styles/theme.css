@@ -8,25 +8,25 @@
 :root {
   --bg: #050a17;
   --bg-2: #07102a;
-  --bg-glow-1: rgba(37, 99, 235, 0.18);
+  --bg-glow-1: rgba(56, 189, 248, 0.16);
   --bg-glow-2: rgba(139, 92, 246, 0.1);
   --panel: rgba(12, 21, 44, 0.78);
   --panel-2: rgba(16, 28, 58, 0.85);
   --panel-solid: #0b142d;
   --panel-hover: rgba(22, 38, 76, 0.9);
   --border: rgba(96, 140, 220, 0.14);
-  --border-strong: rgba(80, 150, 255, 0.38);
+  --border-strong: rgba(56, 189, 248, 0.38);
   --text: #e8eefa;
   --text-2: #a3b3d1;
   --text-3: #6d80a6;
-  --primary: #2f86ff;
-  --primary-2: #1d6fe8;
+  --primary: #38bdf8;
+  --primary-2: #0ea5e9;
   --cyan: #22d3ee;
-  --purple: #8b5cf6;
-  --green: #22c55e;
-  --amber: #f5a524;
-  --red: #f43f5e;
-  --glow-primary: 0 0 0 1px rgba(47, 134, 255, 0.35), 0 8px 28px rgba(47, 134, 255, 0.25);
+  --purple: #a78bfa;
+  --green: #34d399;
+  --amber: #fbbf24;
+  --red: #f87171;
+  --glow-primary: 0 0 0 1px rgba(56, 189, 248, 0.35), 0 8px 28px rgba(56, 189, 248, 0.25);
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   --radius: 14px;
   --radius-sm: 10px;
@@ -66,25 +66,25 @@
 :root[data-theme='light'] {
   --bg: #f3f6fb;
   --bg-2: #e9eff8;
-  --bg-glow-1: rgba(47, 134, 255, 0.1);
+  --bg-glow-1: rgba(56, 189, 248, 0.1);
   --bg-glow-2: rgba(139, 92, 246, 0.06);
   --panel: rgba(255, 255, 255, 0.92);
   --panel-2: rgba(248, 250, 254, 0.96);
   --panel-solid: #ffffff;
   --panel-hover: rgba(236, 242, 252, 0.98);
   --border: rgba(30, 60, 120, 0.13);
-  --border-strong: rgba(37, 99, 235, 0.45);
+  --border-strong: rgba(2, 132, 199, 0.45);
   --text: #0f1b33;
   --text-2: #3d4d6b;
   --text-3: #66758f;
-  --primary: #2563eb;
-  --primary-2: #1d4ed8;
+  --primary: #0284c7;
+  --primary-2: #0369a1;
   --cyan: #0e7490;
   --purple: #7c3aed;
-  --green: #15803d;
+  --green: #059669;
   --amber: #b45309;
   --red: #dc2626;
-  --glow-primary: 0 0 0 1px rgba(37, 99, 235, 0.35), 0 6px 18px rgba(37, 99, 235, 0.18);
+  --glow-primary: 0 0 0 1px rgba(2, 132, 199, 0.35), 0 6px 18px rgba(2, 132, 199, 0.18);
   --shadow: 0 6px 20px rgba(15, 30, 60, 0.08);
   --chrome: rgba(255, 255, 255, 0.85);
   --chrome-2: rgba(248, 250, 254, 0.9);
@@ -94,7 +94,7 @@
   --btn: #ffffff;
   --btn-hover: #eef3fc;
   --scrim: rgba(15, 25, 45, 0.45);
-  --on-tint: #1d4ed8;
+  --on-tint: #0284c7;
   --danger-text: #b91c1c;
   --brand-grad: linear-gradient(90deg, #1b2440, #d9480f);
   color-scheme: light;
@@ -122,7 +122,7 @@ body {
 }
 
 ::selection {
-  background: rgba(47, 134, 255, 0.4);
+  background: rgba(56, 189, 248, 0.4);
 }
 
 ::-webkit-scrollbar {
@@ -317,7 +317,7 @@ table.data time {
 }
 .search input:focus {
   border-color: var(--border-strong);
-  box-shadow: 0 0 0 3px rgba(47, 134, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
 }
 .search input::placeholder {
   color: var(--text-3);
@@ -356,7 +356,7 @@ table.data time {
 }
 .search-results button:hover,
 .search-results button.active {
-  background: rgba(47, 134, 255, 0.14);
+  background: rgba(56, 189, 248, 0.14);
 }
 
 .topbar-actions {
@@ -379,7 +379,7 @@ table.data time {
   transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 .icon-btn:hover {
-  background: rgba(47, 134, 255, 0.12);
+  background: rgba(56, 189, 248, 0.12);
   color: var(--text);
   border-color: var(--border);
 }
@@ -482,7 +482,7 @@ table.data time {
   transition: background 0.18s, color 0.18s;
 }
 .nav-item:hover {
-  background: rgba(47, 134, 255, 0.09);
+  background: rgba(56, 189, 248, 0.09);
   color: var(--text);
 }
 .nav-item.active {
@@ -713,10 +713,10 @@ table.data time {
   background: linear-gradient(180deg, var(--primary), var(--primary-2));
   border-color: transparent;
   color: #fff;
-  box-shadow: 0 6px 20px rgba(47, 134, 255, 0.3);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.3);
 }
 .btn.primary:hover:not(:disabled) {
-  box-shadow: 0 8px 26px rgba(47, 134, 255, 0.45);
+  box-shadow: 0 8px 26px rgba(56, 189, 248, 0.45);
   background: linear-gradient(180deg, #4a97ff, var(--primary));
 }
 .btn.danger {
@@ -930,7 +930,7 @@ table.data tr:last-child td {
   border-bottom: 0;
 }
 table.data tbody tr:hover td {
-  background: rgba(47, 134, 255, 0.05);
+  background: rgba(56, 189, 248, 0.05);
 }
 
 /* Key/value definition grid */
@@ -974,7 +974,7 @@ table.data tbody tr:hover td {
 .textarea:focus,
 .select:focus {
   border-color: var(--border-strong);
-  box-shadow: 0 0 0 3px rgba(47, 134, 255, 0.14);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.14);
 }
 .textarea {
   min-height: 110px;
@@ -1015,7 +1015,7 @@ table.data tbody tr:hover td {
 .toggle[aria-checked='true'] {
   background: var(--primary);
   border-color: transparent;
-  box-shadow: 0 0 14px rgba(47, 134, 255, 0.45);
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.45);
 }
 .toggle[aria-checked='true']::after {
   inset-inline-start: 22px;
@@ -1065,9 +1065,9 @@ table.data tbody tr:hover td {
   color: var(--text);
 }
 .tabs button.active {
-  background: rgba(47, 134, 255, 0.2);
+  background: rgba(56, 189, 248, 0.2);
   color: var(--on-tint);
-  box-shadow: inset 0 0 0 1px rgba(47, 134, 255, 0.4);
+  box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.4);
 }
 
 /* ============ Drop zone ============ */
@@ -1081,9 +1081,9 @@ table.data tbody tr:hover td {
   min-height: 260px;
   padding: 30px;
   border-radius: var(--radius);
-  border: 1.5px dashed rgba(80, 150, 255, 0.35);
+  border: 1.5px dashed rgba(56, 189, 248, 0.35);
   background:
-    radial-gradient(400px 200px at 50% 0%, rgba(47, 134, 255, 0.1), transparent 70%),
+    radial-gradient(400px 200px at 50% 0%, rgba(56, 189, 248, 0.1), transparent 70%),
     var(--sunken);
   text-align: center;
   transition: border-color 0.2s, background 0.2s, transform 0.2s var(--ease);
@@ -1360,8 +1360,8 @@ table.data tbody tr:hover td {
 .chip {
   padding: 3px 9px;
   border-radius: 7px;
-  background: rgba(47, 134, 255, 0.1);
-  border: 1px solid rgba(47, 134, 255, 0.2);
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.2);
   font-size: 12px;
 }
 
@@ -1405,8 +1405,8 @@ table.data tbody tr:hover td {
 }
 .opt[aria-pressed='true'],
 .opt.single[aria-checked='true'] {
-  background: rgba(47, 134, 255, 0.16);
-  border-color: rgba(47, 134, 255, 0.55);
+  background: rgba(56, 189, 248, 0.16);
+  border-color: rgba(56, 189, 248, 0.55);
   color: var(--on-tint);
 }
 .opt:disabled {
@@ -1630,7 +1630,7 @@ table.data tbody tr:hover td {
   z-index: 200;
   pointer-events: none;
   border: 3px dashed var(--primary);
-  background: rgba(47, 134, 255, 0.08);
+  background: rgba(56, 189, 248, 0.08);
   display: flex;
   align-items: flex-start;
   justify-content: center;

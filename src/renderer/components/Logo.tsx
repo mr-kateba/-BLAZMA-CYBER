@@ -29,8 +29,8 @@ export function Constellation() {
     <svg className="constellation" viewBox="0 0 760 260" preserveAspectRatio="xMaxYMin slice" aria-hidden="true">
       <defs>
         <radialGradient id="cg" cx="70%" cy="0%" r="80%">
-          <stop offset="0" stopColor="#2f86ff" stopOpacity="0.25" />
-          <stop offset="1" stopColor="#2f86ff" stopOpacity="0" />
+          <stop offset="0" stopColor="#38bdf8" stopOpacity="0.25" />
+          <stop offset="1" stopColor="#38bdf8" stopOpacity="0" />
         </radialGradient>
       </defs>
       <rect width="760" height="260" fill="url(#cg)" />
