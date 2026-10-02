@@ -141,6 +141,9 @@ Status legend: **DONE** (works, connected, both languages, tested where practica
 ## v1.1.4 — DONE
 - DONE Fix: password recovery extracts the file's hash with John's *2john tools (rar2john/zip2john next to john.exe) before running the engine; earlier builds passed the archive itself so John loaded no hashes and finished instantly with nothing; hashcat gets -m by hash prefix; temp hash file 0600, removed on end; tested end-to-end via stand-in extractor+engine
 
+## v1.1.5 — DONE
+- DONE Theme: adopt the Blazma family sky accent (#38bdf8 dark / #0284c7 light) to match the sibling blazma-nt; orange hexagon stays the brand mark
+
 ## Phase 7 — Polish
 - DONE Terminal: opens the regular Windows terminal (Windows Terminal, else PowerShell) in its own window — no in-app terminal by decision (the GUI never runs commands from user input)
 - DONE Packaging config (electron-builder.yml): per-user NSIS (asInvoker, no elevation, Arabic + English installer), asar, hardened Electron fuses (RunAsNode off, NODE_OPTIONS/inspect off, asar integrity, only-load-from-asar), no publish/auto-update; app icon generated from the logo SVG (scripts/make-icon.mjs)

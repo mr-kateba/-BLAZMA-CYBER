@@ -22,6 +22,7 @@ By **[mr-kateba](https://github.com/mr-kateba)**
 ---
 
 ## Table of contents
+- [What's new in 1.1.5](#whats-new-in-115)
 - [What's new in 1.1.4](#whats-new-in-114)
 - [What's new in 1.1.3](#whats-new-in-113)
 - [What's new in 1.1.2](#whats-new-in-112)
@@ -37,6 +38,10 @@ By **[mr-kateba](https://github.com/mr-kateba)**
 - [License](#license)
 
 ---
+
+## What's new in 1.1.5
+- **Blazma family look.** The interface now shares the Blazma family sky accent with the sibling
+  apps (same blue across the family); the orange Blazma hexagon stays the logo.
 
 ## What's new in 1.1.4
 - **Password recovery actually runs now.** John and hashcat can't read an archive directly — they
@@ -278,7 +283,7 @@ Optional, **user-installed** (Blazma never downloads or runs them by itself):
 ---
 
 ## Project status
-**v1.1.4 (stable).** Verified automatically on real Windows (Server 2025, the Windows 11 24H2 code
+**v1.1.5 (stable).** Verified automatically on real Windows (Server 2025, the Windows 11 24H2 code
 base) in CI: PowerShell facts, Defender status & EICAR file scan, Authenticode, forensics, the
 network tools, a real pktmon capture, the Wi-Fi reader, startup/signature review, the full UI
 end-to-end, and the NSIS installer build.
